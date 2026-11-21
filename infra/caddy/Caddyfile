@@ -1,6 +1,8 @@
 # Production: automatic HTTPS (Let's Encrypt) for JOURNAL_DOMAIN, HTTP → HTTPS redirect.
 {
 	email {$ACME_EMAIL}
+	# Clients that send no SNI (Java for single-label names, old devices) get the site's cert.
+	default_sni {$JOURNAL_DOMAIN}
 	servers {
 		# Only Caddy's own proxy hop is trusted for X-Forwarded-For (TRUSTED_PROXY_COUNT=1).
 		trusted_proxies static private_ranges

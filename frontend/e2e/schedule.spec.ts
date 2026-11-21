@@ -29,8 +29,8 @@ test("teacher sees the lesson, admin cancels it, the student sees «отмене
   await login(page, "e2e.student");
   await page.getByRole("link", { name: "Расписание" }).click();
   await expect(page).toHaveURL(/\/student\/schedule$/);
-  await expect(page.getByText("Математика")).toBeVisible();
-  await expect(page.getByText("отменено")).toBeVisible();
+  await expect(page.getByText("Математика").first()).toBeVisible();
+  await expect(page.getByText("отменено").first()).toBeVisible();
   // The student cannot reach staff schedule endpoints.
   expect((await page.request.get("/api/v1/admin/lessons")).status()).toBe(403);
   expect((await page.request.get("/api/v1/teacher/schedule")).status()).toBe(403);

@@ -273,6 +273,7 @@ jobs:
       - name: OWASP ZAP baseline (SPEC §11)
         if: ${{ !cancelled() }}
         run: |
+          set -o pipefail
           mkdir -p zap && chmod 777 zap
           docker run --rm --network host -v "$PWD/zap:/zap/wrk" ghcr.io/zaproxy/zaproxy:stable \
             zap-baseline.py -t https://localhost/ -r zap-report.html -J zap-report.json -I \
