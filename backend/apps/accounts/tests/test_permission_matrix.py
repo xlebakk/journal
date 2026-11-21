@@ -70,6 +70,12 @@ MATRIX: list[tuple[str, str, dict[str, int]]] = [
     # Stage 3: journal.
     ("get", "/api/v1/journal/courses", {"admin": 200, "teacher": 200, "student": 403}),
     ("get", "/api/v1/teacher/today", {"admin": 403, "teacher": 200, "student": 403}),
+    # Stage 4: the student's cabinet (no current year in the matrix fixture → 400 for some).
+    ("get", "/api/v1/student/home", {"admin": 403, "teacher": 403, "student": 200}),
+    ("get", "/api/v1/student/diary", {"admin": 403, "teacher": 403, "student": 200}),
+    ("get", "/api/v1/student/profile", {"admin": 403, "teacher": 403, "student": 200}),
+    ("get", "/api/v1/student/grades", {"admin": 403, "teacher": 403, "student": 400}),
+    ("get", "/api/v1/student/attendance", {"admin": 403, "teacher": 403, "student": 400}),
 ]
 
 
