@@ -18,7 +18,11 @@ import { UserDetailPage } from "@/features/admin/users/UserDetailPage";
 import { UsersPage } from "@/features/admin/users/UsersPage";
 import { JournalPage } from "@/features/journal/JournalPage";
 import { LessonPage } from "@/features/journal/LessonPage";
+import { AttendancePage } from "@/features/student/AttendancePage";
+import { DiaryPage } from "@/features/student/DiaryPage";
+import { GradesPage } from "@/features/student/GradesPage";
 import { HomePage as StudentHomePage } from "@/features/student/HomePage";
+import { TestsPage } from "@/features/student/TestsPage";
 import { SchedulePage as StudentSchedulePage } from "@/features/student/SchedulePage";
 import { SchedulePage as TeacherSchedulePage } from "@/features/teacher/SchedulePage";
 import { TodayPage } from "@/features/teacher/TodayPage";
@@ -78,6 +82,10 @@ const routes: RouteObject[] = [
     element: <Gate section="student" />,
     children: [
       { index: true, Component: StudentHomePage },
+      { path: "diary", Component: DiaryPage },
+      { path: "grades", Component: GradesPage },
+      { path: "tests", Component: TestsPage },
+      { path: "attendance", Component: AttendancePage },
       { path: "schedule", Component: StudentSchedulePage },
     ],
   },

@@ -32,11 +32,19 @@ export function InitialsMenu({ me }: { me: Me }) {
           <div className={styles.who}>
             <span className={styles.name}>{me.full_name}</span>
             {me.active_role && <span className={styles.role}>{t(`roles.${me.active_role}`)}</span>}
+            {me.groups.length > 0 && (
+              <span className={styles.role}>{me.groups.map((g) => g.name).join(", ")}</span>
+            )}
           </div>
           <Menu.Separator className={styles.separator} />
           <Menu.Item className={styles.item} onSelect={() => navigate("/account/profile")}>
             {t("menu.profile")}
           </Menu.Item>
+          {me.active_role === "student" && (
+            <Menu.Item className={styles.item} onSelect={() => navigate("/student/attendance")}>
+              {t("nav.attendance")}
+            </Menu.Item>
+          )}
           <Menu.Item className={styles.item} onSelect={() => navigate("/account/password")}>
             {t("menu.password")}
           </Menu.Item>

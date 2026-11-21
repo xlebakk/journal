@@ -3804,6 +3804,31 @@ components:
       - lessons
       - today
       - week_start
+    DiaryGrade:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        value:
+          type: integer
+        work_type_name:
+          type: string
+        weight:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,2})?$
+        comment:
+          type: string
+        low:
+          type: boolean
+      required:
+      - comment
+      - id
+      - low
+      - value
+      - weight
+      - work_type_name
     DiaryLesson:
       type: object
       description: 'What a student sees: no versions, no internal links, nothing about
@@ -3887,14 +3912,15 @@ components:
           type: string
           readOnly: true
         attendance:
-          type: string
           nullable: true
           readOnly: true
+          oneOf:
+          - $ref: '#/components/schemas/AttendanceStatusEnum'
+          - $ref: '#/components/schemas/NullEnum'
         grades:
           type: array
           items:
-            type: object
-            additionalProperties: {}
+            $ref: '#/components/schemas/DiaryGrade'
           readOnly: true
       required:
       - attendance
