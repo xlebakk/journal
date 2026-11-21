@@ -34,7 +34,7 @@ jobs:
       DB_HOST: localhost
       DB_PASSWORD: journal
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
@@ -90,7 +90,7 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v5
         with:
           node-version: 24
@@ -117,7 +117,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [frontend]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v5
         with:
           node-version: 24
@@ -162,7 +162,7 @@ jobs:
       DB_HOST: localhost
       DB_PASSWORD: journal
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
@@ -191,7 +191,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [backend, frontend]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: .env.prod for a throwaway stack
         run: |
           secret() { python3 -c "import secrets; print(secrets.token_urlsafe(32))"; }
