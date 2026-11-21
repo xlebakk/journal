@@ -11,3 +11,17 @@ SECURE_REDIRECT_EXEMPT = [r"^api/v1/health$"]
 SECURE_HSTS_SECONDS = 31_536_000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
+
+# Structured logs on stdout (SPEC §11); Docker keeps and rotates them.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {"json": {"()": "apps.core.logging.JsonFormatter"}},
+    "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "json"}},
+    "root": {"handlers": ["console"], "level": "INFO"},
+    "loggers": {
+        # 4xx answers are expected traffic, not incidents.
+        "django.request": {"level": "ERROR"},
+        "django.security.DisallowedHost": {"level": "ERROR"},
+    },
+}

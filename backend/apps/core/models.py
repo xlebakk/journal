@@ -46,6 +46,9 @@ class CenterSettings(models.Model):
     default_grade_scale = models.CharField(max_length=3, default="100")
     last_backup_at = models.DateTimeField(null=True, blank=True)
     last_backup_ok = models.BooleanField(null=True, blank=True)
+    # Monthly restore check of the latest backup (stage 7, SPEC §11).
+    last_restore_check_at = models.DateTimeField(null=True, blank=True)
+    last_restore_check_ok = models.BooleanField(null=True, blank=True)
 
     updated_at = models.DateTimeField(auto_now=True)
 

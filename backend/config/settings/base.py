@@ -40,6 +40,8 @@ MIDDLEWARE = [
     "apps.accounts.middleware.SessionPolicyMiddleware",
     "apps.accounts.middleware.AppTokenMiddleware",
     "apps.accounts.middleware.ForcedActionMiddleware",
+    # Refused requests of logged-in users, for «всплески отказов» in the overview.
+    "apps.audit.middleware.DeniedRequestMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 

@@ -77,9 +77,18 @@ class CenterSettingsSerializer(serializers.ModelSerializer[CenterSettings]):
             "logo",
             "last_backup_at",
             "last_backup_ok",
+            "last_restore_check_at",
+            "last_restore_check_ok",
             "updated_at",
         )
-        read_only_fields = ("logo", "last_backup_at", "last_backup_ok", "updated_at")
+        read_only_fields = (
+            "logo",
+            "last_backup_at",
+            "last_backup_ok",
+            "last_restore_check_at",
+            "last_restore_check_ok",
+            "updated_at",
+        )
         extra_kwargs: ClassVar = {
             name: {"min_value": low, "max_value": high} for name, (low, high) in RANGES.items()
         }
