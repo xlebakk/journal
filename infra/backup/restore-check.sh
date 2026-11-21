@@ -22,6 +22,7 @@ report() {
 }
 cleanup() {
   db dropdb --username postgres --if-exists "$CHECK_DB" >/dev/null 2>&1 || true
+  db rm -f /tmp/restore-check.dump >/dev/null 2>&1 || true
   rm -rf "$WORK"
 }
 fail() { echo "restore check FAILED: $1" >&2; report failed; exit 1; }
@@ -42,8 +43,11 @@ age --decrypt --identity "$AGE_IDENTITY_FILE" --output "$WORK/backup.dump" "$WOR
 
 db dropdb --username postgres --if-exists "$CHECK_DB"
 db createdb --username postgres "$CHECK_DB"
+# From a file inside the container, not a pipe: the dump was streamed through age, so it has no
+# data offsets and pg_restore may need to seek.
+"${COMPOSE[@]}" cp "$WORK/backup.dump" db:/tmp/restore-check.dump
 db pg_restore --username postgres --dbname "$CHECK_DB" --no-owner --no-privileges \
-  --exit-on-error < "$WORK/backup.dump"
+  --exit-on-error /tmp/restore-check.dump
 
 # Sanity: the schema is complete and the data is there.
 live_migrations="$(sql "$("${COMPOSE[@]}" exec -T db printenv DB_NAME | tr -d '\r')" \
