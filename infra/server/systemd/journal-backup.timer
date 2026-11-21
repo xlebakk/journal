@@ -1,0 +1,10 @@
+[Unit]
+Description=Journal nightly backup
+
+[Timer]
+OnCalendar=*-*-* 02:30
+RandomizedDelaySec=15m
+Persistent=true
+
+[Install]
+WantedBy=timers.target

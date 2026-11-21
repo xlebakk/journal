@@ -1,0 +1,16 @@
+# Production: automatic HTTPS (Let's Encrypt) for JOURNAL_DOMAIN, HTTP → HTTPS redirect.
+{
+	email {$ACME_EMAIL}
+	servers {
+		# Only Caddy's own proxy hop is trusted for X-Forwarded-For (TRUSTED_PROXY_COUNT=1).
+		trusted_proxies static private_ranges
+	}
+}
+
+import common.caddy
+
+{$JOURNAL_DOMAIN} {
+	import security_headers
+	header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+	import journal_app
+}
