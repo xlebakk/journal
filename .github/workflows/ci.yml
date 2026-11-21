@@ -271,6 +271,57 @@ jobs:
         run: |
           docker compose -f infra/docker-compose.prod.yml --env-file .env.prod exec -T api python manage.py shell -c "
           from apps.core.models import CenterSettings as C; s = C.load(); assert s.last_backup_ok and s.last_restore_check_ok, (s.last_backup_ok, s.last_restore_check_ok)"
+      # SPEC §15 numbers, measured against the real stack (Caddy, compression, HTTPS).
+      - uses: actions/setup-node@v5
+        if: ${{ !cancelled() }}
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: acceptance tools
+        if: ${{ !cancelled() }}
+        working-directory: frontend
+        run: npm ci
+      - name: Mozilla HTTP Observatory — grade A+ (SPEC §15)
+        if: ${{ !cancelled() }}
+        run: |
+          docker compose -f infra/docker-compose.prod.yml --env-file .env.prod cp             web:/data/caddy/pki/authorities/local/root.crt /tmp/caddy-root.crt
+          cd frontend
+          NODE_EXTRA_CA_CERTS=/tmp/caddy-root.crt node node_modules/@mdn/mdn-http-observatory/src/scan.js localhost > /tmp/observatory.json
+          python3 - <<'PY'
+          import json
+          result = json.load(open("/tmp/observatory.json"))
+          scan = result["scan"]
+          failed = [f"{k}: {v.get('result')}" for k, v in result["tests"].items() if not v.get("pass")]
+          summary = f"grade {scan['grade']}, score {scan['score']}"
+          print(summary)
+          print("::notice title=Observatory::" + summary + "%0A" + "%0A".join(failed))
+          assert scan["grade"] == "A+", failed
+          PY
+      - name: a student with a current year for Lighthouse
+        if: ${{ !cancelled() }}
+        run: |
+          docker compose -f infra/docker-compose.prod.yml --env-file .env.prod exec -T api python manage.py shell -c "
+          from datetime import timedelta
+          from django.utils import timezone
+          from apps.academics.models import AcademicYear
+          from apps.accounts.models import StudentProfile, User
+          today = timezone.localdate()
+          AcademicYear.objects.create(name='CI', starts_on=today - timedelta(days=60), ends_on=today + timedelta(days=200), is_current=True)
+          student = User.objects.create_user(login='ci.student', password='a-long-ci-password-42', last_name='CI', first_name='Student', roles=['student'])
+          StudentProfile.objects.create(user=student)
+          "
+      - name: Lighthouse — accessibility ≥ 95, performance ≥ 90 (SPEC §15)
+        if: ${{ !cancelled() }}
+        working-directory: frontend
+        env:
+          BASE_URL: https://localhost
+          STUDENT_LOGIN: ci.student
+          STUDENT_PASSWORD: a-long-ci-password-42
+        run: |
+          set -o pipefail
+          node scripts/lighthouse.mjs 2>&1 | tee /tmp/lighthouse.out
+          echo "::notice title=Lighthouse::$(grep -E '^[✓✗]' /tmp/lighthouse.out | awk 'BEGIN { ORS = "%0A" } { print }')"
       - name: OWASP ZAP baseline (SPEC §11)
         if: ${{ !cancelled() }}
         run: |
@@ -295,7 +346,7 @@ jobs:
         if: failure()
         run: |
           oneline() { awk 'BEGIN { ORS = "%0A" } { print }'; }
-          for f in /tmp/zap.out /tmp/backup.out /tmp/restore.out; do
+          for f in /tmp/lighthouse.out /tmp/observatory.json /tmp/zap.out /tmp/backup.out /tmp/restore.out; do
             if [ -f "$f" ]; then echo "::error title=$(basename "$f")::$(tail -n 25 "$f" | oneline)"; fi
           done
           for svc in api db web; do

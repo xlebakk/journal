@@ -57,6 +57,7 @@ docs/               decisions.md, security.md, deploy.md (сервер), admin-g
 | Android APK | `cd mobile && npm run apk:debug` (JDK 21+, Android SDK); release — см. `mobile/README.md` |
 | Роли БД продакшена | `SUPERUSER_PASSWORD=… infra/scripts/check-db-roles.sh` (нужен суперпользователь PostgreSQL) |
 | Ротация бэкапов | `uv run --project backend python -m pytest -q -p no:django infra/backup` |
+| Lighthouse (SPEC §15) | `BASE_URL=… STUDENT_LOGIN=… STUDENT_PASSWORD=… npm run lighthouse` во `frontend` (production-сборка); в CI — против продакшен-стека |
 | PWA-проверка | `cd frontend && npm run build && npm run check:pwa` |
 | Pre-commit | `uv run --project backend pre-commit install`, затем `... pre-commit run --all-files` |
 
