@@ -1491,6 +1491,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/journal/lessons/{id}/attendance/{student_id}/clear": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Remove a mark (undo); POST with a body, since DELETE bodies are not portable. */
+        post: operations["journal_lessons_attendance_clear_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/journal/lessons/{id}/attendance/all-present": {
         parameters: {
             query?: never;
@@ -5207,6 +5224,31 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Attendance"];
                 };
+            };
+        };
+    };
+    journal_lessons_attendance_clear_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                student_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VersionReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

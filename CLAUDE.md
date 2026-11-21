@@ -22,7 +22,8 @@ backend/            Django 5.2 LTS + DRF, Python 3.13, uv
                     группы и составы (exclusion-ограничения), курсы с ассистентами
   apps/schedule/    шаблон недели (ScheduleSlot), занятия (Lesson, planned_* для переносов),
                     запросы преподавателей; вся логика — services.py (генерация, конфликты, план)
-  apps/<остальные>/ journal, exams, reports, announcements — создаются на своих этапах
+  apps/journal/     посещаемость и оценки; правила — services.py, формулы — stats.py (одна функция)
+  apps/<остальные>/ exams, reports, announcements — создаются на своих этапах
 frontend/           React + TypeScript + Vite, CSS Modules, TanStack Query, React Router
   src/app/          роутинг, лэйауты
   src/features/     auth, student, teacher, admin
@@ -68,6 +69,7 @@ docs/               decisions.md, security.md, позже deploy.md, admin-guide
 13. Админский CRUD — `apps.core.viewsets.AuditedAdminViewSet`: аудит, 409 `in_use`, коды нарушений ограничений через `constraint_codes`. Сериалайзеры моделей — `apps.core.serializers.DatabaseUniqueModelSerializer`: уникальность проверяет БД.
 14. Query-параметры с id и датами — через `apps.core.params.uuid_param` / `date_param` (мусор → 400).
 15. Занятия по ролям — `Lesson.objects.for_user(user, role)` с **активной** ролью; изменение занятия — под `services.lock_lesson(id, version)` (оптимистичная блокировка).
+16. Любая запись в журнал — только через `apps/journal/services.py` (окно, причина, членство, автор оценки, версии, аудит). Средние и проценты — только `apps/journal/stats.py:course_stats`; новый экран или отчёт с цифрами вызывает её же.
 
 ## Время и данные
 

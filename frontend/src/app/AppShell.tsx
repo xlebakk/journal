@@ -16,11 +16,13 @@ const NAV: Record<Role, NavItem[]> = {
     { to: "/admin/users", label: "nav.users" },
     { to: "/admin/groups", label: "nav.groups" },
     { to: "/admin/schedule", label: "nav.schedule" },
+    { to: "/admin/journal", label: "nav.journal" },
     { to: "/admin/requests", label: "nav.requests" },
     { to: "/admin/catalogs", label: "nav.catalogs" },
   ],
   teacher: [
     { to: "/teacher", label: "nav.today", end: true },
+    { to: "/teacher/journal", label: "nav.journal" },
     { to: "/teacher/schedule", label: "nav.schedule" },
   ],
   student: [

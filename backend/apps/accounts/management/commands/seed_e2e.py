@@ -11,7 +11,15 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import connection, transaction
 
-from apps.academics.models import AcademicYear, Course, Group, GroupMembership, Room, Subject
+from apps.academics.models import (
+    AcademicYear,
+    Course,
+    Group,
+    GroupMembership,
+    LessonType,
+    Room,
+    Subject,
+)
 from apps.accounts import totp
 from apps.accounts.models import Role, StudentProfile, TeacherProfile, User
 from apps.schedule import services
@@ -91,4 +99,19 @@ class Command(BaseCommand):
             course=course, weekday=today.isoweekday(), start_time=time(10), end_time=time(11, 30),
             room=Room.objects.create(name="101", capacity=16), valid_from=year.starts_on,
         )  # fmt: skip
-        services.generate_lessons(slots=[slot])
+        # A second course for the journal scenario (independent of the cancellation test).
+        physics = Course.objects.create(
+            group=group,
+            subject=Subject.objects.create(name="Физика", short_name="Физ"),
+            teacher=teacher,
+        )
+        physics_slot = ScheduleSlot.objects.create(
+            course=physics,
+            weekday=today.isoweekday(),
+            start_time=time(8),
+            end_time=time(9, 30),
+            room=slot.room,
+            lesson_type=LessonType.objects.get(short="Пр"),
+            valid_from=year.starts_on,
+        )
+        services.generate_lessons(slots=[slot, physics_slot])

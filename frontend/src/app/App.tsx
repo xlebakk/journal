@@ -16,6 +16,8 @@ import { SchedulePage as AdminSchedulePage } from "@/features/admin/schedule/Sch
 import { UserCreatePage } from "@/features/admin/users/UserCreatePage";
 import { UserDetailPage } from "@/features/admin/users/UserDetailPage";
 import { UsersPage } from "@/features/admin/users/UsersPage";
+import { JournalPage } from "@/features/journal/JournalPage";
+import { LessonPage } from "@/features/journal/LessonPage";
 import { HomePage as StudentHomePage } from "@/features/student/HomePage";
 import { SchedulePage as StudentSchedulePage } from "@/features/student/SchedulePage";
 import { SchedulePage as TeacherSchedulePage } from "@/features/teacher/SchedulePage";
@@ -57,6 +59,8 @@ const routes: RouteObject[] = [
       { path: "schedule", Component: AdminSchedulePage },
       { path: "requests", Component: RequestsPage },
       { path: "catalogs", Component: CatalogsPage },
+      { path: "journal", Component: JournalPage },
+      { path: "journal/lessons/:id", Component: LessonPage },
     ],
   },
   {
@@ -65,6 +69,8 @@ const routes: RouteObject[] = [
     children: [
       { index: true, Component: TodayPage },
       { path: "schedule", Component: TeacherSchedulePage },
+      { path: "journal", Component: JournalPage },
+      { path: "journal/lessons/:id", Component: LessonPage },
     ],
   },
   {

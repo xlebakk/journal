@@ -1,0 +1,429 @@
+/* Journal: the lesson page and the grid (SPEC §7.2, §7.3, §12). */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.toolbar > * {
+  min-width: 240px;
+}
+
+.tabs {
+  display: flex;
+  gap: var(--space-2);
+  border-bottom: var(--line) solid var(--rule);
+}
+
+.tab {
+  min-height: 36px;
+  padding: 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.tab[aria-selected="true"] {
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+}
+
+.note,
+.lessonMeta {
+  margin: 0;
+  font-size: var(--text-14);
+  color: var(--ink-2);
+}
+
+.hint {
+  min-height: 1.45em;
+  margin: 0;
+  color: var(--pencil);
+  font-size: var(--text-14);
+}
+
+.error {
+  margin: 0;
+  color: var(--red-pen);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.backLink {
+  font-size: var(--text-14);
+}
+
+/* --- Lesson page ---------------------------------------------------------------------- */
+
+.lessonHead h1 {
+  margin-bottom: 4px;
+}
+
+.reasonBox {
+  padding: var(--space-2);
+  border: var(--line) solid var(--pencil);
+  background: var(--sheet);
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(240px, 3fr);
+  gap: var(--space-2) var(--space-3);
+}
+
+.textareaField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  grid-column: 1 / -1;
+}
+
+.label {
+  font-size: var(--text-12);
+  color: var(--ink-2);
+}
+
+.textarea {
+  padding: 4px 0;
+  border: 0;
+  border-bottom: var(--line-strong) solid var(--ink);
+  background: transparent;
+  resize: vertical;
+}
+
+.textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.students {
+  display: flex;
+  flex-direction: column;
+  border-top: var(--line) solid var(--ink);
+  background: var(--sheet);
+}
+
+.studentRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 44px;
+  padding: 4px var(--space-1);
+  border-bottom: var(--line) solid var(--rule);
+}
+
+.studentName {
+  flex: 0 0 180px;
+  padding-right: var(--space-1);
+  border-right: var(--line-strong) solid var(--red-pen);
+}
+
+.mark {
+  min-width: 56px;
+  min-height: 36px;
+  border: var(--line) solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--sheet);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.unmarked {
+  border-style: dashed;
+  color: var(--ink-2);
+}
+
+.mark_present {
+  color: var(--ink);
+}
+
+.mark_late {
+  color: var(--pencil);
+}
+
+.mark_absent {
+  color: var(--red-pen);
+}
+
+.mark_excused {
+  color: var(--ink-2);
+}
+
+.lateInput,
+.gradeInput {
+  width: 56px;
+  min-height: 36px;
+  padding: 0 6px;
+  border: 0;
+  border-bottom: var(--line-strong) solid var(--ink);
+  background: transparent;
+  font-weight: 700;
+}
+
+.lateInput {
+  width: 96px;
+  font-weight: 400;
+}
+
+.gradeInput[aria-invalid="true"] {
+  border-bottom-color: var(--red-pen);
+  color: var(--red-pen);
+}
+
+.grades {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+}
+
+.gradeChip {
+  min-width: 44px;
+  min-height: 36px;
+  border: var(--line) solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--sheet);
+  font-size: var(--text-15);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.gradeChip:disabled {
+  cursor: default;
+}
+
+.valueButtons {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.valueButton {
+  min-width: var(--tap-target);
+  min-height: var(--tap-target);
+  border: var(--line) solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--sheet);
+  font-family: var(--font-mono);
+  font-size: var(--text-16);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.saveStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 36px;
+  font-family: var(--font-mono);
+  font-size: var(--text-14);
+  color: var(--ink-2);
+}
+
+/* --- Grid ----------------------------------------------------------------------------- */
+
+.scroller {
+  max-width: 100%;
+  max-height: 70vh;
+  overflow: auto;
+  border: var(--line) solid var(--rule);
+  background: var(--sheet);
+}
+
+.grid {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.grid:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.grid th,
+.grid td {
+  height: var(--row-height);
+  padding: 0 6px;
+  border-right: var(--line) solid var(--rule);
+  border-bottom: var(--line) solid var(--rule);
+  background: var(--sheet);
+  white-space: nowrap;
+}
+
+.grid thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-bottom-color: var(--ink);
+}
+
+.grid tbody tr:hover > * {
+  background: linear-gradient(var(--rule), var(--rule)), var(--sheet);
+}
+
+.grid .nameCell {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  min-width: 170px;
+  text-align: left;
+  font-weight: 400;
+  border-right: var(--line-strong) solid var(--red-pen);
+}
+
+.grid thead .nameCell {
+  z-index: 3;
+  font-size: var(--text-12);
+  color: var(--ink-2);
+}
+
+.dateHead {
+  min-width: 58px;
+  font-family: var(--font-mono);
+  font-size: var(--text-12);
+  font-weight: 500;
+  text-align: center;
+}
+
+.dateHead a {
+  display: block;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.dateType {
+  display: block;
+  color: var(--ink-2);
+}
+
+.grid .todayHead {
+  background: linear-gradient(var(--marker), var(--marker)), var(--sheet);
+}
+
+.grid .weekStart {
+  border-left: 2px solid var(--ink-2);
+}
+
+.cell {
+  min-width: 58px;
+  text-align: center;
+  cursor: cell;
+}
+
+.grid .todayCell {
+  background: linear-gradient(var(--marker-soft), var(--marker-soft)), var(--sheet);
+}
+
+.grid .outside {
+  color: var(--ink-2);
+  background: var(--paper);
+}
+
+.grid .selected {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.cellContent {
+  display: inline-flex;
+  gap: 4px;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-15);
+  font-weight: 700;
+}
+
+.grade {
+  color: var(--ink);
+}
+
+.low {
+  color: var(--red-pen);
+}
+
+.buffer {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.grid .summary {
+  min-width: 64px;
+  font-family: var(--font-mono);
+  text-align: right;
+}
+
+.topics {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--sheet);
+}
+
+.topics th,
+.topics td {
+  padding: 6px var(--space-1);
+  border-bottom: var(--line) solid var(--rule);
+  text-align: left;
+  vertical-align: top;
+}
+
+.topics th {
+  font-size: var(--text-12);
+  font-weight: 500;
+  color: var(--ink-2);
+  border-bottom-color: var(--ink);
+}
+
+.homework {
+  white-space: pre-wrap;
+}
+
+@media (max-width: 599px) {
+  .fields {
+    grid-template-columns: 1fr;
+  }
+
+  .studentName {
+    flex-basis: 100%;
+    border-right: 0;
+  }
+
+  .mark {
+    min-height: var(--tap-target);
+  }
+
+  .toolbar > * {
+    min-width: 100%;
+  }
+}
