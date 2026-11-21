@@ -1,0 +1,10 @@
+[Unit]
+Description=Journal: lessons four weeks ahead, old security records pruned
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/journal
+ExecStart=/usr/bin/docker compose -f infra/docker-compose.prod.yml --env-file .env.prod exec -T api python manage.py generate_lessons
+ExecStart=/usr/bin/docker compose -f infra/docker-compose.prod.yml --env-file .env.prod exec -T api python manage.py prune_security_log

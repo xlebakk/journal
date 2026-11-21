@@ -24,7 +24,7 @@ repos:
         language: fail
         entry: ".env files must not be committed; use .env.example"
         files: (^|/)\.env(\..+)?$
-        exclude: \.env\.example$
+        exclude: \.env(\.[a-z]+)?\.example$
 
       - id: ruff-check
         name: ruff check

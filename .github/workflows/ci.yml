@@ -71,6 +71,18 @@ jobs:
           DJANGO_CSRF_TRUSTED_ORIGINS: https://journal.example.com
           TOTP_ENCRYPTION_KEYS: dGVzdC1vbmx5LWtleS10ZXN0LW9ubHkta2V5LTAwMDA=
         run: uv run python manage.py check --deploy --fail-level WARNING
+      - name: production DB roles — the app cannot touch the audit log (stage 7)
+        working-directory: .
+        env:
+          SUPERUSER: journal
+          SUPERUSER_PASSWORD: journal
+        run: infra/scripts/check-db-roles.sh
+      - name: backup retention 14 / 8 / 12
+        working-directory: .
+        run: uv run --project backend python -m pytest -q -p no:django infra/backup
+      - name: shellcheck of the server scripts
+        working-directory: .
+        run: shellcheck infra/backup/*.sh infra/scripts/*.sh infra/postgres/init-prod/*.sh
 
   frontend:
     runs-on: ubuntu-latest
@@ -172,3 +184,86 @@ jobs:
         with:
           name: playwright-report
           path: frontend/test-results/
+
+  # The production stack exactly as on the server: images, roles, Caddy with HTTPS (Caddy's
+  # internal CA for «localhost»), headers, a backup → restore round trip and a ZAP baseline.
+  prod-stack:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v5
+      - name: .env.prod for a throwaway stack
+        run: |
+          secret() { python3 -c "import secrets; print(secrets.token_urlsafe(32))"; }
+          fernet() { python3 -c "import base64, os; print(base64.urlsafe_b64encode(os.urandom(32)).decode())"; }
+          cat > .env.prod <<EOF
+          JOURNAL_DOMAIN=localhost
+          ACME_EMAIL=ci@example.com
+          DJANGO_SECRET_KEY=$(secret)$(secret)
+          DJANGO_ALLOWED_HOSTS=localhost
+          DJANGO_CSRF_TRUSTED_ORIGINS=https://localhost
+          TOTP_ENCRYPTION_KEYS=$(fernet)
+          POSTGRES_PASSWORD=$(secret)
+          DB_NAME=journal
+          DB_OWNER_USER=journal_owner
+          DB_OWNER_PASSWORD=$(secret)
+          DB_USER=journal_app
+          DB_PASSWORD=$(secret)
+          REDIS_PASSWORD=$(secret)
+          EOF
+      - name: build and start
+        run: docker compose -f infra/docker-compose.prod.yml --env-file .env.prod up -d --build --wait
+      - name: HTTPS, redirect and security headers
+        run: |
+          curl -sk -o /dev/null -w "%{http_code} %{redirect_url}\n" http://localhost/ | grep -q "^308 https://localhost/"
+          headers="$(curl -skI https://localhost/)"
+          echo "$headers"
+          for h in "strict-transport-security: max-age=31536000" "content-security-policy: default-src 'self'" \
+                   "x-content-type-options: nosniff" "referrer-policy: same-origin" \
+                   "permissions-policy: camera=()" "cross-origin-opener-policy: same-origin"; do
+            echo "$headers" | grep -qi "^$h" || { echo "missing: $h"; exit 1; }
+          done
+          ! echo "$headers" | grep -qi "^server:"
+          curl -sk https://localhost/api/v1/health | grep -q ok
+          test "$(curl -sk -o /dev/null -w '%{http_code}' https://localhost/api/v1/me)" = 401
+      - name: nothing but Caddy listens to the world
+        run: |
+          docker compose -f infra/docker-compose.prod.yml --env-file .env.prod ps --format '{{.Service}} {{.Publishers}}'
+          test -z "$(docker compose -f infra/docker-compose.prod.yml --env-file .env.prod ps --format '{{.Service}} {{.Publishers}}' | grep -E '^(db|redis|api) .*[0-9]+->')"
+      - name: some data to back up
+        run: |
+          docker compose -f infra/docker-compose.prod.yml --env-file .env.prod exec -T api python manage.py shell -c "
+          from django.db import transaction
+          from apps.accounts.models import User
+          from apps.audit import services as audit
+          with transaction.atomic():
+              user = User.objects.create_user(login='ci.admin', password='a-long-ci-password-42', last_name='CI', first_name='CI', roles=['admin'])
+              audit.record(request=None, action='user.create', entity=user)
+          "
+      - name: backup → off-site → restore check
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq age rclone
+          sudo mkdir -p /etc/journal /tmp/offsite
+          age-keygen -o /tmp/identity.txt 2>/dev/null
+          age-keygen -y /tmp/identity.txt > /tmp/recipients.txt
+          printf 'AGE_RECIPIENTS_FILE=/tmp/recipients.txt\nAGE_IDENTITY_FILE=/tmp/identity.txt\nRCLONE_REMOTE=/tmp/offsite\nLOCAL_DIR=/tmp/local-backups\n' > /tmp/backup.env
+          BACKUP_ENV=/tmp/backup.env infra/backup/backup.sh
+          ls -l /tmp/offsite
+          # The off-site copy is encrypted: no SQL in clear text.
+          ! grep -q "accounts_user" /tmp/offsite/*.age
+          BACKUP_ENV=/tmp/backup.env infra/backup/restore-check.sh
+          docker compose -f infra/docker-compose.prod.yml --env-file .env.prod exec -T api python manage.py shell -c "
+          from apps.core.models import CenterSettings as C; s = C.load(); assert s.last_backup_ok and s.last_restore_check_ok"
+      - name: OWASP ZAP baseline (SPEC §11)
+        run: |
+          mkdir -p zap && chmod 777 zap
+          docker run --rm --network host -v "$PWD/zap:/zap/wrk" ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t https://localhost/ -r zap-report.html -J zap-report.json -I
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zap-report
+          path: zap/
+      - name: logs on failure
+        if: failure()
+        run: docker compose -f infra/docker-compose.prod.yml --env-file .env.prod logs --no-color --tail 200

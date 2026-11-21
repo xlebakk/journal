@@ -1,0 +1,14 @@
+# Local / CI test stand: the production build and the same headers on plain http://localhost
+# (browsers treat localhost as a secure context, so Secure cookies work). No HSTS here.
+#   JOURNAL_API=127.0.0.1:8001 JOURNAL_ROOT=../../frontend/dist caddy run --config Caddyfile.e2e
+{
+	admin off
+	auto_https off
+}
+
+import common.caddy
+
+http://localhost:{$E2E_PORT:5175} {
+	import security_headers
+	import journal_app
+}

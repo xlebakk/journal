@@ -34,9 +34,11 @@ frontend/           React + TypeScript + Vite, CSS Modules, TanStack Query, Reac
   src/shared/api/   сгенерированный из OpenAPI клиент (сайт — cookie + CSRF, приложение — Bearer)
   src/platform/     единственное место, знающее «сайт или Android»: адрес API, токены, «Назад»
   src/dev/          /dev/styleguide (только в dev-сборке)
-infra/              docker-compose, init-скрипты БД, позже Caddyfile и бэкапы
+infra/              docker-compose.dev / .prod, postgres/init(-prod), caddy/ (Caddyfile, образ web),
+                    backup/ (backup.sh, restore-check.sh, retention.py), server/ (ssh, fail2ban, apt, systemd),
+                    scripts/check-db-roles.sh
 mobile/             Capacitor: android/, capacitor.config.ts, scripts/build.mjs, иконки; см. mobile/README.md
-docs/               decisions.md, security.md, позже deploy.md, admin-guide.md
+docs/               decisions.md, security.md, deploy.md (сервер), admin-guide.md (администратор центра)
 ```
 
 ## Команды
@@ -53,6 +55,8 @@ docs/               decisions.md, security.md, позже deploy.md, admin-guide
 | Фронтенд dev | `cd frontend && npm run dev` (API проксируется на `VITE_API_PROXY`, по умолчанию `localhost:8000`) |
 | Фронтенд проверки | `cd frontend && npm run lint && npm run typecheck && npm test && npm run contrast` |
 | Android APK | `cd mobile && npm run apk:debug` (JDK 21+, Android SDK); release — см. `mobile/README.md` |
+| Роли БД продакшена | `SUPERUSER_PASSWORD=… infra/scripts/check-db-roles.sh` (нужен суперпользователь PostgreSQL) |
+| Ротация бэкапов | `uv run --project backend python -m pytest -q -p no:django infra/backup` |
 | PWA-проверка | `cd frontend && npm run build && npm run check:pwa` |
 | Pre-commit | `uv run --project backend pre-commit install`, затем `... pre-commit run --all-files` |
 
@@ -78,6 +82,7 @@ docs/               decisions.md, security.md, позже deploy.md, admin-guide
 16. Любая запись в журнал — только через `apps/journal/services.py` (окно, причина, членство, автор оценки, версии, аудит). Средние и проценты — только `apps/journal/stats.py:course_stats` (по курсу — `summarise_group`); новый экран или отчёт с цифрами вызывает их же.
 17. Выгрузка файла (`?export=xlsx|csv`) — экспорт ПД: `require_recent_password` и `throttle_scope = "export"`; файлы — только через `apps/core/files.py` (`read_table`, `export`). Результаты тестов — только через `apps/exams/services.py`.
 18. Сеанс — это `UserSession` и для сайта, и для приложения (`kind="app"`, refresh-токены). Читать активную роль, состояние сеанса и время повторного ввода пароля — только через `apps/accounts/sessions.py` (`get_active_role`, `state`, `current_session_id`), не через `request.session`.
+19. Новая таблица — без изменений прав: `db_grants` после миграции выдаёт роли приложения DML на все таблицы. Таблица только на добавление (как аудит) — сразу в `db_grants` (REVOKE UPDATE, DELETE) и в `check-db-roles.sh`.
 
 ## Время и данные
 

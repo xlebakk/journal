@@ -1,0 +1,10 @@
+[Unit]
+Description=Journal: restore the newest backup into a throwaway database and check it
+After=docker.service network-online.target
+Requires=docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/journal/infra/backup/restore-check.sh
+Nice=10

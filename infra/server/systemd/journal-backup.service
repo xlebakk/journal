@@ -1,0 +1,11 @@
+[Unit]
+Description=Journal: encrypted off-site backup
+After=docker.service network-online.target
+Requires=docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/journal/infra/backup/backup.sh
+Nice=10
+IOSchedulingClass=idle

@@ -1,0 +1,10 @@
+# /etc/fail2ban/jail.d/journal.local — SSH brute force (the app has its own login limits).
+[DEFAULT]
+bantime = 1h
+bantime.increment = true
+findtime = 10m
+maxretry = 5
+backend = systemd
+
+[sshd]
+enabled = true
