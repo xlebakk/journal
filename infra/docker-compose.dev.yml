@@ -1,0 +1,68 @@
+# Development stack. Run from the repository root:
+#   docker compose -f infra/docker-compose.dev.yml up --build
+# Only the frontend (5173) and API (8000) are published, and only on 127.0.0.1.
+name: journal-dev
+
+services:
+  db:
+    image: postgres:16-alpine
+    env_file: ../.env
+    environment:
+      # Superuser (password: POSTGRES_PASSWORD from .env) exists for the container only;
+      # the app connects as the non-superuser DB_USER created by postgres/init/01-app-role.sh.
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    env_file: ../.env
+    command: ["sh", "-c", 'exec redis-server --requirepass "$$REDIS_PASSWORD" --save ""']
+    healthcheck:
+      test: ["CMD-SHELL", 'redis-cli -a "$$REDIS_PASSWORD" --no-auth-warning ping | grep PONG']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: ../backend
+      target: dev
+    env_file: ../.env
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.dev
+      DB_HOST: db
+    volumes:
+      - ../backend:/app
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    image: node:24-alpine
+    working_dir: /app
+    command: ["sh", "-c", "npm ci && npm run dev"]
+    environment:
+      VITE_API_PROXY: http://api:8000
+    volumes:
+      - ../frontend:/app
+      - frontend-node-modules:/app/node_modules
+    ports:
+      - "127.0.0.1:5173:5173"
+    depends_on:
+      - api
+
+volumes:
+  db-data:
+  frontend-node-modules:

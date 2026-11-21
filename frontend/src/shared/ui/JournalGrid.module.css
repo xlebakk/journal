@@ -1,0 +1,112 @@
+/* Journal grid look (SPEC §12). Stage 3 builds the real grid on these classes. */
+
+.scroller {
+  max-width: 100%;
+  overflow: auto;
+  border: var(--line) solid var(--rule);
+  background: var(--sheet);
+}
+
+.grid {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.grid th,
+.grid td {
+  height: var(--row-height);
+  padding: 0 6px;
+  border-right: var(--line) solid var(--rule);
+  border-bottom: var(--line) solid var(--rule);
+  background: var(--sheet);
+  white-space: nowrap;
+}
+
+.grid thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  font-family: var(--font-mono);
+  font-size: var(--text-12);
+  font-weight: 500;
+  color: var(--ink-2);
+  text-align: center;
+}
+
+/* Names column, separated by the red margin line of an exercise book. */
+.grid .name {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  min-width: 160px;
+  text-align: left;
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  font-weight: 400;
+  color: var(--ink);
+  border-right: var(--line-strong) solid var(--red-pen);
+}
+
+.grid thead .name {
+  z-index: 3;
+}
+
+.dataCell {
+  min-width: 52px;
+  text-align: center;
+}
+
+.grid .weekStart {
+  border-left: 2px solid var(--ink-2);
+}
+
+.grid .today {
+  background: linear-gradient(var(--marker-soft), var(--marker-soft)), var(--sheet);
+}
+
+.grid thead .today {
+  background: linear-gradient(var(--marker), var(--marker)), var(--sheet);
+  color: var(--ink);
+}
+
+.grid .hover {
+  background: linear-gradient(var(--rule), var(--rule)), var(--sheet);
+}
+
+.grid .selected {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.cell {
+  display: inline-flex;
+  gap: 6px;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-15);
+  font-weight: 700;
+}
+
+.grade {
+  color: var(--ink);
+}
+
+.low,
+.absent {
+  color: var(--red-pen);
+}
+
+.late {
+  color: var(--pencil);
+}
+
+.excused {
+  color: var(--ink-2);
+}
+
+.grid .summary {
+  min-width: 64px;
+  text-align: right;
+  font-family: var(--font-mono);
+}

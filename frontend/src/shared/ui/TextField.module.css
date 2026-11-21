@@ -1,0 +1,54 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-size: var(--text-12);
+  color: var(--ink-2);
+}
+
+.input {
+  min-height: 36px;
+  padding: 4px 0;
+  border: 0;
+  border-bottom: var(--line-strong) solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+  outline: none;
+}
+
+.input:focus {
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 3.5px;
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.input[aria-invalid="true"] {
+  border-bottom-color: var(--red-pen);
+}
+
+.hint,
+.error {
+  margin: 0;
+  font-size: var(--text-12);
+}
+
+.hint {
+  color: var(--ink-2);
+}
+
+.error {
+  color: var(--red-pen);
+}
+
+@media (max-width: 599px) {
+  .input {
+    min-height: var(--tap-target);
+  }
+}

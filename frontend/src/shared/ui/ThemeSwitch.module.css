@@ -1,0 +1,53 @@
+.switch {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  float: left;
+  margin-right: var(--space-1);
+  font-size: var(--text-12);
+  color: var(--ink-2);
+  line-height: 36px;
+}
+
+.option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border: var(--line) solid var(--ink);
+  cursor: pointer;
+}
+
+.option + .option {
+  border-left: 0;
+}
+
+.option input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.option:has(input:checked) {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.option:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 599px) {
+  .option {
+    min-height: var(--tap-target);
+  }
+}
