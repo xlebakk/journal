@@ -20,6 +20,9 @@ import {
   TextField,
   ThemeSwitch,
   type AttendanceMark,
+  ScheduleIssues,
+  WeekSchedule,
+  type ScheduleItem,
 } from "@/shared/ui";
 import grid from "@/shared/ui/JournalGrid.module.css";
 
@@ -73,6 +76,78 @@ const DEMO: DemoCell[][] = PEOPLE.map((_, row) =>
     return {};
   }),
 );
+
+const BASE: Omit<ScheduleItem, "id" | "date" | "start_time" | "end_time" | "subject_name"> = {
+  subject_short: "",
+  group_name: "11-М вечерняя",
+  teacher_name: "Юсупов Т.",
+  room_name: "101",
+  lesson_type_short: "Пр",
+  status: "planned",
+  cancel_reason: "",
+  is_extra: false,
+  is_moved: false,
+  is_room_changed: false,
+  is_substituted: false,
+  planned_date: "2026-11-16",
+  planned_start_time: "16:00:00",
+  planned_room_name: "101",
+};
+
+const WEEK: ScheduleItem[] = [
+  {
+    ...BASE,
+    id: "1",
+    date: "2026-11-16",
+    start_time: "16:00:00",
+    end_time: "17:30:00",
+    subject_name: "Математика",
+  },
+  {
+    ...BASE,
+    id: "2",
+    date: "2026-11-16",
+    start_time: "17:45:00",
+    end_time: "19:15:00",
+    subject_name: "Физика",
+    status: "cancelled",
+    cancel_reason: "олимпиада",
+  },
+  {
+    ...BASE,
+    id: "3",
+    date: "2026-11-17",
+    start_time: "16:00:00",
+    end_time: "17:30:00",
+    subject_name: "Английский язык",
+    is_substituted: true,
+    teacher_name: "Ким С.",
+  },
+  {
+    ...BASE,
+    id: "4",
+    date: "2026-11-21",
+    start_time: "14:00:00",
+    end_time: "15:30:00",
+    subject_name: "Математика",
+    is_moved: true,
+    planned_date: "2026-11-19",
+    planned_start_time: "16:00:00",
+  },
+  {
+    ...BASE,
+    id: "5",
+    date: "2026-11-21",
+    start_time: "16:00:00",
+    end_time: "17:30:00",
+    subject_name: "Химия",
+    group_name: "11-Б утренняя",
+    room_name: "Актовый зал",
+    is_room_changed: true,
+    is_extra: true,
+    lesson_type_short: "Конс",
+  },
+];
 
 function JournalGridPreview() {
   const [hover, setHover] = useState<{ row: number; col: number } | null>(null);
@@ -296,6 +371,36 @@ export default function StyleguidePage() {
               />
             ))}
           </div>
+        </section>
+
+        <section className={styles.section} aria-labelledby="sg-week">
+          <h2 id="sg-week">Расписание недели</h2>
+          <p className={styles.caption}>
+            Строки — время начала, колонки — дни. Отмена зачёркнута, перенос, замена и кабинет —
+            текстом. На телефоне — список по дням.
+          </p>
+          <WeekSchedule
+            monday="2026-11-16"
+            today="2026-11-21"
+            lessons={WEEK}
+            showGroup
+            showTeacher
+          />
+          <ScheduleIssues
+            conflicts={[
+              {
+                kind: "room",
+                date: "2026-11-16",
+                start_time: "16:00",
+                end_time: "17:30",
+                group: "11-Г вечерняя",
+                subject: "Английский язык",
+                teacher: "Ким С.",
+                room: "101",
+              },
+            ]}
+            warnings={[{ kind: "students", date: "2026-11-21", students: ["Алиев Ф.", "Ким М."] }]}
+          />
         </section>
 
         <section className={styles.section} aria-labelledby="sg-states">

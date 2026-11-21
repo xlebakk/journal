@@ -1,0 +1,190 @@
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useMemo } from "react";
+
+import { t } from "@/shared/i18n";
+import { useMediaQuery } from "@/shared/lib/useMediaQuery";
+import {
+  addDays,
+  formatDayLong,
+  formatDayShort,
+  formatWeekRange,
+  hhmm,
+  weekDays,
+} from "@/shared/lib/week";
+
+import { Button } from "./Button";
+import { lessonMarks, type ScheduleItem } from "./scheduleMarks";
+import styles from "./WeekSchedule.module.css";
+
+type Options = { showGroup?: boolean; showTeacher?: boolean };
+
+function Details({ item, showGroup, showTeacher }: { item: ScheduleItem } & Options) {
+  return (
+    <>
+      <span className={`mono ${styles.time}`}>
+        {hhmm(item.start_time)}–{hhmm(item.end_time)}
+        {item.lesson_type_short && <span className={styles.type}> {item.lesson_type_short}</span>}
+      </span>
+      <span className={styles.subject}>{item.subject_name}</span>
+      {showGroup && item.group_name && <span className={styles.meta}>{item.group_name}</span>}
+      <span className={styles.meta}>
+        {item.room_name ? t("schedule.room", { room: item.room_name }) : t("schedule.noRoom")}
+        {showTeacher && !item.is_substituted && <> · {item.teacher_name}</>}
+      </span>
+      {lessonMarks(item).map((mark) => (
+        <span key={mark.text} className={styles[mark.tone]}>
+          {mark.text}
+        </span>
+      ))}
+    </>
+  );
+}
+
+type LessonProps = Options & {
+  item: ScheduleItem;
+  onSelect?: (item: ScheduleItem) => void;
+};
+
+function Lesson({ item, onSelect, ...options }: LessonProps) {
+  const className = [styles.lesson, item.status === "cancelled" && styles.cancelled]
+    .filter(Boolean)
+    .join(" ");
+  if (onSelect) {
+    return (
+      <button type="button" className={className} onClick={() => onSelect(item)}>
+        <Details item={item} {...options} />
+      </button>
+    );
+  }
+  return (
+    <div className={className}>
+      <Details item={item} {...options} />
+    </div>
+  );
+}
+
+type WeekScheduleProps = Options & {
+  monday: string;
+  today: string;
+  lessons: ScheduleItem[];
+  onSelect?: (item: ScheduleItem) => void;
+};
+
+/**
+ * Desktop: a ruled timetable — rows are start times, columns are days, like a paper
+ * schedule. Lessons of different groups at the same time share a cell. Phone: a list by
+ * day (SPEC §6.6).
+ */
+export function WeekSchedule({ monday, today, lessons, onSelect, ...options }: WeekScheduleProps) {
+  const phone = useMediaQuery("(max-width: 599px)");
+  const days = useMemo(() => weekDays(monday), [monday]);
+  const cells = useMemo(() => {
+    const map = new Map<string, ScheduleItem[]>();
+    for (const lesson of lessons) {
+      const key = `${lesson.date} ${hhmm(lesson.start_time)}`;
+      map.set(key, [...(map.get(key) ?? []), lesson]);
+    }
+    return map;
+  }, [lessons]);
+  const byDay = (day: string) => lessons.filter((lesson) => lesson.date === day);
+  // Sunday only when something happens on it.
+  const shown = days.filter((day, i) => i < 6 || byDay(day).length > 0);
+
+  if (phone) {
+    return (
+      <div className={styles.list}>
+        {shown.map((day) => {
+          const items = byDay(day);
+          const isToday = day === today;
+          return (
+            <section key={day} className={styles.listDay} aria-label={formatDayLong(day)}>
+              <h3
+                className={isToday ? `${styles.listHeading} ${styles.today}` : styles.listHeading}
+              >
+                {formatDayLong(day)}
+                {isToday && <span className="visually-hidden"> ({t("schedule.today")})</span>}
+              </h3>
+              {items.length === 0 ? (
+                <p className={styles.emptyDay}>{t("schedule.emptyDay")}</p>
+              ) : (
+                items.map((item) => (
+                  <Lesson key={item.id} item={item} onSelect={onSelect} {...options} />
+                ))
+              )}
+            </section>
+          );
+        })}
+      </div>
+    );
+  }
+
+  const times = [...new Set(lessons.map((lesson) => hhmm(lesson.start_time)))].sort();
+  return (
+    <div className={styles.scroller}>
+      <table className={styles.timetable}>
+        <caption className="visually-hidden">{formatWeekRange(monday)}</caption>
+        <thead>
+          <tr>
+            <th scope="col" className={styles.timeHead}>
+              <span className="visually-hidden">{t("schedule.start")}</span>
+            </th>
+            {shown.map((day) => (
+              <th
+                key={day}
+                scope="col"
+                className={day === today ? `${styles.dayHead} ${styles.today}` : styles.dayHead}
+              >
+                {formatDayShort(day)}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {times.length === 0 ? (
+            <tr>
+              <td className={styles.timeCell} />
+              <td colSpan={shown.length} className={styles.emptyWeek}>
+                {t("schedule.empty")}
+              </td>
+            </tr>
+          ) : (
+            times.map((time) => (
+              <tr key={time}>
+                <th scope="row" className={`mono ${styles.timeCell}`}>
+                  {time}
+                </th>
+                {shown.map((day) => (
+                  <td
+                    key={day}
+                    className={day === today ? `${styles.cell} ${styles.todayCell}` : styles.cell}
+                  >
+                    {(cells.get(`${day} ${time}`) ?? []).map((item) => (
+                      <Lesson key={item.id} item={item} onSelect={onSelect} {...options} />
+                    ))}
+                  </td>
+                ))}
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+type WeekNavProps = { monday: string; onChange: (monday: string) => void; onToday: () => void };
+
+export function WeekNav({ monday, onChange, onToday }: WeekNavProps) {
+  return (
+    <div className={styles.nav}>
+      <Button aria-label={t("schedule.previousWeek")} onClick={() => onChange(addDays(monday, -7))}>
+        <ChevronLeft size={18} strokeWidth={1.5} aria-hidden="true" />
+      </Button>
+      <span className={styles.range}>{formatWeekRange(monday)}</span>
+      <Button aria-label={t("schedule.nextWeek")} onClick={() => onChange(addDays(monday, 7))}>
+        <ChevronRight size={18} strokeWidth={1.5} aria-hidden="true" />
+      </Button>
+      <Button onClick={onToday}>{t("schedule.today")}</Button>
+    </div>
+  );
+}
