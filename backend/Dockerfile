@@ -30,6 +30,7 @@ ENV DJANGO_SETTINGS_MODULE=config.settings.prod
 USER app
 EXPOSE 8000
 # Access log as JSON without the query string (SPEC §11: no tokens or personal data in logs).
+# No control socket: the root filesystem is read-only, and restarts go through Docker.
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", \
-     "--worker-tmp-dir", "/dev/shm", "--access-logfile", "-", \
+     "--worker-tmp-dir", "/dev/shm", "--no-control-socket", "--access-logfile", "-", \
      "--access-logformat", "{\"time\": \"%(t)s\", \"method\": \"%(m)s\", \"path\": \"%(U)s\", \"status\": %(s)s, \"ms\": %(M)s}"]

@@ -274,7 +274,9 @@ jobs:
         if: ${{ !cancelled() }}
         run: |
           mkdir -p zap && chmod 777 zap
-          docker run --rm --network host -v "$PWD/zap:/zap/wrk" ghcr.io/zaproxy/zaproxy:stable             zap-baseline.py -t https://localhost/ -r zap-report.html -J zap-report.json -I
+          docker run --rm --network host -v "$PWD/zap:/zap/wrk" ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t https://localhost/ -r zap-report.html -J zap-report.json -I \
+            2>&1 | tee /tmp/zap.out
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -285,8 +287,8 @@ jobs:
         if: failure()
         run: |
           oneline() { awk 'BEGIN { ORS = "%0A" } { print }'; }
-          for f in /tmp/backup.out /tmp/restore.out; do
-            if [ -f "$f" ]; then echo "::error title=$(basename "$f")::$(tail -n 15 "$f" | oneline)"; fi
+          for f in /tmp/zap.out /tmp/backup.out /tmp/restore.out; do
+            if [ -f "$f" ]; then echo "::error title=$(basename "$f")::$(tail -n 25 "$f" | oneline)"; fi
           done
           for svc in api db web; do
             out="$(docker compose -f infra/docker-compose.prod.yml --env-file .env.prod logs --no-color --tail 15 "$svc" 2>&1 | oneline)"
