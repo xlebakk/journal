@@ -11,6 +11,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -44,6 +45,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -69,6 +71,7 @@ paths:
               $ref: '#/components/schemas/AnnouncementRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -96,6 +99,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -127,6 +131,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedAnnouncementRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -153,6 +158,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -200,6 +206,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -249,6 +256,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -283,6 +291,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -310,6 +319,7 @@ paths:
               $ref: '#/components/schemas/CourseRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -337,6 +347,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -368,6 +379,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedCourseRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -394,6 +406,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -419,6 +432,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -446,6 +460,7 @@ paths:
               $ref: '#/components/schemas/GroupRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -473,6 +488,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -504,6 +520,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedGroupRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -530,6 +547,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -548,6 +566,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -582,6 +601,7 @@ paths:
               $ref: '#/components/schemas/AddMemberRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -602,6 +622,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -629,6 +650,7 @@ paths:
               $ref: '#/components/schemas/HolidayRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -656,6 +678,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -687,6 +710,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedHolidayRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -713,6 +737,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -737,6 +762,7 @@ paths:
                 apply:
                   type: boolean
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -751,6 +777,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -772,6 +799,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -799,6 +827,7 @@ paths:
               $ref: '#/components/schemas/LessonTypeRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -826,6 +855,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -857,6 +887,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedLessonTypeRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -883,6 +914,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -924,6 +956,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -946,6 +979,7 @@ paths:
               $ref: '#/components/schemas/ExtraLessonRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -969,6 +1003,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -998,6 +1033,7 @@ paths:
               $ref: '#/components/schemas/CancelRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1028,6 +1064,7 @@ paths:
               $ref: '#/components/schemas/MoveRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1056,6 +1093,7 @@ paths:
               $ref: '#/components/schemas/VersionRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1085,6 +1123,7 @@ paths:
               $ref: '#/components/schemas/SubstituteRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1128,6 +1167,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1155,6 +1195,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedMembershipRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1183,6 +1224,7 @@ paths:
               $ref: '#/components/schemas/LeaveRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1213,6 +1255,7 @@ paths:
               $ref: '#/components/schemas/TransferRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -1227,6 +1270,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1264,6 +1308,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1309,6 +1354,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1345,6 +1391,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1365,6 +1412,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1392,6 +1440,7 @@ paths:
               $ref: '#/components/schemas/RoomRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -1419,6 +1468,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1450,6 +1500,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedRoomRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1476,6 +1527,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -1503,6 +1555,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1524,6 +1577,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1550,6 +1604,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ResolveRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1576,6 +1631,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ResolveRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1593,6 +1649,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1614,6 +1671,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedCenterSettingsRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1637,6 +1695,7 @@ paths:
                   type: string
                   format: binary
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1650,6 +1709,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -1684,6 +1744,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1708,6 +1769,7 @@ paths:
               $ref: '#/components/schemas/SlotWriteRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -1732,6 +1794,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1760,6 +1823,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedSlotWriteRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1786,6 +1850,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -1811,6 +1876,7 @@ paths:
               $ref: '#/components/schemas/SlotWriteRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1831,6 +1897,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1858,6 +1925,7 @@ paths:
               $ref: '#/components/schemas/SubjectRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -1885,6 +1953,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1916,6 +1985,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedSubjectRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1942,6 +2012,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -1953,6 +2024,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -1980,6 +2052,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2007,6 +2080,7 @@ paths:
               $ref: '#/components/schemas/TermRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -2034,6 +2108,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2065,6 +2140,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedTermRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2091,6 +2167,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -2135,6 +2212,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2154,6 +2232,7 @@ paths:
               $ref: '#/components/schemas/AdminUserWriteRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -2175,6 +2254,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2200,6 +2280,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedAdminUserWriteRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2223,6 +2304,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2244,6 +2326,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2265,6 +2348,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2287,6 +2371,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2320,6 +2405,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2348,6 +2434,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -2365,6 +2452,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2388,6 +2476,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2420,6 +2509,7 @@ paths:
                 $ref: '#/components/schemas/TargetRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2443,6 +2533,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2464,6 +2555,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2484,6 +2576,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2511,6 +2604,7 @@ paths:
               $ref: '#/components/schemas/WorkTypeRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -2538,6 +2632,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2569,6 +2664,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedWorkTypeRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2595,6 +2691,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -2611,6 +2708,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2638,6 +2736,7 @@ paths:
               $ref: '#/components/schemas/AcademicYearRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -2665,6 +2764,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2696,6 +2796,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedAcademicYearRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2722,6 +2823,7 @@ paths:
       tags:
       - admin
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -2739,6 +2841,7 @@ paths:
       tags:
       - announcements
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2757,6 +2860,7 @@ paths:
       tags:
       - auth
       security:
+      - appBearer: []
       - sessionCookie: []
       - {}
       responses:
@@ -2779,6 +2883,7 @@ paths:
               $ref: '#/components/schemas/LoginRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       - {}
       responses:
@@ -2794,6 +2899,7 @@ paths:
       tags:
       - auth
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -2812,6 +2918,7 @@ paths:
               $ref: '#/components/schemas/PasswordChangeRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -2829,6 +2936,7 @@ paths:
               $ref: '#/components/schemas/PasswordRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -2845,6 +2953,7 @@ paths:
               $ref: '#/components/schemas/RoleSwitchRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2859,6 +2968,7 @@ paths:
       tags:
       - auth
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2882,6 +2992,7 @@ paths:
       tags:
       - auth
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -2892,6 +3003,7 @@ paths:
       tags:
       - auth
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2899,6 +3011,68 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ended'
+          description: ''
+  /api/v1/auth/token:
+    post:
+      operationId: auth_token_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenPair'
+          description: ''
+  /api/v1/auth/token/refresh:
+    post:
+      operationId: auth_token_refresh_create
+      description: 'Rotation: every refresh token works once; a second use ends the
+        session (SPEC §11).'
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequestRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenPair'
+          description: ''
+  /api/v1/auth/token/totp:
+    post:
+      operationId: auth_token_totp_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenTotpRequestRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenPair'
           description: ''
   /api/v1/auth/totp:
     post:
@@ -2913,6 +3087,7 @@ paths:
               $ref: '#/components/schemas/TotpCodeRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       - {}
       responses:
@@ -2928,6 +3103,7 @@ paths:
       tags:
       - auth
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2945,6 +3121,7 @@ paths:
       tags:
       - auth
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2967,6 +3144,7 @@ paths:
               $ref: '#/components/schemas/TotpCodeRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -2983,6 +3161,7 @@ paths:
       tags:
       - auth
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -2998,6 +3177,7 @@ paths:
       tags:
       - exams
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3019,6 +3199,7 @@ paths:
               $ref: '#/components/schemas/ExamWriteRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -3040,6 +3221,7 @@ paths:
       tags:
       - exams
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3065,6 +3247,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedExamUpdateRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3085,6 +3268,7 @@ paths:
       tags:
       - exams
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -3119,6 +3303,7 @@ paths:
                 reason:
                   type: string
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3142,6 +3327,7 @@ paths:
       tags:
       - exams
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3174,6 +3360,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ResultWriteRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3207,6 +3394,7 @@ paths:
               $ref: '#/components/schemas/ClearRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -3226,6 +3414,7 @@ paths:
       tags:
       - exams
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3247,6 +3436,7 @@ paths:
       tags:
       - exams
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3285,6 +3475,7 @@ paths:
       tags:
       - journal
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3321,6 +3512,7 @@ paths:
       tags:
       - journal
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3342,6 +3534,7 @@ paths:
       tags:
       - journal
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3370,6 +3563,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedGradeUpdateRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3397,6 +3591,7 @@ paths:
               $ref: '#/components/schemas/VersionReasonRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3424,6 +3619,7 @@ paths:
               $ref: '#/components/schemas/VersionReasonRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3447,6 +3643,7 @@ paths:
       tags:
       - journal
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3474,6 +3671,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedLessonUpdateRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3507,6 +3705,7 @@ paths:
               $ref: '#/components/schemas/AttendanceWriteRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3542,6 +3741,7 @@ paths:
               $ref: '#/components/schemas/VersionReasonRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '204':
@@ -3564,6 +3764,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ReasonMixinRequest'
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3593,6 +3794,7 @@ paths:
               $ref: '#/components/schemas/VersionReasonRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3620,6 +3822,7 @@ paths:
               $ref: '#/components/schemas/GradeCreateRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -3634,6 +3837,7 @@ paths:
       tags:
       - me
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3676,6 +3880,7 @@ paths:
       tags:
       - reports
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3691,6 +3896,7 @@ paths:
       tags:
       - rooms
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3714,6 +3920,7 @@ paths:
       tags:
       - student
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3735,6 +3942,7 @@ paths:
       tags:
       - student
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3751,6 +3959,7 @@ paths:
       tags:
       - student
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3774,6 +3983,7 @@ paths:
       tags:
       - student
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3797,6 +4007,7 @@ paths:
       tags:
       - student
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3812,6 +4023,7 @@ paths:
       tags:
       - student
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3828,6 +4040,7 @@ paths:
       tags:
       - student
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3854,6 +4067,7 @@ paths:
       tags:
       - student
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3884,6 +4098,7 @@ paths:
               $ref: '#/components/schemas/ScheduleRequestRequest'
         required: true
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '201':
@@ -3908,6 +4123,7 @@ paths:
       tags:
       - teacher
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3924,6 +4140,7 @@ paths:
       tags:
       - teacher
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3947,6 +4164,7 @@ paths:
       tags:
       - teacher
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -3963,6 +4181,7 @@ paths:
       tags:
       - teacher
       security:
+      - appBearer: []
       - sessionCookie: []
       responses:
         '200':
@@ -7512,6 +7731,10 @@ components:
           type: string
           format: uuid
           readOnly: true
+        kind:
+          allOf:
+          - $ref: '#/components/schemas/SessionKindEnum'
+          readOnly: true
         created_at:
           type: string
           format: date-time
@@ -7538,9 +7761,18 @@ components:
       - current
       - id
       - ip
+      - kind
       - last_seen_at
       - remember
       - user_agent
+    SessionKindEnum:
+      enum:
+      - web
+      - app
+      type: string
+      description: |-
+        * `web` - Web
+        * `app` - App
     Slot:
       type: object
       properties:
@@ -8705,6 +8937,48 @@ components:
       - state
       - status
       - subject_name
+    TokenPair:
+      type: object
+      properties:
+        step:
+          type: string
+        access:
+          type: string
+        access_expires_in:
+          type: integer
+        refresh:
+          type: string
+        refresh_expires_at:
+          type: string
+          format: date-time
+      required:
+      - access
+      - access_expires_in
+      - refresh
+      - refresh_expires_at
+      - step
+    TokenRefreshRequestRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+          maxLength: 128
+      required:
+      - refresh
+    TokenTotpRequestRequest:
+      type: object
+      properties:
+        ticket:
+          type: string
+          minLength: 1
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+      required:
+      - code
+      - ticket
     TotpCodeRequest:
       type: object
       properties:
@@ -8870,6 +9144,9 @@ components:
       - name
       - weight
   securitySchemes:
+    appBearer:
+      type: http
+      scheme: bearer
     sessionCookie:
       type: apiKey
       in: cookie

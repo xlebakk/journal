@@ -53,7 +53,8 @@ function SubjectBlock({ subject }: { subject: SubjectExams }) {
               {t("studentTests.percent")}
             </th>
             <th scope="col" className={styles.number}>
-              {t("studentTests.change")}
+              <span aria-hidden="true">{t("studentTests.changeShort")}</span>
+              <span className="visually-hidden">{t("studentTests.change")}</span>
             </th>
           </tr>
         </thead>
@@ -62,7 +63,8 @@ function SubjectBlock({ subject }: { subject: SubjectExams }) {
             const below = target !== null && e.percent !== null && Number(e.percent) < target;
             return (
               <tr key={e.exam}>
-                <td className="mono">{formatDate(e.date)}</td>
+                {/* The year is the school year; dd.mm keeps the table within a phone. */}
+                <td className={styles.number}>{formatDate(e.date).slice(0, 5)}</td>
                 <td>
                   {e.title}
                   {e.sections.length > 0 && (

@@ -37,7 +37,11 @@ export function SessionsTable({
                 {" "}
                 <span className="mono">{session.ip ?? ""}</span>
                 {session.current && <> · {t("sessions.current")}</>}
-                {session.remember && <> · {t("sessions.remembered")}</>}
+                {session.kind === "app" ? (
+                  <> · {t("sessions.kindApp")}</>
+                ) : (
+                  session.remember && <> · {t("sessions.remembered")}</>
+                )}
               </span>
             </td>
             <td className="mono">{when(session.last_seen_at)}</td>

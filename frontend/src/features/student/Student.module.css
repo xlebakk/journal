@@ -88,6 +88,7 @@
 .number {
   font-family: var(--font-mono);
   text-align: right;
+  white-space: nowrap;
 }
 
 /* --- Diary: two facing pages of a paper diary ------------------------------------------ */

@@ -14,6 +14,7 @@ const W = 640;
 const H = 220;
 const PAD = { top: 24, right: 16, bottom: 28, left: 36 };
 const GRID = [0, 25, 50, 75, 100];
+const INSET = 40;
 
 /**
  * Results of mock exams in % (tests may have different maxima), with the goal as a dashed
@@ -32,8 +33,10 @@ export function ScoreChart({
   label: string;
 }) {
   const inner = { w: W - PAD.left - PAD.right, h: H - PAD.top - PAD.bottom };
+  // Points stay away from the axis and the right edge, so their labels fit on a phone.
+  const span = inner.w - 2 * INSET;
   const x = (i: number) =>
-    PAD.left + (points.length <= 1 ? inner.w / 2 : (i * inner.w) / (points.length - 1));
+    PAD.left + INSET + (points.length <= 1 ? span / 2 : (i * span) / (points.length - 1));
   const y = (pct: number) => PAD.top + inner.h - (pct / 100) * inner.h;
   const present = points
     .map((p, i) => ({ ...p, i }))

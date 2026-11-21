@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { isNativeApp, tokens, type TokenPair } from "@/platform";
 import { api, isApiError, type Schemas } from "@/shared/api/client";
 
 export type Me = Schemas["Me"];
@@ -34,11 +35,45 @@ export function useBranding() {
   });
 }
 
+type AppStep = ({ step: "done" } & TokenPair) | { step: "totp"; ticket: string };
+
+// The app's 2FA ticket lives only in memory between the two login steps.
+let ticket = "";
+
+/** The site gets a session cookie; the app — tokens (SPEC §11). Same two steps for both. */
+async function loginStep(body: {
+  login: string;
+  password: string;
+  remember: boolean;
+}): Promise<{ step: LoginStep }> {
+  if (!isNativeApp) return api<{ step: LoginStep }>("/auth/login", { method: "POST", body });
+  const result = await api<AppStep>("/auth/token", {
+    method: "POST",
+    body: { login: body.login, password: body.password },
+  });
+  if (result.step === "totp") {
+    ticket = result.ticket;
+    return { step: "totp" };
+  }
+  await tokens.save(result);
+  return { step: "done" };
+}
+
+async function totpStep(code: string): Promise<{ step: LoginStep }> {
+  if (!isNativeApp)
+    return api<{ step: LoginStep }>("/auth/totp", { method: "POST", body: { code } });
+  const result = await api<AppStep>("/auth/token/totp", { method: "POST", body: { ticket, code } });
+  if (result.step === "done") {
+    ticket = "";
+    await tokens.save(result);
+  }
+  return { step: result.step };
+}
+
 export function useLogin() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (body: { login: string; password: string; remember: boolean }) =>
-      api<{ step: LoginStep }>("/auth/login", { method: "POST", body }),
+    mutationFn: loginStep,
     onSuccess: async (data) => {
       if (data.step === "done") await queryClient.invalidateQueries({ queryKey: ME_KEY });
     },
@@ -48,8 +83,7 @@ export function useLogin() {
 export function useTotpLogin() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (code: string) =>
-      api<{ step: LoginStep }>("/auth/totp", { method: "POST", body: { code } }),
+    mutationFn: totpStep,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ME_KEY }),
   });
 }
@@ -59,6 +93,7 @@ export async function logout(): Promise<void> {
   try {
     await api("/auth/logout", { method: "POST" });
   } finally {
+    if (isNativeApp) await tokens.clear();
     if ("caches" in window) {
       const names = await caches.keys().catch(() => []);
       await Promise.all(names.map((name) => caches.delete(name)));

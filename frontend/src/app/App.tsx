@@ -1,5 +1,5 @@
 import { QueryClientProvider } from "@tanstack/react-query";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { createBrowserRouter, RouterProvider, type RouteObject } from "react-router";
 
 import { ForcedPasswordChangePage, PasswordPage } from "@/features/auth/ChangePasswordPage";
@@ -35,6 +35,7 @@ import { TestsPage } from "@/features/student/TestsPage";
 import { SchedulePage as StudentSchedulePage } from "@/features/student/SchedulePage";
 import { SchedulePage as TeacherSchedulePage } from "@/features/teacher/SchedulePage";
 import { TodayPage } from "@/features/teacher/TodayPage";
+import { onBackButton } from "@/platform";
 import { RuledSkeleton } from "@/shared/ui";
 
 import { Gate, RootRedirect } from "./Gate";
@@ -124,7 +125,15 @@ const routes: RouteObject[] = [
 
 const router = createBrowserRouter(routes);
 
+/** React Router keeps the position in the history as `idx`. */
+function canGoBack(): boolean {
+  const state = window.history.state as { idx?: number } | null;
+  return (state?.idx ?? 0) > 0;
+}
+
 export function App() {
+  // The Android «Назад» (no-op on the site).
+  useEffect(() => onBackButton(() => void router.navigate(-1), canGoBack), []);
   return (
     <QueryClientProvider client={queryClient}>
       <Suspense fallback={<RuledSkeleton />}>

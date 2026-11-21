@@ -1,3 +1,5 @@
+import { apiRoot, isNativeApp, tokens } from "@/platform";
+
 import type { components } from "./schema";
 
 export type Schemas = components["schemas"];
@@ -46,6 +48,47 @@ export class ApiError extends Error {
 
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
+tokens.configure(`${apiRoot()}/auth/token/refresh`);
+
+// The app's login and refresh calls carry no access token and must not trigger a refresh.
+const TOKEN_FREE = /^\/auth\/(token|login)/;
+
+function withQuery(path: string, query?: Record<string, string | undefined>): string {
+  let url = `${apiRoot()}${path}`;
+  if (query) {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(query)) if (value) params.set(key, value);
+    const qs = params.toString();
+    if (qs) url += `?${qs}`;
+  }
+  return url;
+}
+
+/**
+ * fetch with the platform's credentials: the session cookie and CSRF token on the site, the
+ * Bearer access token in the app. In the app a 401 refreshes the tokens once and repeats.
+ */
+async function send(path: string, init: RequestInit & { headers: Record<string, string> }) {
+  const headers = { ...init.headers };
+  if (!isNativeApp) {
+    if (init.method && init.method !== "GET") {
+      const token = csrfToken();
+      if (token) headers["X-CSRFToken"] = token;
+    }
+    return fetch(path, { ...init, headers, credentials: "same-origin" });
+  }
+  const attempt = () => {
+    const access = tokens.access();
+    const auth: Record<string, string> = access ? { Authorization: `Bearer ${access}` } : {};
+    return fetch(path, { ...init, headers: { ...headers, ...auth }, credentials: "omit" });
+  };
+  const relative = path.slice(apiRoot().length);
+  if (TOKEN_FREE.test(relative)) return fetch(path, { ...init, headers, credentials: "omit" });
+  const first = await attempt();
+  if (first.status !== 401 || !(await tokens.refresh())) return first;
+  return attempt();
+}
+
 export async function api<T>(
   path: string,
   options: { method?: Method; body?: unknown; query?: Record<string, string | undefined> } = {},
@@ -53,22 +96,10 @@ export async function api<T>(
   const { method = "GET", body, query } = options;
   const headers: Record<string, string> = { Accept: "application/json" };
   if (body !== undefined) headers["Content-Type"] = "application/json";
-  if (method !== "GET") {
-    const token = csrfToken();
-    if (token) headers["X-CSRFToken"] = token;
-  }
-  let url = `/api/v1${path}`;
-  if (query) {
-    const params = new URLSearchParams();
-    for (const [key, value] of Object.entries(query)) if (value) params.set(key, value);
-    const qs = params.toString();
-    if (qs) url += `?${qs}`;
-  }
-  const response = await fetch(url, {
+  const response = await send(withQuery(path, query), {
     method,
     headers,
     body: body === undefined ? undefined : JSON.stringify(body),
-    credentials: "same-origin",
   });
   if (response.status === 204) return undefined as T;
   const data: unknown = await response.json().catch(() => null);
@@ -82,14 +113,10 @@ export function isApiError(error: unknown, status?: number): error is ApiError {
 
 /** multipart/form-data upload (imports, the logo). */
 export async function upload<T>(path: string, form: FormData): Promise<T> {
-  const headers: Record<string, string> = { Accept: "application/json" };
-  const token = csrfToken();
-  if (token) headers["X-CSRFToken"] = token;
-  const response = await fetch(`/api/v1${path}`, {
+  const response = await send(withQuery(path), {
     method: "POST",
-    headers,
+    headers: { Accept: "application/json" },
     body: form,
-    credentials: "same-origin",
   });
   const data: unknown = await response.json().catch(() => null);
   if (!response.ok) throw new ApiError(response.status, data);
@@ -106,12 +133,7 @@ export async function download(
   path: string,
   query: Record<string, string | undefined> = {},
 ): Promise<void> {
-  const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(query)) if (value) params.set(key, value);
-  const qs = params.toString();
-  const response = await fetch(`/api/v1${path}${qs ? `?${qs}` : ""}`, {
-    credentials: "same-origin",
-  });
+  const response = await send(withQuery(path, query), { method: "GET", headers: {} });
   if (!response.ok) {
     const data: unknown = await response.json().catch(() => null);
     throw new ApiError(response.status, data);

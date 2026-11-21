@@ -6,8 +6,10 @@ import { z } from "zod";
 
 import { ApiError } from "@/shared/api/client";
 import { errorMessage } from "@/shared/api/errors";
+import { isNativeApp } from "@/platform";
 import { t } from "@/shared/i18n";
 import { formatJournalHeader } from "@/shared/lib/time";
+import { shouldShowIosInstallHint } from "@/shared/lib/userAgent";
 import { Button, Checkbox, PasswordField, TextField } from "@/shared/ui";
 
 import { homePath, useBranding, useLogin, useMe, useTotpLogin } from "./api";
@@ -80,7 +82,8 @@ function PasswordStep({ onTotp }: { onTotp: () => void }) {
         error={form.formState.errors.password?.message}
         {...form.register("password")}
       />
-      <Checkbox label={t("login.remember")} {...form.register("remember")} />
+      {/* The app always stays signed in for 30 days (refresh token); the choice is web-only. */}
+      {!isNativeApp && <Checkbox label={t("login.remember")} {...form.register("remember")} />}
       {login.error && (
         <p className={styles.error} role="alert">
           {errorMessage(login.error)}
@@ -151,6 +154,9 @@ export function LoginPage() {
         <TotpStep onBack={() => setStep("password")} />
       )}
       <HelpLine />
+      {!isNativeApp && shouldShowIosInstallHint() && (
+        <p className={styles.help}>{t("install.ios")}</p>
+      )}
     </AuthColumn>
   );
 }

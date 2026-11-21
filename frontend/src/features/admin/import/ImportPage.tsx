@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import styles from "@/features/schedule/SchedulePage.module.css";
 import { download, upload, type Schemas } from "@/shared/api/client";
 import { errorMessage, fieldError } from "@/shared/api/errors";
+import { canPrint } from "@/platform";
 import { t, tMaybe, type MessageKey } from "@/shared/i18n";
 import { Button, EmptyState, FileField, Table } from "@/shared/ui";
 
@@ -54,9 +55,11 @@ export function ImportPage() {
         <div className={`${styles.titleRow} ${styles.noPrint}`}>
           <h1>{t("importStudents.cards")}</h1>
           <div className={styles.row}>
-            <Button variant="primary" onClick={() => window.print()}>
-              {t("importStudents.printCards")}
-            </Button>
+            {canPrint && (
+              <Button variant="primary" onClick={() => window.print()}>
+                {t("importStudents.printCards")}
+              </Button>
+            )}
             <Button onClick={again}>{t("importStudents.again")}</Button>
           </div>
         </div>

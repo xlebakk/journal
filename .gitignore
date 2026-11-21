@@ -21,6 +21,8 @@ backend/media/
 # Node
 node_modules/
 frontend/dist/
+frontend/dist-mobile/
+frontend/dev-dist/
 frontend/coverage/
 *.tsbuildinfo
 
@@ -33,3 +35,14 @@ Thumbs.db
 # Playwright
 frontend/test-results/
 frontend/playwright-report/
+
+# Android (stage 6): build output and anything signing-related never enters the repo
+mobile/node_modules/
+mobile/android/app/build/
+mobile/android/build/
+mobile/android/.gradle/
+mobile/android/local.properties
+mobile/android/app/src/main/assets/public/
+*.apk
+*.aab
+keystore.properties

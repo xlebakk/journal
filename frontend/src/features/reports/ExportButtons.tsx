@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import styles from "@/features/schedule/SchedulePage.module.css";
+import { canDownload } from "@/platform";
 import { errorMessage } from "@/shared/api/errors";
 import { t } from "@/shared/i18n";
 import { Button } from "@/shared/ui";
@@ -20,6 +21,7 @@ export function ExportButtons({
   const exportFile = useExport();
   const [error, setError] = useState<unknown>(null);
   const [pending, setPending] = useState(false);
+  if (!canDownload) return <p className={styles.note}>{t("common.webOnly")}</p>;
   const run = async (kind: "xlsx" | "csv") => {
     setError(null);
     setPending(true);
