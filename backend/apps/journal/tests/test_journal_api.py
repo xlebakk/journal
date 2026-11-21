@@ -505,3 +505,21 @@ def test_journal_course_list_is_scoped(
     assert len(client_for(teacher).get(f"{J}/courses").json()) == 1
     assert client_for(stranger).get(f"{J}/courses").json() == []
     assert len(admin_client.get(f"{J}/courses").json()) == 1
+
+
+@pytest.mark.django_db
+def test_clear_attendance_for_undo(
+    lesson: Lesson, teacher: User, student: User, client_for: ClientFor
+) -> None:
+    client = client_for(teacher)
+    record = set_mark(client, lesson, student, "absent").json()
+    url = f"{J}/lessons/{lesson.pk}/attendance/{student.pk}/clear"
+    assert client.post(url, {"version": record["version"]}, format="json").status_code == 204
+    assert not Attendance.objects.exists()
+    assert AuditLog.objects.filter(action="journal.attendance_clear").exists()
+    # A conducted lesson keeps its attendance.
+    client.post(f"{J}/lessons/{lesson.pk}/attendance/all-present", {}, format="json")
+    client.patch(f"{J}/lessons/{lesson.pk}", {"version": 1, "topic": "Т"}, format="json")
+    client.post(f"{J}/lessons/{lesson.pk}/conduct", {"version": 2}, format="json")
+    response = client.post(url, {"version": 1}, format="json")
+    assert response.json() == {"detail": ["lesson_conducted"]}

@@ -284,6 +284,20 @@ class AttendanceView(APIView):
         return Response(s.AttendanceSerializer(record).data)
 
 
+class AttendanceClearView(APIView):
+    """Remove a mark (undo); POST with a body, since DELETE bodies are not portable."""
+
+    permission_classes = STAFF
+
+    @extend_schema(request=s.VersionReasonSerializer, responses={204: None})
+    def post(self, request: Request, pk: str, student_id: str) -> Response:
+        form = s.VersionReasonSerializer(data=request.data)
+        form.is_valid(raise_exception=True)
+        data = form.validated_data
+        services.clear_attendance(request, pk, student_id, data["version"], data["reason"])
+        return Response(status=204)
+
+
 class AllPresentView(APIView):
     permission_classes = STAFF
 

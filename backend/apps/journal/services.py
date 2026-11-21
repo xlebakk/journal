@@ -226,6 +226,24 @@ def set_attendance(
     return record
 
 
+def clear_attendance(
+    request: Request, lesson_id: Any, student_id: Any, version: int, reason: str
+) -> None:
+    """Undo of a first mark. A conducted lesson keeps full attendance (SPEC §10.5)."""
+    who = actor(request)
+    with transaction.atomic():
+        lesson = lock(who, lesson_id)
+        require_writable(lesson, who, reason)
+        if lesson.status == LessonStatus.CONDUCTED:
+            raise Rule("lesson_conducted")
+        record = get_object_or_404(Attendance, lesson=lesson, student_id=student_id)
+        if record.version != version:
+            raise VersionConflict()
+        before = audit.snapshot(record, ATTENDANCE_AUDIT)
+        record.delete()
+        _record(request, "journal.attendance_clear", lesson, before, None, reason)
+
+
 def mark_all_present(request: Request, lesson_id: Any, reason: str) -> list[Attendance]:
     """«Все присутствуют»: unmarked students become present; existing marks stay."""
     who = actor(request)

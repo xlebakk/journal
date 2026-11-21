@@ -23,6 +23,11 @@ urlpatterns: list[URLPattern | URLResolver] = [
         name="journal-attendance",
     ),
     path(
+        "journal/lessons/<uuid:pk>/attendance/<uuid:student_id>/clear",
+        views.AttendanceClearView.as_view(),
+        name="journal-attendance-clear",
+    ),
+    path(
         "journal/lessons/<uuid:pk>/grades", views.GradeCreateView.as_view(), name="journal-grades"
     ),
     path("journal/grades/<uuid:pk>", views.GradeView.as_view(), name="journal-grade"),

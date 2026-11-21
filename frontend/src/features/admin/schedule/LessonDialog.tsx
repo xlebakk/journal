@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
+import { Link } from "react-router";
 
 import { useTeachers } from "@/features/admin/groups/api";
 import { useInvalidateSchedule, useRooms, type Lesson } from "@/features/schedule/api";
@@ -114,6 +115,7 @@ function LessonActions({ lesson, onClose }: { lesson: Lesson; onClose: () => voi
           <dd key={mark.text}>{mark.text}</dd>
         ))}
       </dl>
+      <Link to={`/admin/journal/lessons/${lesson.id}`}>{t("schedule.openJournal")}</Link>
 
       {editable && (
         <div className={styles.tabs} role="tablist">

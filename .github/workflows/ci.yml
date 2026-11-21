@@ -49,8 +49,10 @@ jobs:
         env:
           TOTP_ENCRYPTION_KEYS: dGVzdC1vbmx5LWtleS10ZXN0LW9ubHkta2V5LTAwMDA=
         run: uv run pytest --cov --cov-report=term-missing
-      - name: coverage of accounts ≥ 85% (SPEC §15)
-        run: uv run coverage report --include="apps/accounts/*" --fail-under=85
+      - name: coverage of accounts and journal ≥ 85% (SPEC §15)
+        run: |
+          uv run coverage report --include="apps/accounts/*" --fail-under=85
+          uv run coverage report --include="apps/journal/*" --fail-under=85
       - name: OpenAPI schema is valid and committed
         env:
           TOTP_ENCRYPTION_KEYS: dGVzdC1vbmx5LWtleS10ZXN0LW9ubHkta2V5LTAwMDA=

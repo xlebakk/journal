@@ -2716,6 +2716,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/Attendance'
           description: ''
+  /api/v1/journal/lessons/{id}/attendance/{student_id}/clear:
+    post:
+      operationId: journal_lessons_attendance_clear_create
+      description: Remove a mark (undo); POST with a body, since DELETE bodies are
+        not portable.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: student_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - journal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionReasonRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/journal/lessons/{id}/attendance/all-present:
     post:
       operationId: journal_lessons_attendance_all_present_create
