@@ -1,14 +1,17 @@
+import { lazy, Suspense } from "react";
 import { Navigate, Outlet } from "react-router";
 
 import { homePath, useMe, type Role } from "@/features/auth/api";
-import { ReauthProvider } from "@/features/auth/reauth";
 import { errorMessage } from "@/shared/api/errors";
 import { RuledSkeleton } from "@/shared/ui";
 
 import { OfflinePage } from "./OfflinePage";
 
-import { AppShell } from "./AppShell";
 import { NotFoundPage } from "./NotFoundPage";
+
+// The shell and its menus/dialogs are not needed on the login page (SPEC §15).
+const Shell = lazy(() => import("./Shell").then((m) => ({ default: m.Shell })));
+const ReauthOutlet = lazy(() => import("./Shell").then((m) => ({ default: m.ReauthOutlet })));
 
 type GateProps = {
   /** Section of one role; another role sees 404 (the server would answer 403 anyway). */
@@ -36,17 +39,17 @@ export function Gate({ section, mode }: GateProps) {
   if (mode === "password") return <Navigate to="/" replace />;
   if (mode === "totp")
     return (
-      <ReauthProvider>
-        <Outlet />
-      </ReauthProvider>
+      <Suspense fallback={<RuledSkeleton />}>
+        <ReauthOutlet />
+      </Suspense>
     );
   if (user.totp_setup_required) return <Navigate to="/setup-2fa" replace />;
   if (section && user.active_role !== section) return <NotFoundPage />;
 
   return (
-    <ReauthProvider>
-      <AppShell me={user} />
-    </ReauthProvider>
+    <Suspense fallback={<RuledSkeleton />}>
+      <Shell me={user} />
+    </Suspense>
   );
 }
 

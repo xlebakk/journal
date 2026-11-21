@@ -32,11 +32,27 @@ export default tseslint.config(
           message: "Inline styles break the CSP style-src 'self': use CSS Modules.",
         },
       ],
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "zod",
+              message: "Import z from @/shared/lib/zod (jitless: no CSP reports).",
+            },
+          ],
+        },
+      ],
       "no-restricted-properties": [
         "error",
         { object: "window", property: "localStorage", message: "Use shared/lib/storage." },
       ],
     },
+  },
+  {
+    // The one place that imports zod and configures it (see the file).
+    files: ["src/shared/lib/zod.ts"],
+    rules: { "no-restricted-imports": "off" },
   },
   {
     files: ["scripts/**/*.mjs"],
