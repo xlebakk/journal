@@ -9,6 +9,7 @@
 		Permissions-Policy "camera=(), microphone=(), geolocation=()"
 		Cross-Origin-Opener-Policy "same-origin"
 		Cross-Origin-Resource-Policy "same-origin"
+		Cross-Origin-Embedder-Policy "require-corp"
 		X-Frame-Options "DENY"
 		-Server
 		-Via
@@ -20,6 +21,8 @@
 
 	# The API: Django behind gunicorn. Caddy adds X-Forwarded-For/-Proto itself.
 	handle /api/* {
+		# Children's data: never kept in browser or proxy caches.
+		header Cache-Control "no-store"
 		reverse_proxy {$JOURNAL_API:api:8000} {
 			header_up -X-Forwarded-Host
 		}
