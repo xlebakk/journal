@@ -30,12 +30,15 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # CORS for the Android app only (no cookies): before anything that may answer.
+    "apps.core.cors.AppCorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     # Timeouts by role, revoked sessions, forced password change / 2FA setup.
     "apps.accounts.middleware.SessionPolicyMiddleware",
+    "apps.accounts.middleware.AppTokenMiddleware",
     "apps.accounts.middleware.ForcedActionMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -121,6 +124,12 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # Uploaded files live outside the web root and are served only through the API (SPEC §11).
 MEDIA_ROOT = Path(env_str("MEDIA_ROOT", str(BASE_DIR / "media")))
 LOGO_MAX_BYTES = 1024 * 1024
+
+# Android app (SPEC §11, stage 6): access token in memory, refresh token in the Keystore.
+APP_ACCESS_SECONDS = 600
+APP_REFRESH_DAYS = 30
+# Origins of the Capacitor WebView (androidScheme https; iOS later uses capacitor://).
+APP_ORIGINS = env_list("APP_ORIGINS", ["https://localhost", "capacitor://localhost"])
 IMPORT_MAX_BYTES = 5 * 1024 * 1024
 
 # --- Cookies. Same origin as the frontend, so no CORS.
@@ -141,7 +150,10 @@ SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
 
 # --- API. Deny by default: every view must declare its permission classes explicitly.
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": ["apps.core.authentication.SessionAuthentication"],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "apps.core.authentication.AppTokenAuthentication",
+        "apps.core.authentication.SessionAuthentication",
+    ],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],

@@ -3,7 +3,7 @@ from rest_framework.routers import SimpleRouter
 
 from apps.audit.views import AuditLogExportView, AuditLogListView, LoginEventListView
 
-from . import views_admin, views_auth, views_import
+from . import views_admin, views_auth, views_import, views_token
 
 router = SimpleRouter(trailing_slash=False, use_regex_path=False)
 router.register("admin/users", views_admin.AdminUserViewSet, basename="admin-user")
@@ -12,6 +12,9 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("auth/login", views_auth.LoginView.as_view(), name="auth-login"),
     path("auth/totp", views_auth.TotpLoginView.as_view(), name="auth-totp"),
     path("auth/logout", views_auth.LogoutView.as_view(), name="auth-logout"),
+    path("auth/token", views_token.TokenLoginView.as_view(), name="auth-token"),
+    path("auth/token/totp", views_token.TokenTotpView.as_view(), name="auth-token-totp"),
+    path("auth/token/refresh", views_token.TokenRefreshView.as_view(), name="auth-token-refresh"),
     path("auth/password", views_auth.PasswordChangeView.as_view(), name="auth-password"),
     path("auth/role", views_auth.RoleSwitchView.as_view(), name="auth-role"),
     path("auth/reauth", views_auth.ReauthView.as_view(), name="auth-reauth"),

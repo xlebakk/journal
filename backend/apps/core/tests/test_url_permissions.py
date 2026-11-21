@@ -18,8 +18,16 @@ from rest_framework.test import APIClient
 from rest_framework.views import APIView
 
 # URL names that may be reached without logging in. Keep this list short.
-# The login flow (password, then the 2FA step) and health are the only public endpoints.
-PUBLIC_URL_NAMES = {"health", "auth-login", "auth-totp"}
+# The login flow (password, then the 2FA step) and health are the only public endpoints;
+# the app's token login, its 2FA step and the refresh (authenticated by the refresh token).
+PUBLIC_URL_NAMES = {
+    "health",
+    "auth-login",
+    "auth-totp",
+    "auth-token",
+    "auth-token-totp",
+    "auth-token-refresh",
+}
 
 _CONVERTER_SAMPLES = {"int": "1", "uuid": str(uuid.uuid4()), "str": "x", "slug": "x", "path": "x"}
 _PARAM_RE = re.compile(r"<(?:(?P<conv>\w+):)?(?P<name>\w+)>")

@@ -6,10 +6,13 @@ administrator switching to the teacher role keeps the administrator's limits.
 
 import hashlib
 import time
+from collections.abc import MutableMapping
 from dataclasses import dataclass
 from datetime import timedelta
+from typing import Any
 
 from django.contrib.auth import login, logout
+from django.core.cache import cache
 from django.http import HttpRequest
 from django.utils import timezone
 
@@ -27,6 +30,65 @@ PENDING_LOGIN = "pending_login"
 TOTP_SETUP_SECRET = "totp_setup_secret"
 
 LAST_SEEN_DB_WRITE_EVERY = 60  # seconds
+APP_STATE_TTL = 3600
+
+
+class AppState:
+    """Short-lived per-session values (re-auth time, 2FA setup secret) of an app session.
+
+    Web sessions keep them in the Django session; the app has no cookie, so they live in the
+    cache under the session id. Losing them only means «enter the password again».
+    """
+
+    def __init__(self, session: UserSession) -> None:
+        self.key = f"accounts:app-state:{session.pk}"
+
+    def _data(self) -> dict[str, Any]:
+        value = cache.get(self.key)
+        return dict(value) if isinstance(value, dict) else {}
+
+    def get(self, name: str, default: Any = None) -> Any:
+        return self._data().get(name, default)
+
+    def __setitem__(self, name: str, value: Any) -> None:
+        data = self._data()
+        data[name] = value
+        cache.set(self.key, data, APP_STATE_TTL)
+
+    def pop(self, name: str, default: Any = None) -> Any:
+        data = self._data()
+        value = data.pop(name, default)
+        cache.set(self.key, data, APP_STATE_TTL)
+        return value
+
+
+def app_session(request: HttpRequest) -> UserSession | None:
+    """The app session of a Bearer request (set by AppTokenMiddleware), or None."""
+    value = getattr(request, "app_session", None)
+    return value if isinstance(value, UserSession) else None
+
+
+def state(request: HttpRequest) -> "AppState | MutableMapping[str, Any]":
+    session = app_session(request)
+    return AppState(session) if session is not None else request.session
+
+
+def get_active_role(request: HttpRequest) -> str | None:
+    session = app_session(request)
+    if session is not None:
+        return session.active_role or None
+    value = request.session.get(ACTIVE_ROLE)
+    return str(value) if value else None
+
+
+def set_active_role(request: HttpRequest, role: str) -> None:
+    session = app_session(request)
+    if session is not None:
+        session.active_role = role
+        UserSession.objects.filter(pk=session.pk).update(active_role=role)
+        return
+    request.session[ACTIVE_ROLE] = role
+    cycle_session_key(request)
 
 
 @dataclass(frozen=True)
@@ -78,7 +140,9 @@ def start_session(request: HttpRequest, user: User, *, remember: bool) -> UserSe
 
 
 def cycle_session_key(request: HttpRequest) -> None:
-    """New session id for the same login (role switch, password change)."""
+    """New session id for the same login (role switch, password change). Web only."""
+    if app_session(request) is not None:
+        return
     request.session.cycle_key()
     session_id = request.session.get(USER_SESSION_ID)
     if session_id:
@@ -88,6 +152,9 @@ def cycle_session_key(request: HttpRequest) -> None:
 
 
 def current_session_id(request: HttpRequest) -> str | None:
+    session = app_session(request)
+    if session is not None:
+        return str(session.pk)
     value = request.session.get(USER_SESSION_ID)
     return str(value) if value else None
 
@@ -108,6 +175,12 @@ def end_user_sessions(user: User, reason: str, *, except_id: str | None = None) 
 
 
 def logout_current(request: HttpRequest, reason: str) -> None:
+    session = app_session(request)
+    if session is not None:
+        UserSession.objects.filter(pk=session.pk, ended_at__isnull=True).update(
+            ended_at=timezone.now(), end_reason=reason
+        )
+        return
     session_id = current_session_id(request)
     if session_id:
         UserSession.objects.filter(pk=session_id, ended_at__isnull=True).update(
@@ -144,8 +217,8 @@ def check_and_touch(request: HttpRequest, user: User) -> str | None:
 
 
 def mark_reauthenticated(request: HttpRequest) -> None:
-    request.session[REAUTH_AT] = time.time()
+    state(request)[REAUTH_AT] = time.time()
 
 
 def recently_reauthenticated(request: HttpRequest, max_age: int) -> bool:
-    return time.time() - float(request.session.get(REAUTH_AT, 0)) <= max_age
+    return time.time() - float(state(request).get(REAUTH_AT, 0)) <= max_age

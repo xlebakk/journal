@@ -47,11 +47,11 @@ _DUMMY_HASH = make_password("dummy-password-for-timing-equalisation")
 StepSerializer = inline_serializer("LoginStep", fields={"step": serializers.CharField()})
 
 
-def _invalid_credentials() -> Response:
+def invalid_credentials() -> Response:
     return Response({"detail": "invalid_credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-def _too_many_attempts(seconds: int) -> Response:
+def too_many_attempts(seconds: int) -> Response:
     minutes = lockout.minutes(seconds)
     return Response(
         {"detail": "too_many_attempts", "retry_after_minutes": minutes},
@@ -60,7 +60,7 @@ def _too_many_attempts(seconds: int) -> Response:
     )
 
 
-def _log(request: Request, login: str, user: User | None, success: bool, reason: str) -> None:
+def log_login(request: Request, login: str, user: User | None, success: bool, reason: str) -> None:
     LoginEvent.objects.create(
         login_attempted=login[:64],
         user=user,
@@ -69,6 +69,57 @@ def _log(request: Request, login: str, user: User | None, success: bool, reason:
         success=success,
         reason=reason,
     )
+
+
+def check_password_step(request: Request, login: str, password: str) -> User | Response:
+    """The first login step for the site and the app: limits, equal timing, the login journal.
+
+    Returns the user whose password matched, or the error response to send.
+    """
+    wait = lockout.ip_over_limit_seconds(client_ip(request))
+    if wait:
+        log_login(request, login, None, False, LoginEvent.Reason.IP_LIMIT)
+        return too_many_attempts(wait)
+    wait = lockout.locked_seconds(login)
+    if wait:
+        log_login(request, login, None, False, LoginEvent.Reason.LOCKED)
+        return too_many_attempts(wait)
+
+    user = User.objects.filter(login=login).first()
+    if user is None:
+        check_password(password, _DUMMY_HASH)
+        ok = False
+    else:
+        ok = user.check_password(password) and user.can_log_in
+    if not ok or user is None:
+        lockout.register_failure(login)
+        log_login(request, login, user, False, LoginEvent.Reason.INVALID_CREDENTIALS)
+        return invalid_credentials()
+    lockout.reset_failures(login)
+    return user
+
+
+def check_second_factor(
+    request: Request, user: User, code: str, attempts: int
+) -> tuple[bool, Response | None]:
+    """A TOTP or backup code. (True, None) — passed; (False, response) — refuse with it.
+
+    `attempts` counts earlier wrong codes of this login; the last allowed one locks the login.
+    """
+    used_backup = False
+    ok = totp.verify_totp(user, code)
+    if not ok and totp.looks_like_backup_code(code):
+        ok = used_backup = totp.use_backup_code(user, code)
+    if ok:
+        reason = LoginEvent.Reason.BACKUP_CODE if used_backup else LoginEvent.Reason.OK
+        log_login(request, user.login, user, True, reason)
+        return True, None
+    if attempts + 1 >= settings.TOTP_MAX_ATTEMPTS:
+        seconds = lockout.register_failure(user.login)
+        log_login(request, user.login, user, False, LoginEvent.Reason.TOTP_LIMIT)
+        return False, too_many_attempts(seconds or 60)
+    log_login(request, user.login, user, False, LoginEvent.Reason.TOTP_INVALID)
+    return False, Response({"detail": "invalid_code"}, status=400)
 
 
 @method_decorator(ensure_csrf_cookie, name="get")
@@ -89,31 +140,12 @@ class LoginView(CsrfEnforcedMixin, APIView):
     def post(self, request: Request) -> Response:
         form = LoginSerializer(data=request.data)
         if not form.is_valid():
-            return _invalid_credentials()
+            return invalid_credentials()
         login = normalize_login(form.validated_data["login"])
-        password = form.validated_data["password"]
-
-        wait = lockout.ip_over_limit_seconds(client_ip(request))
-        if wait:
-            _log(request, login, None, False, LoginEvent.Reason.IP_LIMIT)
-            return _too_many_attempts(wait)
-        wait = lockout.locked_seconds(login)
-        if wait:
-            _log(request, login, None, False, LoginEvent.Reason.LOCKED)
-            return _too_many_attempts(wait)
-
-        user = User.objects.filter(login=login).first()
-        if user is None:
-            check_password(password, _DUMMY_HASH)
-            ok = False
-        else:
-            ok = user.check_password(password) and user.can_log_in
-        if not ok or user is None:
-            lockout.register_failure(login)
-            _log(request, login, user, False, LoginEvent.Reason.INVALID_CREDENTIALS)
-            return _invalid_credentials()
-
-        lockout.reset_failures(login)
+        checked = check_password_step(request, login, form.validated_data["password"])
+        if isinstance(checked, Response):
+            return checked
+        user = checked
         remember = form.validated_data["remember"]
         if user.totp_enabled:
             request.session[sessions.PENDING_LOGIN] = {
@@ -124,7 +156,7 @@ class LoginView(CsrfEnforcedMixin, APIView):
             }
             return Response({"step": "totp"})
         sessions.start_session(request, user, remember=remember)
-        _log(request, login, user, True, LoginEvent.Reason.OK)
+        log_login(request, login, user, True, LoginEvent.Reason.OK)
         return Response({"step": "done"})
 
 
@@ -147,30 +179,21 @@ class TotpLoginView(CsrfEnforcedMixin, APIView):
         wait = lockout.locked_seconds(user.login)
         if wait:
             request.session.pop(sessions.PENDING_LOGIN, None)
-            return _too_many_attempts(wait)
+            return too_many_attempts(wait)
 
         form = TotpCodeSerializer(data=request.data)
         code = form.validated_data["code"] if form.is_valid() else ""
-        used_backup = False
-        ok = totp.verify_totp(user, code)
-        if not ok and totp.looks_like_backup_code(code):
-            ok = used_backup = totp.use_backup_code(user, code)
-
+        ok, refusal = check_second_factor(request, user, code, int(pending["attempts"]))
         if not ok:
             pending["attempts"] = int(pending["attempts"]) + 1
             if pending["attempts"] >= settings.TOTP_MAX_ATTEMPTS:
                 request.session.pop(sessions.PENDING_LOGIN, None)
-                seconds = lockout.register_failure(user.login)
-                _log(request, user.login, user, False, LoginEvent.Reason.TOTP_LIMIT)
-                return _too_many_attempts(seconds or 60)
-            request.session[sessions.PENDING_LOGIN] = pending
-            _log(request, user.login, user, False, LoginEvent.Reason.TOTP_INVALID)
-            return Response({"detail": "invalid_code"}, status=400)
+            else:
+                request.session[sessions.PENDING_LOGIN] = pending
+            return refusal or invalid_credentials()
 
         request.session.pop(sessions.PENDING_LOGIN, None)
         sessions.start_session(request, user, remember=bool(pending["remember"]))
-        reason = LoginEvent.Reason.BACKUP_CODE if used_backup else LoginEvent.Reason.OK
-        _log(request, user.login, user, True, reason)
         return Response({"step": "done"})
 
 
@@ -202,7 +225,7 @@ class PasswordChangeView(APIView):
         user = current_user(request)
         wait = lockout.locked_seconds(user.login)
         if wait:
-            return _too_many_attempts(wait)
+            return too_many_attempts(wait)
         current = request.data.get("current_password", "") if isinstance(request.data, dict) else ""
         if not isinstance(current, str) or not user.check_password(current):
             lockout.register_failure(user.login)
@@ -221,7 +244,8 @@ class PasswordChangeView(APIView):
             )
             audit.record(request=request, action="auth.password_change", entity=user)
         # New session id and auth hash for the current session; others are already ended.
-        update_session_auth_hash(request, user)
+        if sessions.app_session(request) is None:
+            update_session_auth_hash(request, user)
         sessions.cycle_session_key(request)
         sessions.mark_reauthenticated(request)
         lockout.reset_failures(user.login)
@@ -239,8 +263,7 @@ class RoleSwitchView(APIView):
         user = current_user(request)
         if role not in user.roles:
             return Response({"role": ["role_not_assigned"]}, status=400)
-        request.session[sessions.ACTIVE_ROLE] = role
-        sessions.cycle_session_key(request)
+        sessions.set_active_role(request, role)
         return Response(MeSerializer(user, context={"request": request}).data)
 
 
@@ -254,7 +277,7 @@ class ReauthView(APIView):
         user = current_user(request)
         wait = lockout.locked_seconds(user.login)
         if wait:
-            return _too_many_attempts(wait)
+            return too_many_attempts(wait)
         form = PasswordSerializer(data=request.data)
         if not form.is_valid() or not user.check_password(form.validated_data["password"]):
             lockout.register_failure(user.login)
@@ -288,7 +311,7 @@ class TotpSetupView(APIView):
         if user.totp_enabled:
             return Response({"detail": "totp_already_enabled"}, status=400)
         secret = totp.new_secret()
-        request.session[sessions.TOTP_SETUP_SECRET] = totp.encrypt_secret(secret)
+        sessions.state(request)[sessions.TOTP_SETUP_SECRET] = totp.encrypt_secret(secret)
         uri = totp.provisioning_uri(user, secret)
         return Response({"otpauth_uri": uri, "qr": totp.qr_svg_data_uri(uri), "secret": secret})
 
@@ -297,7 +320,7 @@ class TotpSetupView(APIView):
         user = current_user(request)
         if user.totp_enabled:
             return Response({"detail": "totp_already_enabled"}, status=400)
-        encrypted = request.session.get(sessions.TOTP_SETUP_SECRET)
+        encrypted = sessions.state(request).get(sessions.TOTP_SETUP_SECRET)
         if not encrypted:
             return Response({"detail": "totp_setup_expired"}, status=400)
         form = TotpCodeSerializer(data=request.data)
@@ -313,7 +336,7 @@ class TotpSetupView(APIView):
             user.save(update_fields=["totp_secret", "totp_enabled", "totp_last_counter"])
             codes = totp.generate_backup_codes(user)
             audit.record(request=request, action="auth.totp_enable", entity=user)
-        request.session.pop(sessions.TOTP_SETUP_SECRET, None)
+        sessions.state(request).pop(sessions.TOTP_SETUP_SECRET, None)
         return Response({"backup_codes": codes})
 
     @extend_schema(request=None, responses={204: None})

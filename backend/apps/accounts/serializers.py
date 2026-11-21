@@ -125,7 +125,16 @@ class SessionSerializer(serializers.ModelSerializer[UserSession]):
 
     class Meta:
         model = UserSession
-        fields = ("id", "created_at", "last_seen_at", "ip", "user_agent", "remember", "current")
+        fields = (
+            "id",
+            "kind",
+            "created_at",
+            "last_seen_at",
+            "ip",
+            "user_agent",
+            "remember",
+            "current",
+        )
         read_only_fields = fields
 
     def get_current(self, session: UserSession) -> bool:

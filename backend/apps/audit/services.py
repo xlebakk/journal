@@ -10,6 +10,7 @@ from django.db import connection
 from django.db.models import Model
 from rest_framework.request import Request
 
+from apps.accounts import sessions
 from apps.core.request_info import client_ip, user_agent
 
 from .models import AuditLog
@@ -53,7 +54,7 @@ def record(
     actor_role = ""
     if request is not None and request.user.is_authenticated:
         actor = request.user
-        actor_role = request.session.get("active_role", "")
+        actor_role = sessions.get_active_role(request) or ""
     if entity is not None:
         entity_type = entity_type or entity._meta.label_lower
         entity_id = entity_id or str(entity.pk)

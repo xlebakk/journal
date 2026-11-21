@@ -1,4 +1,5 @@
-"""Role permissions. The *active* role (session) decides, and must be one of the user's roles."""
+"""Role permissions. The *active* role of the session (web or app) decides; it must be one of
+the user's roles."""
 
 from typing import Any
 
@@ -23,7 +24,7 @@ def active_role(request: Request) -> str | None:
     user = request.user
     if not (user.is_authenticated and isinstance(user, User)):
         return None
-    role = request.session.get(sessions.ACTIVE_ROLE)
+    role = sessions.get_active_role(request)
     return role if role in user.roles else None
 
 
