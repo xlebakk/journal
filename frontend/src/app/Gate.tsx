@@ -3,7 +3,7 @@ import { Navigate, Outlet } from "react-router";
 
 import { homePath, useMe, type Role } from "@/features/auth/api";
 import { errorMessage } from "@/shared/api/errors";
-import { RuledSkeleton } from "@/shared/ui";
+import { RuledSkeleton } from "@/shared/ui/RuledSkeleton";
 
 import { OfflinePage } from "./OfflinePage";
 
