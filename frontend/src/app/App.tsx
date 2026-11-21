@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider, type RouteObject } from "react-rou
 
 import { LoginPage } from "@/features/auth/LoginPage";
 import { onBackButton } from "@/platform";
-import { RuledSkeleton } from "@/shared/ui";
+import { RuledSkeleton } from "@/shared/ui/RuledSkeleton";
 
 import { Gate, RootRedirect } from "./Gate";
 import { NotFoundPage } from "./NotFoundPage";

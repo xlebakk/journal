@@ -27,7 +27,11 @@ async function loginAsStudent(page) {
     });
 }
 
-async function audit(page, path, keepSession) {
+// Like Lighthouse CI: several runs, the median counts — the first run in a cold browser
+// (empty code caches) is an outlier, not the page.
+const RUNS = Number(process.env.LIGHTHOUSE_RUNS ?? 3);
+
+async function once(page, path, keepSession) {
   const { lhr } = await lighthouse(
     `${base}${path}`,
     { onlyCategories: Object.keys(MIN), disableStorageReset: keepSession, logLevel: "error" },
@@ -38,15 +42,25 @@ async function audit(page, path, keepSession) {
   if (lhr.finalDisplayedUrl.replace(base, "") !== path) {
     throw new Error(`${path} redirected to ${lhr.finalDisplayedUrl}: not logged in?`);
   }
+  return lhr;
+}
+
+async function audit(page, path, keepSession) {
+  const runs = [];
+  for (let i = 0; i < RUNS; i += 1) runs.push(await once(page, path, keepSession));
   let ok = true;
   for (const [category, min] of Object.entries(MIN)) {
-    const score = lhr.categories[category].score ?? 0;
-    const pass = score >= min;
+    const scores = runs.map((lhr) => lhr.categories[category].score ?? 0);
+    const sorted = [...scores].sort((a, b) => a - b);
+    const median = sorted[Math.floor(sorted.length / 2)];
+    const pass = median >= min;
     ok &&= pass;
+    const all = scores.map((x) => Math.round(x * 100)).join("/");
     console.log(
-      `${pass ? "✓" : "✗"} ${path} ${category} ${Math.round(score * 100)} (min ${min * 100})`,
+      `${pass ? "✓" : "✗"} ${path} ${category} ${Math.round(median * 100)} (runs ${all}, min ${min * 100})`,
     );
     if (!pass) {
+      const lhr = runs[scores.indexOf(median)];
       for (const ref of lhr.categories[category].auditRefs) {
         const item = lhr.audits[ref.id];
         if (ref.weight > 0 && item.score !== null && item.score < 0.9) {

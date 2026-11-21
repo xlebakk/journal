@@ -8,7 +8,11 @@ import { isNativeApp } from "@/platform";
 import { t } from "@/shared/i18n";
 import { formatJournalHeader } from "@/shared/lib/time";
 import { shouldShowIosInstallHint } from "@/shared/lib/userAgent";
-import { Button, Checkbox, PasswordField, TextField } from "@/shared/ui";
+// Direct imports, not the @/shared/ui barrel: the first screen must not pull every component.
+import { Button } from "@/shared/ui/Button";
+import { Checkbox } from "@/shared/ui/Checkbox";
+import { PasswordField } from "@/shared/ui/PasswordField";
+import { TextField } from "@/shared/ui/TextField";
 
 import { homePath, useBranding, useLogin, useMe, useTotpLogin } from "./api";
 import styles from "./AuthPage.module.css";

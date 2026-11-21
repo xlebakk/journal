@@ -1,5 +1,6 @@
 import { t } from "@/shared/i18n";
-import { Button, EmptyState } from "@/shared/ui";
+import { Button } from "@/shared/ui/Button";
+import { EmptyState } from "@/shared/ui/EmptyState";
 
 import styles from "./NotFoundPage.module.css";
 
