@@ -114,6 +114,16 @@ class TestExamCrud:
         )
         assert empty.json() == {"courses": ["required"]}
 
+    def test_assistant_enters_results_but_does_not_create_tests(
+        self, exam: Exam, course: Course, student: User, make_user: MakeUser,
+        client_for: ClientFor, frozen_today: date,
+    ) -> None:  # fmt: skip
+        helper = make_user(Role.TEACHER)
+        course.assistants.add(helper)
+        client = client_for(helper)
+        assert new_exam(client, [course]).json() == {"courses": ["not_your_course"]}
+        assert put_result(client, exam.pk, student, total=55).status_code == 200
+
     def test_sections_must_sum_to_max_and_be_unique(
         self, course: Course, teacher: User, client_for: ClientFor, frozen_today: date
     ) -> None:

@@ -6,7 +6,7 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 
 from apps.core.models import CenterSettings
 
-from . import sessions
+from . import sessions, tokens
 from .models import Role, User
 
 
@@ -26,6 +26,25 @@ class SessionPolicyMiddleware:
         return self.get_response(request)
 
 
+class AppTokenMiddleware:
+    """`Authorization: Bearer <access>` from the Android app (SPEC §11).
+
+    A Bearer request is authenticated by the token alone: cookies are ignored, and an invalid
+    or expired token leaves the request anonymous (401; the app then refreshes).
+    """
+
+    def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]) -> None:
+        self.get_response = get_response
+
+    def __call__(self, request: HttpRequest) -> HttpResponse:
+        header = request.headers.get("Authorization", "")
+        if header.startswith("Bearer "):
+            session = tokens.session_for_access(header.removeprefix("Bearer ").strip())
+            request.user = session.user if session is not None else AnonymousUser()
+            request.app_session = session  # type: ignore[attr-defined]
+        return self.get_response(request)
+
+
 def totp_setup_required(user: User) -> bool:
     if user.totp_enabled:
         return False
@@ -35,7 +54,9 @@ def totp_setup_required(user: User) -> bool:
 
 
 # URL names reachable while the user must first change the temporary password / set up 2FA.
-PASSWORD_CHANGE_ALLOWED = frozenset({"auth-me", "auth-logout", "auth-password", "auth-login"})
+PASSWORD_CHANGE_ALLOWED = frozenset(
+    {"auth-me", "auth-logout", "auth-password", "auth-login", "auth-token-refresh"}
+)
 TOTP_SETUP_ALLOWED = PASSWORD_CHANGE_ALLOWED | {"auth-totp-setup"}
 
 

@@ -232,7 +232,15 @@ class BackupCode(models.Model):
 
 
 class UserSession(models.Model):
-    """Server-side record of a login, for the «Активные сеансы» list and revocation."""
+    """Server-side record of a login, for the «Активные сеансы» list and revocation.
+
+    A web login is a Django session (cookie); an app login (Android, stage 6) is a chain of
+    refresh tokens. Both are ended the same way, so revocation covers phones too.
+    """
+
+    class Kind(models.TextChoices):
+        WEB = "web"
+        APP = "app"
 
     class EndReason(models.TextChoices):
         LOGOUT = "logout"
@@ -244,10 +252,14 @@ class UserSession(models.Model):
         ACCOUNT_DISABLED = "account_disabled"
         ROLES_CHANGED = "roles_changed"
         TOTP_RESET = "totp_reset"
+        TOKEN_REUSE = "token_reuse"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sessions")
-    key_hash = models.CharField(max_length=64, db_index=True)
+    kind = models.CharField(max_length=3, choices=Kind.choices, default=Kind.WEB)
+    key_hash = models.CharField(max_length=64, db_index=True, blank=True)
+    # App sessions keep the active role here; web sessions keep it in the Django session.
+    active_role = models.CharField(max_length=16, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_seen_at = models.DateTimeField()
     expires_at = models.DateTimeField()
@@ -271,6 +283,24 @@ class UserSession(models.Model):
     @property
     def is_active(self) -> bool:
         return self.ended_at is None
+
+
+class RefreshToken(models.Model):
+    """One link of an app session's chain (SPEC §11). Only the hash is stored.
+
+    Each refresh marks the token used and issues the next one; presenting a used token again
+    means it was copied, so the whole session ends (`token_reuse`).
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    session = models.ForeignKey(UserSession, on_delete=models.CASCADE, related_name="tokens")
+    token_hash = models.CharField(max_length=64, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    used_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f"refresh:{self.pk}"
 
 
 class LoginEvent(models.Model):

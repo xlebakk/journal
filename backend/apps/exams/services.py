@@ -97,9 +97,12 @@ def require_writable(exam: Exam, who: Actor, reason: str) -> None:
 
 
 def _check_courses(who: Actor, courses: list[Course], subject_id: Any) -> None:
+    """A test is set up by the courses' teacher (or the administrator); assistants enter
+    results but do not create tests (decision of stage 2)."""
     if not courses:
         raise ValidationError({"courses": ["required"]})
-    allowed = set(staff_courses(who).values_list("pk", flat=True))
+    own = Course.objects.all() if who.is_admin else Course.objects.filter(teacher=who.user)
+    allowed = set(own.values_list("pk", flat=True))
     if any(c.pk not in allowed for c in courses):
         raise ValidationError({"courses": ["not_your_course"]})
     if any(c.subject_id != subject_id for c in courses):
