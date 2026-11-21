@@ -18,3 +18,14 @@ export function describeUserAgent(ua: string): string {
     "";
   return [browser, os].filter(Boolean).join(" · ") || ua.slice(0, 40);
 }
+
+/** iPhone/iPad Safari, not yet installed on the home screen: show how to install (SPEC §13). */
+export function shouldShowIosInstallHint(
+  nav: Navigator & { standalone?: boolean } = navigator,
+  standalone = window.matchMedia?.("(display-mode: standalone)").matches ?? false,
+): boolean {
+  const ios =
+    /iPhone|iPad|iPod/.test(nav.userAgent) ||
+    (nav.platform === "MacIntel" && nav.maxTouchPoints > 1);
+  return ios && !nav.standalone && !standalone;
+}

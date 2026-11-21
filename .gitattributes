@@ -1,5 +1,9 @@
 * text=auto eol=lf
 *.sh text eol=lf
+# cmd.exe misreads `goto` labels in LF batch files (gradlew.bat).
+*.bat text eol=crlf
+*.jar binary
+*.jks binary
 *.woff binary
 *.woff2 binary
 *.png binary

@@ -5,6 +5,7 @@ import { useGroups, useTeachers } from "@/features/admin/groups/api";
 import { useRooms, useWeekParam, type Lesson } from "@/features/schedule/api";
 import styles from "@/features/schedule/SchedulePage.module.css";
 import { errorMessage } from "@/shared/api/errors";
+import { canPrint } from "@/platform";
 import { t } from "@/shared/i18n";
 import { startOfWeek } from "@/shared/lib/week";
 import {
@@ -116,7 +117,7 @@ export function SchedulePage() {
         {mode === "week" && (
           <>
             <Button onClick={() => setAdding(true)}>{t("schedule.addLesson")}</Button>
-            <Button onClick={() => window.print()}>{t("schedule.print")}</Button>
+            {canPrint && <Button onClick={() => window.print()}>{t("schedule.print")}</Button>}
           </>
         )}
       </div>

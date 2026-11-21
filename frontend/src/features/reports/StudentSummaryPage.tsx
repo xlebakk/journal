@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router";
 import { percentText, scoreText } from "@/features/exams/api";
 import styles from "@/features/schedule/SchedulePage.module.css";
 import { errorMessage } from "@/shared/api/errors";
+import { canPrint } from "@/platform";
 import { t } from "@/shared/i18n";
 import { centerToday, formatDate } from "@/shared/lib/week";
 import { Button, RuledSkeleton, Table, TextField } from "@/shared/ui";
@@ -38,9 +39,11 @@ export function StudentSummaryPage() {
           value={to}
           onChange={(e) => setTo(e.target.value)}
         />
-        <Button variant="primary" onClick={() => window.print()}>
-          {t("reports.print")}
-        </Button>
+        {canPrint && (
+          <Button variant="primary" onClick={() => window.print()}>
+            {t("reports.print")}
+          </Button>
+        )}
       </div>
       <header>
         <p className={styles.status}>{t("reports.summaryTitle")}</p>

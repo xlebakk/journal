@@ -31,10 +31,11 @@ frontend/           React + TypeScript + Vite, CSS Modules, TanStack Query, Reac
   src/app/          роутинг, лэйауты
   src/features/     auth, student, teacher, admin
   src/shared/ui/    свои компоненты; tokens.css — единственное место с цветами и размерами
-  src/shared/api/   сгенерированный из OpenAPI клиент
+  src/shared/api/   сгенерированный из OpenAPI клиент (сайт — cookie + CSRF, приложение — Bearer)
+  src/platform/     единственное место, знающее «сайт или Android»: адрес API, токены, «Назад»
   src/dev/          /dev/styleguide (только в dev-сборке)
 infra/              docker-compose, init-скрипты БД, позже Caddyfile и бэкапы
-mobile/             Capacitor (этап 6)
+mobile/             Capacitor: android/, capacitor.config.ts, scripts/build.mjs, иконки; см. mobile/README.md
 docs/               decisions.md, security.md, позже deploy.md, admin-guide.md
 ```
 
@@ -51,12 +52,14 @@ docs/               decisions.md, security.md, позже deploy.md, admin-guide
 | Безопасность бэкенда | `cd backend && uv run bandit -q -c pyproject.toml -r apps config && uv run pip-audit` |
 | Фронтенд dev | `cd frontend && npm run dev` (API проксируется на `VITE_API_PROXY`, по умолчанию `localhost:8000`) |
 | Фронтенд проверки | `cd frontend && npm run lint && npm run typecheck && npm test && npm run contrast` |
+| Android APK | `cd mobile && npm run apk:debug` (JDK 21+, Android SDK); release — см. `mobile/README.md` |
+| PWA-проверка | `cd frontend && npm run build && npm run check:pwa` |
 | Pre-commit | `uv run --project backend pre-commit install`, затем `... pre-commit run --all-files` |
 
 ## Правила прав доступа (не нарушать)
 
 1. **Любая проверка прав — на сервере.** Фронтенд только прячет кнопки.
-2. **Запрет по умолчанию.** У каждого view — явные `permission_classes`. `AllowAny` — только для URL из `PUBLIC_URL_NAMES` в `apps/core/tests/test_url_permissions.py` (`health`, `auth-login`, `auth-totp`). Тест-обходчик падает на любом другом.
+2. **Запрет по умолчанию.** У каждого view — явные `permission_classes`. `AllowAny` — только для URL из `PUBLIC_URL_NAMES` в `apps/core/tests/test_url_permissions.py` (`health`, `auth-login`, `auth-totp`, мобильные `auth-token`, `auth-token-totp`, `auth-token-refresh`). Тест-обходчик падает на любом другом.
    Роль проверяется по **активной** роли сессии: `IsAdmin`, `IsTeacher`, `IsStudent` из `apps/accounts/permissions.py`. Текущий пользователь во view — `current_user(request)`.
    Опасные действия (роли, 2FA, позже — шкала, экспорт ПД) вызывают `require_recent_password(request)`.
 3. **Анонимный запрос → 401**, а не 403 (`apps.core.authentication.SessionAuthentication`).
@@ -74,6 +77,7 @@ docs/               decisions.md, security.md, позже deploy.md, admin-guide
 15. Занятия по ролям — `Lesson.objects.for_user(user, role)` с **активной** ролью; изменение занятия — под `services.lock_lesson(id, version)` (оптимистичная блокировка).
 16. Любая запись в журнал — только через `apps/journal/services.py` (окно, причина, членство, автор оценки, версии, аудит). Средние и проценты — только `apps/journal/stats.py:course_stats` (по курсу — `summarise_group`); новый экран или отчёт с цифрами вызывает их же.
 17. Выгрузка файла (`?export=xlsx|csv`) — экспорт ПД: `require_recent_password` и `throttle_scope = "export"`; файлы — только через `apps/core/files.py` (`read_table`, `export`). Результаты тестов — только через `apps/exams/services.py`.
+18. Сеанс — это `UserSession` и для сайта, и для приложения (`kind="app"`, refresh-токены). Читать активную роль, состояние сеанса и время повторного ввода пароля — только через `apps/accounts/sessions.py` (`get_active_role`, `state`, `current_session_id`), не через `request.session`.
 
 ## Время и данные
 

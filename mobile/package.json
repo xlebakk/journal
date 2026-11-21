@@ -1,0 +1,26 @@
+{
+  "name": "journal-mobile",
+  "private": true,
+  "version": "0.6.0",
+  "description": "Android shell (Capacitor) around the frontend build; see README.md",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "icons": "uv run --project ../backend python scripts/make_icons.py --android",
+    "apk:debug": "node scripts/build.mjs debug",
+    "apk:release": "node scripts/build.mjs release",
+    "check:versions": "node scripts/check-versions.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.6.2",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.6.2",
+    "capacitor-secure-storage-plugin": "0.14.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.6.2",
+    "typescript": "6.0.3"
+  }
+}

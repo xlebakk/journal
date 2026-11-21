@@ -1572,6 +1572,55 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["auth_token_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/token/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Rotation: every refresh token works once; a second use ends the session (SPEC §11). */
+        post: operations["auth_token_refresh_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/token/totp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["auth_token_totp_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/totp": {
         parameters: {
             query?: never;
@@ -3616,6 +3665,7 @@ export interface components {
         Session: {
             /** Format: uuid */
             readonly id: string;
+            readonly kind: components["schemas"]["SessionKindEnum"];
             /** Format: date-time */
             readonly created_at: string;
             /** Format: date-time */
@@ -3625,6 +3675,12 @@ export interface components {
             readonly remember: boolean;
             readonly current: boolean;
         };
+        /**
+         * @description * `web` - Web
+         *     * `app` - App
+         * @enum {string}
+         */
+        SessionKindEnum: "web" | "app";
         Slot: {
             /** Format: uuid */
             readonly id: string;
@@ -4051,6 +4107,21 @@ export interface components {
             status: string;
             state: components["schemas"]["StateEnum"];
             is_substituted: boolean;
+        };
+        TokenPair: {
+            step: string;
+            access: string;
+            access_expires_in: number;
+            refresh: string;
+            /** Format: date-time */
+            refresh_expires_at: string;
+        };
+        TokenRefreshRequestRequest: {
+            refresh: string;
+        };
+        TokenTotpRequestRequest: {
+            ticket: string;
+            code: string;
         };
         TotpCodeRequest: {
             code: string;
@@ -6640,6 +6711,75 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Ended"];
+                };
+            };
+        };
+    };
+    auth_token_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenPair"];
+                };
+            };
+        };
+    };
+    auth_token_refresh_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TokenRefreshRequestRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenPair"];
+                };
+            };
+        };
+    };
+    auth_token_totp_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TokenTotpRequestRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenPair"];
                 };
             };
         };
