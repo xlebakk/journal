@@ -14,10 +14,12 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
+    "django.contrib.postgres",
     "rest_framework",
     "drf_spectacular",
     "apps.core",
     "apps.accounts",
+    "apps.audit",
 ]
 
 MIDDLEWARE = [
@@ -26,6 +28,9 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # Timeouts by role, revoked sessions, forced password change / 2FA setup.
+    "apps.accounts.middleware.SessionPolicyMiddleware",
+    "apps.accounts.middleware.ForcedActionMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
@@ -66,6 +71,21 @@ CACHES = {
     }
 }
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+# Upper bound only; the real per-role limits live in CenterSettings (apps.accounts.sessions).
+SESSION_COOKIE_AGE = 30 * 24 * 3600
+
+# --- 2FA. Fernet keys, comma-separated; the first one encrypts, all decrypt (rotation).
+TOTP_ENCRYPTION_KEYS = env_list("TOTP_ENCRYPTION_KEYS")
+TOTP_ISSUER = env_str("TOTP_ISSUER", "Journal")
+
+# Number of reverse proxies in front of Django whose X-Forwarded-For can be trusted.
+TRUSTED_PROXY_COUNT = env_int("TRUSTED_PROXY_COUNT", 0)
+
+# Login limits per IP (SPEC §11): attempts per window.
+LOGIN_IP_LIMIT = 20
+LOGIN_IP_WINDOW_SECONDS = 600
+TOTP_MAX_ATTEMPTS = 5
+REAUTH_VALID_SECONDS = 300
 
 # --- Users and passwords.
 AUTH_USER_MODEL = "accounts.User"
@@ -73,7 +93,10 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.Argon2PasswordHasher",
 ]
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "OPTIONS": {"user_attributes": ("login", "last_name", "first_name", "middle_name")},
+    },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
         "OPTIONS": {"min_length": 10},
@@ -113,6 +136,14 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.UserRateThrottle",
+        "rest_framework.throttling.AnonRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {"user": "300/min", "anon": "60/min"},
+    "DEFAULT_PAGINATION_CLASS": "apps.core.pagination.Pagination",
+    "PAGE_SIZE": 50,
+    "EXCEPTION_HANDLER": "apps.core.exceptions.exception_handler",
     "UNAUTHENTICATED_USER": "django.contrib.auth.models.AnonymousUser",
 }
 
@@ -120,9 +151,9 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Journal API",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
-    # Stage 1 narrows this to administrators.
-    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAuthenticated"],
+    "SERVE_PERMISSIONS": ["apps.accounts.permissions.IsAdmin"],
     "COMPONENT_SPLIT_REQUEST": True,
+    "ENUM_NAME_OVERRIDES": {"RoleEnum": "apps.accounts.models.Role"},
 }
 
 LOGGING = {

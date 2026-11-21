@@ -3,6 +3,7 @@ from drf_spectacular.views import SpectacularAPIView
 
 api_v1: list[URLPattern | URLResolver] = [
     path("", include("apps.core.urls")),
+    path("", include("apps.accounts.urls")),
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
 ]
 

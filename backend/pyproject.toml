@@ -4,12 +4,15 @@ version = "0.1.0"
 requires-python = ">=3.13,<3.14"
 dependencies = [
     "argon2-cffi>=25.1.0",
+    "cryptography>=50.0.2",
     "django>=5.2,<5.3",
     "django-redis>=7.0.0",
     "djangorestframework>=3.18.3",
     "drf-spectacular>=0.30.0",
     "gunicorn>=27.0.1",
     "psycopg[binary]>=3.3.9",
+    "pyotp>=2.12.1",
+    "segno>=1.6.6",
 ]
 
 [dependency-groups]
@@ -37,9 +40,12 @@ force-exclude = true
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "S", "DJ", "SIM", "RUF", "PT"]
+# Russian UI: Cyrillic in strings and comments is intended.
+# S105: constants like "password_changed" are names, not secrets (secrets come from env).
+ignore = ["RUF001", "RUF002", "RUF003", "S105"]
 
 [tool.ruff.lint.per-file-ignores]
-"**/tests/**" = ["S101", "S105", "S106"]
+"**/tests/**" = ["S101", "S106", "E501"]
 "conftest.py" = ["S101"]
 
 [tool.mypy]
@@ -66,3 +72,4 @@ omit = ["*/migrations/*", "*/tests/*"]
 
 [tool.bandit]
 exclude_dirs = ["tests", ".venv"]
+skips = ["B105"]

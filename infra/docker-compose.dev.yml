@@ -12,6 +12,8 @@ services:
       # the app connects as the non-superuser DB_USER created by postgres/init/01-app-role.sh.
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
+      # ICU collation: case-insensitive search must work for Cyrillic (UPPER() in C locale does not).
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale-provider=icu --icu-locale=und"
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./postgres/init:/docker-entrypoint-initdb.d:ro

@@ -1,9 +1,15 @@
 export { Button, type ButtonVariant } from "./Button";
+export { Checkbox } from "./Checkbox";
+export { Dialog, DialogActions } from "./Dialog";
 export { EmptyState } from "./EmptyState";
 export { InitialsStamp } from "./InitialsStamp";
 export { initialsOf, stampInk } from "./stamp";
 export { JournalCell, type AttendanceMark } from "./JournalCell";
+export { PasswordField } from "./PasswordField";
 export { RuledSkeleton } from "./RuledSkeleton";
+export { SelectField } from "./SelectField";
+export { StrengthMeter } from "./StrengthMeter";
+export { passwordStrength } from "./strength";
 export { Table } from "./Table";
 export { TextField } from "./TextField";
 export { ThemeSwitch } from "./ThemeSwitch";

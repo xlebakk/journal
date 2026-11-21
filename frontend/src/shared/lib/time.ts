@@ -30,6 +30,12 @@ export function formatHumanDate(date: Date): string {
   return `${p.weekday}, ${p.day} ${p.month}`;
 }
 
+/** пт, 21 ноября, 14:32 — from an ISO timestamp. */
+export function formatDateTime(iso: string): string {
+  const date = new Date(iso);
+  return `${formatHumanDate(date)}, ${formatTime(date)}`;
+}
+
 /** 14:32 */
 export function formatTime(date: Date): string {
   const p = parts(date, { hour: "2-digit", minute: "2-digit", hourCycle: "h23" });

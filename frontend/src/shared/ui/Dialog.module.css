@@ -1,0 +1,55 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgb(27 33 48 / 35%);
+  animation: fade var(--duration) var(--easing);
+}
+
+.content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 51;
+  width: min(440px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  padding: var(--space-3);
+  border: var(--line-strong) solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--sheet);
+  box-shadow: var(--shadow-hard);
+  transform: translate(-50%, -50%);
+  animation: rise var(--duration) var(--easing);
+}
+
+.title {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-20);
+  font-weight: 600;
+}
+
+.description {
+  margin: 0 0 var(--space-2);
+  color: var(--ink-2);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 8px));
+  }
+}

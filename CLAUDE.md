@@ -15,7 +15,9 @@
 backend/            Django 5.2 LTS + DRF, Python 3.13, uv
   config/settings/  base · dev · test · prod; секреты только из окружения (config/env.py)
   apps/core/        общее: health, SessionAuthentication с 401, обработчики 404/500
-  apps/accounts/    пользователи (AUTH_USER_MODEL = accounts.User, UUID)
+  apps/accounts/    пользователи, профили, вход, 2FA (totp.py), блокировки (lockout.py),
+                    сеансы и тайм-ауты (sessions.py, middleware.py), права (permissions.py)
+  apps/audit/       AuditLog (только INSERT, триггер) и services.record()
   apps/<остальные>/ academics, schedule, journal, exams, reports, announcements, audit — создаются на своих этапах
 frontend/           React + TypeScript + Vite, CSS Modules, TanStack Query, React Router
   src/app/          роутинг, лэйауты
@@ -34,6 +36,9 @@ docs/               decisions.md, security.md, позже deploy.md, admin-guide
 | --- | --- |
 | Весь стек в Docker | `docker compose -f infra/docker-compose.dev.yml up --build` |
 | Бэкенд-тесты | `cd backend && uv run pytest` (нужен PostgreSQL, переменные `DB_*`) |
+| Демо-данные | `uv run python manage.py seed_demo` (только DEBUG, пустая база) |
+| e2e | `cd frontend && npm run e2e` (база `journal_e2e`, пересоздаётся каждый прогон) |
+| OpenAPI → типы | `manage.py spectacular --settings=config.settings.test --file ../frontend/src/shared/api/schema.yml`, затем `npm run api:types` |
 | Линтеры бэкенда | `cd backend && uv run ruff check . && uv run ruff format --check . && uv run mypy .` |
 | Безопасность бэкенда | `cd backend && uv run bandit -q -c pyproject.toml -r apps config && uv run pip-audit` |
 | Фронтенд dev | `cd frontend && npm run dev` (API проксируется на `VITE_API_PROXY`, по умолчанию `localhost:8000`) |
@@ -43,15 +48,19 @@ docs/               decisions.md, security.md, позже deploy.md, admin-guide
 ## Правила прав доступа (не нарушать)
 
 1. **Любая проверка прав — на сервере.** Фронтенд только прячет кнопки.
-2. **Запрет по умолчанию.** У каждого view — явные `permission_classes`. `AllowAny` — только для URL из `PUBLIC_URL_NAMES` в `apps/core/tests/test_url_permissions.py` (сейчас `health`, на этапе 1 добавится вход). Тест-обходчик падает на любом другом.
+2. **Запрет по умолчанию.** У каждого view — явные `permission_classes`. `AllowAny` — только для URL из `PUBLIC_URL_NAMES` в `apps/core/tests/test_url_permissions.py` (`health`, `auth-login`, `auth-totp`). Тест-обходчик падает на любом другом.
+   Роль проверяется по **активной** роли сессии: `IsAdmin`, `IsTeacher`, `IsStudent` из `apps/accounts/permissions.py`. Текущий пользователь во view — `current_user(request)`.
+   Опасные действия (роли, 2FA, позже — шкала, экспорт ПД) вызывают `require_recent_password(request)`.
 3. **Анонимный запрос → 401**, а не 403 (`apps.core.authentication.SessionAuthentication`).
 4. **Права на объекты — через queryset:** у каждого менеджера метод `for_user(user)`. Объект вне области видимости — **404**, не 403. Никаких `Model.objects.get(pk=...)` во view без `for_user`.
 5. **Сериалайзеры — явный список полей**, никакого `__all__`; отдельные сериалайзеры для ролей. `roles`, `is_active`, `created_by` и подобные поля пишутся только админскими эндпоинтами.
-6. **Аудит — в той же транзакции**, что и изменение. Таблица аудита только на добавление (триггер в PostgreSQL), приложение работает под ролью БД без прав суперпользователя.
-7. **Средние и проценты считает только сервер** — одной функцией для всех экранов и отчётов.
-8. Только ORM; сырой SQL — с параметрами и обоснованием в `docs/decisions.md`.
-9. Во фронтенде нет `dangerouslySetInnerHTML` и `innerHTML` (ESLint падает). Пользовательский текст — простой текст.
-10. В логах нет паролей, токенов, cookie и телефонов.
+6. **Аудит — в той же транзакции**, что и изменение: `with transaction.atomic(): ...; audit.record(request=..., action="entity.verb", entity=obj, before=..., after=...)`. `record()` падает вне транзакции. Секретные поля (`SECRET_FIELDS`) отрезаются автоматически. Таблица аудита только на добавление (триггер в PostgreSQL), приложение работает под ролью БД без прав суперпользователя.
+7. **Ошибки API — машинные коды** `{"detail": "<code>"}` / `{"поле": ["<code>"]}`; перевод — в `frontend/src/shared/i18n/ru.json` (`errors.*`). Новый код — сразу и перевод.
+8. **Средние и проценты считает только сервер** — одной функцией для всех экранов и отчётов.
+9. Только ORM; сырой SQL — с параметрами и обоснованием в `docs/decisions.md`.
+10. Во фронтенде нет `dangerouslySetInnerHTML` и `innerHTML` (ESLint падает). Пользовательский текст — простой текст.
+11. В логах нет паролей, токенов, cookie и телефонов.
+12. Матрица прав в `docs/security.md` и `apps/accounts/tests/test_permission_matrix.py` растёт с каждым новым эндпоинтом.
 
 ## Время и данные
 

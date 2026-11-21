@@ -52,3 +52,44 @@
     min-height: var(--tap-target);
   }
 }
+
+.withAction {
+  display: flex;
+  align-items: stretch;
+}
+
+.withAction .input {
+  flex: 1;
+  min-width: 0;
+}
+
+.action {
+  padding: 0 0 0 var(--space-1);
+  border: 0;
+  border-bottom: var(--line-strong) solid var(--ink);
+  background: transparent;
+  color: var(--accent);
+  font-size: var(--text-14);
+  cursor: pointer;
+}
+
+.select {
+  min-height: 36px;
+  padding: 4px 0;
+  border: 0;
+  border-bottom: var(--line-strong) solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+}
+
+.select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+@media (max-width: 599px) {
+  .select,
+  .action {
+    min-height: var(--tap-target);
+  }
+}

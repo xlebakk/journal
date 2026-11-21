@@ -2,7 +2,7 @@ import { Link } from "react-router";
 
 import { t } from "@/shared/i18n";
 
-import styles from "./HomePage.module.css";
+import styles from "./NotFoundPage.module.css";
 
 export function NotFoundPage() {
   return (
