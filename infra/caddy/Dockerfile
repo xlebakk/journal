@@ -2,7 +2,7 @@
 # The web server: the production build of the frontend served by Caddy (stage 7).
 # Build from the repository root:  docker build -f infra/caddy/Dockerfile .
 
-FROM node:24-alpine AS build
+FROM node:26-alpine AS build
 WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
