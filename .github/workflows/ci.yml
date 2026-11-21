@@ -277,6 +277,12 @@ jobs:
           docker run --rm --network host -v "$PWD/zap:/zap/wrk" ghcr.io/zaproxy/zaproxy:stable \
             zap-baseline.py -t https://localhost/ -r zap-report.html -J zap-report.json -I \
             2>&1 | tee /tmp/zap.out
+      - name: ZAP summary as a public annotation
+        if: ${{ !cancelled() }}
+        run: |
+          summary="$(grep -E '^(WARN-NEW|FAIL-NEW|FAIL-INPROG|PASS)' /tmp/zap.out | grep -v '^PASS:' | awk 'BEGIN { ORS = "%0A" } { print }')"
+          totals="$(grep -E '^FAIL-NEW: [0-9]+' /tmp/zap.out)"
+          echo "::notice title=ZAP baseline: $totals::$summary"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
