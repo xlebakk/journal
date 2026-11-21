@@ -41,6 +41,32 @@ MATRIX: list[tuple[str, str, dict[str, int]]] = [
     ("get", "/api/v1/admin/audit", {"admin": 200, "teacher": 403, "student": 403}),
     ("get", "/api/v1/admin/login-events", {"admin": 200, "teacher": 403, "student": 403}),
     ("get", "/api/v1/schema/", {"admin": 200, "teacher": 403, "student": 403}),
+    # Stage 2: structure and schedule.
+    *[
+        ("get", f"/api/v1/admin/{name}", {"admin": 200, "teacher": 403, "student": 403})
+        for name in (
+            "years",
+            "terms",
+            "subjects",
+            "rooms",
+            "work-types",
+            "lesson-types",
+            "holidays",
+            "groups",
+            "courses",
+            "slots",
+            "lessons",
+            "schedule-requests",
+            "teachers",
+        )
+    ],
+    ("post", "/api/v1/admin/groups", {"admin": 400, "teacher": 403, "student": 403}),
+    ("post", "/api/v1/admin/slots", {"admin": 400, "teacher": 403, "student": 403}),
+    ("post", "/api/v1/admin/lessons", {"admin": 400, "teacher": 403, "student": 403}),
+    ("get", "/api/v1/rooms", {"admin": 200, "teacher": 200, "student": 403}),
+    ("get", "/api/v1/teacher/schedule", {"admin": 403, "teacher": 200, "student": 403}),
+    ("get", "/api/v1/teacher/schedule-requests", {"admin": 403, "teacher": 200, "student": 403}),
+    ("get", "/api/v1/student/schedule", {"admin": 403, "teacher": 403, "student": 200}),
 ]
 
 

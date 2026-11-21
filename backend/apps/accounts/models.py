@@ -185,7 +185,7 @@ class TeacherProfile(models.Model):
         User, on_delete=models.PROTECT, primary_key=True, related_name="teacher_profile"
     )
     phone = models.CharField(max_length=32, blank=True)
-    # `subjects` arrives in stage 2 together with academics.Subject.
+    subjects = models.ManyToManyField("academics.Subject", blank=True, related_name="teachers")
 
     def __str__(self) -> str:
         return f"teacher:{self.user_id}"

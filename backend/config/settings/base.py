@@ -20,6 +20,8 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.accounts",
     "apps.audit",
+    "apps.academics",
+    "apps.schedule",
 ]
 
 MIDDLEWARE = [
@@ -153,7 +155,14 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     "SERVE_PERMISSIONS": ["apps.accounts.permissions.IsAdmin"],
     "COMPONENT_SPLIT_REQUEST": True,
-    "ENUM_NAME_OVERRIDES": {"RoleEnum": "apps.accounts.models.Role"},
+    "ENUM_NAME_OVERRIDES": {
+        "RoleEnum": "apps.accounts.models.Role",
+        "LessonStatusEnum": "apps.schedule.models.LessonStatus",
+        "ScheduleRequestStatusEnum": "apps.schedule.models.ScheduleRequest.Status",
+        "ScheduleRequestKindEnum": "apps.schedule.models.ScheduleRequest.Kind",
+        "GradeScaleEnum": "apps.academics.models.GradeScale",
+        "WeekdayEnum": "apps.schedule.models.Weekday",
+    },
 }
 
 LOGGING = {

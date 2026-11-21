@@ -20,6 +20,404 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/courses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_courses_list"];
+        put?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        post: operations["admin_courses_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/courses/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_courses_retrieve"];
+        put?: never;
+        post?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        delete: operations["admin_courses_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        patch: operations["admin_courses_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/admin/groups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_groups_list"];
+        put?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        post: operations["admin_groups_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/groups/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_groups_retrieve"];
+        put?: never;
+        post?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        delete: operations["admin_groups_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        patch: operations["admin_groups_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/admin/groups/{id}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Full history of the composition: current and former members. */
+        get: operations["admin_groups_members_list"];
+        put?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        post: operations["admin_groups_members_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/holidays": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_holidays_list"];
+        put?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        post: operations["admin_holidays_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/holidays/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_holidays_retrieve"];
+        put?: never;
+        post?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        delete: operations["admin_holidays_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        patch: operations["admin_holidays_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/admin/lesson-types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_lesson_types_list"];
+        put?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        post: operations["admin_lesson_types_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/lesson-types/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_lesson_types_retrieve"];
+        put?: never;
+        post?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        delete: operations["admin_lesson_types_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        patch: operations["admin_lesson_types_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/admin/lessons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Concrete lessons and their exceptions: cancel, restore, move, substitute, extra lesson. */
+        get: operations["admin_lessons_list"];
+        put?: never;
+        /** @description A one-off extra lesson (consultation, mock test). */
+        post: operations["admin_lessons_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/lessons/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Concrete lessons and their exceptions: cancel, restore, move, substitute, extra lesson. */
+        get: operations["admin_lessons_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/lessons/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Concrete lessons and their exceptions: cancel, restore, move, substitute, extra lesson. */
+        post: operations["admin_lessons_cancel_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/lessons/{id}/move": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Another date, time or room. The lesson stays the same row (planned_* keep the
+         *     template values), so «перенесено с …» can be shown.
+         */
+        post: operations["admin_lessons_move_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/lessons/{id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Undo a cancellation, if the time is still free. */
+        post: operations["admin_lessons_restore_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/lessons/{id}/substitute": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description A substitute teacher for this one lesson; `teacher: null` returns the course teacher. */
+        post: operations["admin_lessons_substitute_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/login-events": {
         parameters: {
             query?: never;
@@ -34,6 +432,408 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/memberships/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description PATCH: fix dates of a membership. Every change is audited. */
+        patch: operations["admin_memberships_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/admin/memberships/{id}/leave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Exclude from the group: the membership ends on `left_on` (inclusive). */
+        post: operations["admin_memberships_leave_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/memberships/{id}/transfer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Transfer (SPEC §10.9): the old membership ends the day before `date`, a new one starts
+         *     on `date`. Old grades stay in the old course.
+         */
+        post: operations["admin_memberships_transfer_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/rooms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_rooms_list"];
+        put?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        post: operations["admin_rooms_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/rooms/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_rooms_retrieve"];
+        put?: never;
+        post?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        delete: operations["admin_rooms_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        patch: operations["admin_rooms_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/admin/schedule-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["admin_schedule_requests_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/schedule-requests/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["admin_schedule_requests_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/schedule-requests/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["admin_schedule_requests_approve_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/schedule-requests/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["admin_schedule_requests_reject_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/slots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Week template. Changes apply only to future, untouched lessons, after the administrator
+         *     confirms the list of affected dates (SPEC §9).
+         */
+        get: operations["admin_slots_list"];
+        put?: never;
+        /**
+         * @description Week template. Changes apply only to future, untouched lessons, after the administrator
+         *     confirms the list of affected dates (SPEC §9).
+         */
+        post: operations["admin_slots_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/slots/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Week template. Changes apply only to future, untouched lessons, after the administrator
+         *     confirms the list of affected dates (SPEC §9).
+         */
+        get: operations["admin_slots_retrieve"];
+        put?: never;
+        post?: never;
+        /** @description Removes the slot: untouched future lessons go, past lessons and exceptions stay. */
+        delete: operations["admin_slots_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description Week template. Changes apply only to future, untouched lessons, after the administrator
+         *     confirms the list of affected dates (SPEC §9).
+         */
+        patch: operations["admin_slots_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/admin/slots/{id}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description What PATCH would do, without saving: affected dates, conflicts, warnings. */
+        post: operations["admin_slots_preview_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/subjects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_subjects_list"];
+        put?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        post: operations["admin_subjects_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/subjects/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_subjects_retrieve"];
+        put?: never;
+        post?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        delete: operations["admin_subjects_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        patch: operations["admin_subjects_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/admin/teachers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Active teachers for selects in admin forms. */
+        get: operations["admin_teachers_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_terms_list"];
+        put?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        post: operations["admin_terms_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/terms/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_terms_retrieve"];
+        put?: never;
+        post?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        delete: operations["admin_terms_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        patch: operations["admin_terms_partial_update"];
         trace?: never;
     };
     "/api/v1/admin/users": {
@@ -213,6 +1013,140 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/work-types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_work_types_list"];
+        put?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        post: operations["admin_work_types_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/work-types/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_work_types_retrieve"];
+        put?: never;
+        post?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        delete: operations["admin_work_types_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        patch: operations["admin_work_types_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/admin/years": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_years_list"];
+        put?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        post: operations["admin_years_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/years/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_years_retrieve"];
+        put?: never;
+        post?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        delete: operations["admin_years_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        patch: operations["admin_years_partial_update"];
         trace?: never;
     };
     "/api/v1/auth/login": {
@@ -441,10 +1375,139 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/rooms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Rooms for selects: administrators and teachers (move requests). */
+        get: operations["rooms_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/student/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Lessons of the groups the student belonged to on each date; cancelled ones included
+         *     (shown struck through).
+         */
+        get: operations["student_schedule_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/teacher/lessons/{id}/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description A teacher asks to cancel or move a lesson of their own (SPEC §9). */
+        post: operations["teacher_lessons_requests_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/teacher/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description «Моя неделя»: own courses, assisted courses and substitutions. */
+        get: operations["teacher_schedule_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/teacher/schedule-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["teacher_schedule_requests_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/teacher/schedule-requests/{id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["teacher_schedule_requests_withdraw_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AcademicYear: {
+            /** Format: uuid */
+            readonly id: string;
+            name: string;
+            /** Format: date */
+            starts_on: string;
+            /** Format: date */
+            ends_on: string;
+            is_current?: boolean;
+            grade_scale?: components["schemas"]["GradeScaleEnum"];
+        };
+        AcademicYearRequest: {
+            name: string;
+            /** Format: date */
+            starts_on: string;
+            /** Format: date */
+            ends_on: string;
+            is_current?: boolean;
+            grade_scale?: components["schemas"]["GradeScaleEnum"];
+        };
+        AddMemberRequest: {
+            /** Format: uuid */
+            student: string;
+            /** Format: date */
+            joined_on: string;
+        };
         AdminUserDetail: {
             /** Format: uuid */
             readonly id: string;
@@ -524,14 +1587,191 @@ export interface components {
             center_name: string;
             contacts: string;
         };
+        CancelRequest: {
+            version: number;
+            reason: string;
+        };
+        Course: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            group: string;
+            readonly group_name: string;
+            /** Format: uuid */
+            subject: string;
+            readonly subject_name: string;
+            readonly subject_short: string;
+            /** Format: uuid */
+            teacher: string;
+            readonly teacher_info: components["schemas"]["Person"];
+            assistants?: string[];
+            readonly assistants_info: components["schemas"]["Person"][];
+        };
+        CourseBrief: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            readonly subject: string;
+            readonly subject_name: string;
+            readonly subject_short: string;
+            readonly teacher: components["schemas"]["Person"];
+        };
+        CourseRequest: {
+            /** Format: uuid */
+            group: string;
+            /** Format: uuid */
+            subject: string;
+            /** Format: uuid */
+            teacher: string;
+            assistants?: string[];
+        };
         Ended: {
             ended: number;
         };
         EndedSessions: {
             ended: number;
         };
+        ExtraLessonRequest: {
+            /** Format: uuid */
+            course: string;
+            /** Format: date */
+            date: string;
+            /** Format: time */
+            start_time: string;
+            /** Format: time */
+            end_time: string;
+            /** Format: uuid */
+            room?: string | null;
+            /** Format: uuid */
+            lesson_type?: string | null;
+            /** Format: uuid */
+            teacher?: string | null;
+        };
+        /**
+         * @description * `100` - 100-балльная (0–100)
+         *     * `5` - 5-балльная (2–5)
+         *     * `10` - 10-балльная (1–10)
+         * @enum {string}
+         */
+        GradeScaleEnum: "100" | "5" | "10";
+        Group: {
+            /** Format: uuid */
+            readonly id: string;
+            name: string;
+            /** Format: uuid */
+            academic_year: string;
+            readonly year_name: string;
+            level?: string;
+            is_archived?: boolean;
+            /** @default 0 */
+            readonly members_count: number;
+            readonly courses: components["schemas"]["CourseBrief"][];
+        };
+        GroupRequest: {
+            name: string;
+            /** Format: uuid */
+            academic_year: string;
+            level?: string;
+            is_archived?: boolean;
+        };
         Health: {
             status: string;
+        };
+        Holiday: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: date */
+            date: string;
+            name: string;
+        };
+        HolidayRequest: {
+            /** Format: date */
+            date: string;
+            name: string;
+        };
+        LeaveRequest: {
+            /** Format: date */
+            left_on: string;
+        };
+        /** @description Admin and teacher view of a lesson in the schedule. */
+        Lesson: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            readonly course: string;
+            /** Format: uuid */
+            readonly group: string;
+            readonly group_name: string;
+            readonly subject_name: string;
+            readonly subject_short: string;
+            /** Format: date */
+            readonly date: string;
+            /** Format: time */
+            readonly start_time: string;
+            /** Format: time */
+            readonly end_time: string;
+            /** Format: uuid */
+            readonly room: string | null;
+            readonly room_name: string;
+            /** Format: uuid */
+            readonly teacher: string;
+            readonly teacher_name: string;
+            /** Format: uuid */
+            readonly course_teacher: string;
+            readonly course_teacher_name: string;
+            /** Format: uuid */
+            readonly lesson_type: string | null;
+            readonly lesson_type_short: string;
+            readonly lesson_type_name: string;
+            readonly status: components["schemas"]["LessonStatusEnum"];
+            readonly cancel_reason: string;
+            readonly is_extra: boolean;
+            readonly is_moved: boolean;
+            readonly is_room_changed: boolean;
+            readonly is_substituted: boolean;
+            /** Format: date */
+            readonly planned_date: string;
+            /** Format: time */
+            readonly planned_start_time: string;
+            /** Format: time */
+            readonly planned_end_time: string;
+            readonly planned_room_name: string;
+            /** Format: uuid */
+            readonly slot: string | null;
+            readonly version: number;
+        };
+        LessonChange: {
+            lesson: components["schemas"]["Lesson"];
+            warnings: {
+                [key: string]: unknown;
+            }[];
+        };
+        /**
+         * @description * `planned` - запланировано
+         *     * `conducted` - проведено
+         *     * `cancelled` - отменено
+         * @enum {string}
+         */
+        LessonStatusEnum: "planned" | "conducted" | "cancelled";
+        LessonType: {
+            /** Format: uuid */
+            readonly id: string;
+            name: string;
+            short: string;
+            /** Format: uuid */
+            default_work_type?: string | null;
+            counts_attendance?: boolean;
+            sort_order?: number;
+            is_archived?: boolean;
+        };
+        LessonTypeRequest: {
+            name: string;
+            short: string;
+            /** Format: uuid */
+            default_work_type?: string | null;
+            counts_attendance?: boolean;
+            sort_order?: number;
+            is_archived?: boolean;
         };
         LoginEvent: {
             readonly id: number;
@@ -568,6 +1808,36 @@ export interface components {
             readonly must_change_password: boolean;
             readonly totp_enabled: boolean;
             readonly totp_setup_required: boolean;
+            readonly groups: components["schemas"]["MeGroup"][];
+        };
+        MeGroup: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+        };
+        Membership: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            readonly group: string;
+            readonly group_name: string;
+            readonly student: components["schemas"]["Person"];
+            /** Format: date */
+            joined_on: string;
+            /** Format: date */
+            left_on?: string | null;
+            readonly is_active: boolean;
+        };
+        MoveRequest: {
+            version: number;
+            /** Format: date */
+            date: string;
+            /** Format: time */
+            start_time: string;
+            /** Format: time */
+            end_time: string;
+            /** Format: uuid */
+            room: string | null;
         };
         /** @enum {unknown} */
         NullEnum: null;
@@ -616,6 +1886,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["LoginEvent"][];
         };
+        PaginatedScheduleRequestList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["ScheduleRequest"][];
+        };
         PaginatedSessionList: {
             /** @example 123 */
             count: number;
@@ -638,6 +1923,15 @@ export interface components {
         PasswordRequest: {
             password: string;
         };
+        PatchedAcademicYearRequest: {
+            name?: string;
+            /** Format: date */
+            starts_on?: string;
+            /** Format: date */
+            ends_on?: string;
+            is_current?: boolean;
+            grade_scale?: components["schemas"]["GradeScaleEnum"];
+        };
         /** @description Create and update. Profiles are created when the matching role is present. */
         PatchedAdminUserWriteRequest: {
             last_name?: string;
@@ -647,6 +1941,92 @@ export interface components {
             roles?: string[];
             student_profile?: components["schemas"]["StudentProfileRequest"];
             teacher_profile?: components["schemas"]["TeacherProfileRequest"];
+        };
+        PatchedCourseRequest: {
+            /** Format: uuid */
+            group?: string;
+            /** Format: uuid */
+            subject?: string;
+            /** Format: uuid */
+            teacher?: string;
+            assistants?: string[];
+        };
+        PatchedGroupRequest: {
+            name?: string;
+            /** Format: uuid */
+            academic_year?: string;
+            level?: string;
+            is_archived?: boolean;
+        };
+        PatchedHolidayRequest: {
+            /** Format: date */
+            date?: string;
+            name?: string;
+        };
+        PatchedLessonTypeRequest: {
+            name?: string;
+            short?: string;
+            /** Format: uuid */
+            default_work_type?: string | null;
+            counts_attendance?: boolean;
+            sort_order?: number;
+            is_archived?: boolean;
+        };
+        PatchedMembershipRequest: {
+            /** Format: date */
+            joined_on?: string;
+            /** Format: date */
+            left_on?: string | null;
+        };
+        PatchedRoomRequest: {
+            name?: string;
+            capacity?: number;
+            is_archived?: boolean;
+        };
+        PatchedSlotWriteRequest: {
+            /** Format: uuid */
+            course?: string;
+            weekday?: components["schemas"]["WeekdayEnum"];
+            /** Format: time */
+            start_time?: string;
+            /** Format: time */
+            end_time?: string;
+            /** Format: uuid */
+            room?: string | null;
+            /** Format: uuid */
+            lesson_type?: string | null;
+            /** Format: date */
+            valid_from?: string;
+            /** Format: date */
+            valid_to?: string | null;
+            /** @default false */
+            confirm: boolean;
+        };
+        PatchedSubjectRequest: {
+            name?: string;
+            short_name?: string;
+            is_archived?: boolean;
+        };
+        PatchedTermRequest: {
+            /** Format: uuid */
+            year?: string;
+            name?: string;
+            /** Format: date */
+            starts_on?: string;
+            /** Format: date */
+            ends_on?: string;
+        };
+        PatchedWorkTypeRequest: {
+            name?: string;
+            /** Format: decimal */
+            weight?: string;
+            is_archived?: boolean;
+        };
+        Person: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly full_name: string;
+            readonly short_name: string;
         };
         /**
          * @description * `ok` - Ok
@@ -660,6 +2040,9 @@ export interface components {
          * @enum {string}
          */
         ReasonEnum: "ok" | "invalid_credentials" | "locked" | "ip_limit" | "totp_required" | "totp_invalid" | "totp_limit" | "backup_code";
+        ResolveRequest: {
+            comment?: string;
+        };
         /**
          * @description * `admin` - администратор
          *     * `teacher` - преподаватель
@@ -671,6 +2054,77 @@ export interface components {
         RoleSwitchRequest: {
             role: components["schemas"]["RoleEnum"];
         };
+        Room: {
+            /** Format: uuid */
+            readonly id: string;
+            name: string;
+            capacity: number;
+            is_archived?: boolean;
+        };
+        RoomOption: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly name: string;
+            readonly capacity: number;
+        };
+        RoomRequest: {
+            name: string;
+            capacity: number;
+            is_archived?: boolean;
+        };
+        ScheduleRequest: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            readonly lesson: string;
+            readonly lesson_info: components["schemas"]["Lesson"];
+            readonly author_name: string;
+            kind: components["schemas"]["ScheduleRequestKindEnum"];
+            /** Format: date */
+            proposed_date?: string | null;
+            /** Format: time */
+            proposed_start_time?: string | null;
+            /** Format: time */
+            proposed_end_time?: string | null;
+            /** Format: uuid */
+            proposed_room?: string | null;
+            readonly proposed_room_name: string;
+            reason: string;
+            /** @default pending */
+            readonly status: components["schemas"]["ScheduleRequestStatusEnum"];
+            readonly resolved_by_name: string;
+            /** Format: date-time */
+            readonly resolved_at: string | null;
+            readonly resolution_comment: string;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /**
+         * @description * `cancel` - отмена
+         *     * `move` - перенос
+         * @enum {string}
+         */
+        ScheduleRequestKindEnum: "cancel" | "move";
+        ScheduleRequestRequest: {
+            kind: components["schemas"]["ScheduleRequestKindEnum"];
+            /** Format: date */
+            proposed_date?: string | null;
+            /** Format: time */
+            proposed_start_time?: string | null;
+            /** Format: time */
+            proposed_end_time?: string | null;
+            /** Format: uuid */
+            proposed_room?: string | null;
+            reason: string;
+        };
+        /**
+         * @description * `pending` - ожидает
+         *     * `approved` - одобрен
+         *     * `rejected` - отклонён
+         *     * `withdrawn` - отозван
+         * @enum {string}
+         */
+        ScheduleRequestStatusEnum: "pending" | "approved" | "rejected" | "withdrawn";
         /**
          * @description * `9` - 9
          *     * `10` - 10
@@ -689,6 +2143,94 @@ export interface components {
             readonly user_agent: string;
             readonly remember: boolean;
             readonly current: boolean;
+        };
+        Slot: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            course: string;
+            /** Format: uuid */
+            readonly group: string;
+            readonly group_name: string;
+            readonly subject_name: string;
+            readonly subject_short: string;
+            /** Format: uuid */
+            readonly teacher: string;
+            readonly teacher_name: string;
+            weekday: components["schemas"]["WeekdayEnum"];
+            /** Format: time */
+            start_time: string;
+            /** Format: time */
+            end_time: string;
+            /** Format: uuid */
+            room?: string | null;
+            readonly room_name: string;
+            /** Format: uuid */
+            lesson_type?: string | null;
+            readonly lesson_type_short: string;
+            /** Format: date */
+            valid_from: string;
+            /** Format: date */
+            valid_to?: string | null;
+        };
+        SlotChange: {
+            slot: components["schemas"]["Slot"] | null;
+            plan: {
+                [key: string]: unknown;
+            };
+            warnings: {
+                [key: string]: unknown;
+            }[];
+        };
+        SlotWriteRequest: {
+            /** Format: uuid */
+            course: string;
+            weekday: components["schemas"]["WeekdayEnum"];
+            /** Format: time */
+            start_time: string;
+            /** Format: time */
+            end_time: string;
+            /** Format: uuid */
+            room?: string | null;
+            /** Format: uuid */
+            lesson_type?: string | null;
+            /** Format: date */
+            valid_from: string;
+            /** Format: date */
+            valid_to?: string | null;
+            /** @default false */
+            confirm: boolean;
+        };
+        /** @description What a student sees: no versions, no internal links, nothing about other students. */
+        StudentLesson: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: date */
+            readonly date: string;
+            /** Format: time */
+            readonly start_time: string;
+            /** Format: time */
+            readonly end_time: string;
+            readonly subject_name: string;
+            readonly subject_short: string;
+            readonly group_name: string;
+            readonly teacher_name: string;
+            readonly room_name: string;
+            readonly lesson_type_short: string;
+            readonly lesson_type_name: string;
+            readonly status: components["schemas"]["LessonStatusEnum"];
+            readonly cancel_reason: string;
+            readonly is_extra: boolean;
+            readonly is_moved: boolean;
+            readonly is_room_changed: boolean;
+            readonly is_substituted: boolean;
+            /** Format: date */
+            readonly planned_date: string;
+            /** Format: time */
+            readonly planned_start_time: string;
+            /** Format: time */
+            readonly planned_end_time: string;
+            readonly planned_room_name: string;
         };
         StudentProfile: {
             phone?: string;
@@ -710,15 +2252,54 @@ export interface components {
             parent_phone?: string;
             admin_note?: string;
         };
+        Subject: {
+            /** Format: uuid */
+            readonly id: string;
+            name: string;
+            short_name: string;
+            is_archived?: boolean;
+        };
+        SubjectRequest: {
+            name: string;
+            short_name: string;
+            is_archived?: boolean;
+        };
+        SubstituteRequest: {
+            version: number;
+            /** Format: uuid */
+            teacher: string | null;
+        };
         TeacherProfile: {
             phone?: string;
+            subjects?: string[];
         };
         TeacherProfileRequest: {
             phone?: string;
+            subjects?: string[];
         };
         TemporaryPassword: {
             user: components["schemas"]["AdminUserDetail"];
             temporary_password: string;
+        };
+        Term: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            year: string;
+            name: string;
+            /** Format: date */
+            starts_on: string;
+            /** Format: date */
+            ends_on: string;
+        };
+        TermRequest: {
+            /** Format: uuid */
+            year: string;
+            name: string;
+            /** Format: date */
+            starts_on: string;
+            /** Format: date */
+            ends_on: string;
         };
         TotpCodeRequest: {
             code: string;
@@ -727,6 +2308,40 @@ export interface components {
             otpauth_uri: string;
             qr: string;
             secret: string;
+        };
+        TransferRequest: {
+            /** Format: uuid */
+            group: string;
+            /** Format: date */
+            date: string;
+        };
+        VersionRequest: {
+            version: number;
+        };
+        /**
+         * @description * `1` - понедельник
+         *     * `2` - вторник
+         *     * `3` - среда
+         *     * `4` - четверг
+         *     * `5` - пятница
+         *     * `6` - суббота
+         *     * `7` - воскресенье
+         * @enum {integer}
+         */
+        WeekdayEnum: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+        WorkType: {
+            /** Format: uuid */
+            readonly id: string;
+            name: string;
+            /** Format: decimal */
+            weight: string;
+            is_archived?: boolean;
+        };
+        WorkTypeRequest: {
+            name: string;
+            /** Format: decimal */
+            weight: string;
+            is_archived?: boolean;
         };
     };
     responses: never;
@@ -767,6 +2382,662 @@ export interface operations {
             };
         };
     };
+    admin_courses_list: {
+        parameters: {
+            query?: {
+                group?: string;
+                teacher?: string;
+                year?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Course"][];
+                };
+            };
+        };
+    };
+    admin_courses_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CourseRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Course"];
+                };
+            };
+        };
+    };
+    admin_courses_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Course"];
+                };
+            };
+        };
+    };
+    admin_courses_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    admin_courses_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCourseRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Course"];
+                };
+            };
+        };
+    };
+    admin_groups_list: {
+        parameters: {
+            query?: {
+                archived?: boolean;
+                year?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Group"][];
+                };
+            };
+        };
+    };
+    admin_groups_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Group"];
+                };
+            };
+        };
+    };
+    admin_groups_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Group"];
+                };
+            };
+        };
+    };
+    admin_groups_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    admin_groups_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedGroupRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Group"];
+                };
+            };
+        };
+    };
+    admin_groups_members_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Membership"][];
+                };
+            };
+        };
+    };
+    admin_groups_members_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddMemberRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Membership"];
+                };
+            };
+        };
+    };
+    admin_holidays_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Holiday"][];
+                };
+            };
+        };
+    };
+    admin_holidays_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HolidayRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Holiday"];
+                };
+            };
+        };
+    };
+    admin_holidays_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Holiday"];
+                };
+            };
+        };
+    };
+    admin_holidays_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    admin_holidays_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedHolidayRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Holiday"];
+                };
+            };
+        };
+    };
+    admin_lesson_types_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonType"][];
+                };
+            };
+        };
+    };
+    admin_lesson_types_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LessonTypeRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonType"];
+                };
+            };
+        };
+    };
+    admin_lesson_types_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonType"];
+                };
+            };
+        };
+    };
+    admin_lesson_types_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    admin_lesson_types_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedLessonTypeRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonType"];
+                };
+            };
+        };
+    };
+    admin_lessons_list: {
+        parameters: {
+            query?: {
+                course?: string;
+                from?: string;
+                group?: string;
+                room?: string;
+                student?: string;
+                teacher?: string;
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Lesson"][];
+                };
+            };
+        };
+    };
+    admin_lessons_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExtraLessonRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonChange"];
+                };
+            };
+        };
+    };
+    admin_lessons_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Lesson"];
+                };
+            };
+        };
+    };
+    admin_lessons_cancel_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonChange"];
+                };
+            };
+        };
+    };
+    admin_lessons_move_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MoveRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonChange"];
+                };
+            };
+        };
+    };
+    admin_lessons_restore_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VersionRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonChange"];
+                };
+            };
+        };
+    };
+    admin_lessons_substitute_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubstituteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonChange"];
+                };
+            };
+        };
+    };
     admin_login_events_list: {
         parameters: {
             query?: {
@@ -791,6 +3062,663 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaginatedLoginEventList"];
+                };
+            };
+        };
+    };
+    admin_memberships_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedMembershipRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Membership"];
+                };
+            };
+        };
+    };
+    admin_memberships_leave_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LeaveRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Membership"];
+                };
+            };
+        };
+    };
+    admin_memberships_transfer_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TransferRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Membership"];
+                };
+            };
+        };
+    };
+    admin_rooms_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Room"][];
+                };
+            };
+        };
+    };
+    admin_rooms_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoomRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Room"];
+                };
+            };
+        };
+    };
+    admin_rooms_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Room"];
+                };
+            };
+        };
+    };
+    admin_rooms_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    admin_rooms_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedRoomRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Room"];
+                };
+            };
+        };
+    };
+    admin_schedule_requests_list: {
+        parameters: {
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                status?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedScheduleRequestList"];
+                };
+            };
+        };
+    };
+    admin_schedule_requests_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleRequest"];
+                };
+            };
+        };
+    };
+    admin_schedule_requests_approve_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ResolveRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleRequest"];
+                };
+            };
+        };
+    };
+    admin_schedule_requests_reject_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ResolveRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleRequest"];
+                };
+            };
+        };
+    };
+    admin_slots_list: {
+        parameters: {
+            query?: {
+                active_on?: string;
+                course?: string;
+                group?: string;
+                room?: string;
+                teacher?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Slot"][];
+                };
+            };
+        };
+    };
+    admin_slots_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SlotWriteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SlotChange"];
+                };
+            };
+        };
+    };
+    admin_slots_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Slot"];
+                };
+            };
+        };
+    };
+    admin_slots_destroy: {
+        parameters: {
+            query?: {
+                confirm?: boolean;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    admin_slots_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedSlotWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SlotChange"];
+                };
+            };
+        };
+    };
+    admin_slots_preview_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SlotWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SlotChange"];
+                };
+            };
+        };
+    };
+    admin_subjects_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Subject"][];
+                };
+            };
+        };
+    };
+    admin_subjects_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubjectRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Subject"];
+                };
+            };
+        };
+    };
+    admin_subjects_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Subject"];
+                };
+            };
+        };
+    };
+    admin_subjects_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    admin_subjects_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedSubjectRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Subject"];
+                };
+            };
+        };
+    };
+    admin_teachers_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Person"][];
+                };
+            };
+        };
+    };
+    admin_terms_list: {
+        parameters: {
+            query?: {
+                year?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Term"][];
+                };
+            };
+        };
+    };
+    admin_terms_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TermRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Term"];
+                };
+            };
+        };
+    };
+    admin_terms_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Term"];
+                };
+            };
+        };
+    };
+    admin_terms_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    admin_terms_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedTermRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Term"];
                 };
             };
         };
@@ -1081,6 +4009,222 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminUserDetail"];
+                };
+            };
+        };
+    };
+    admin_work_types_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkType"][];
+                };
+            };
+        };
+    };
+    admin_work_types_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkTypeRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkType"];
+                };
+            };
+        };
+    };
+    admin_work_types_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkType"];
+                };
+            };
+        };
+    };
+    admin_work_types_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    admin_work_types_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedWorkTypeRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkType"];
+                };
+            };
+        };
+    };
+    admin_years_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AcademicYear"][];
+                };
+            };
+        };
+    };
+    admin_years_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcademicYearRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AcademicYear"];
+                };
+            };
+        };
+    };
+    admin_years_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AcademicYear"];
+                };
+            };
+        };
+    };
+    admin_years_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    admin_years_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedAcademicYearRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AcademicYear"];
                 };
             };
         };
@@ -1406,6 +4550,134 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    rooms_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomOption"][];
+                };
+            };
+        };
+    };
+    student_schedule_list: {
+        parameters: {
+            query?: {
+                from?: string;
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentLesson"][];
+                };
+            };
+        };
+    };
+    teacher_lessons_requests_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleRequestRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleRequest"];
+                };
+            };
+        };
+    };
+    teacher_schedule_list: {
+        parameters: {
+            query?: {
+                from?: string;
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Lesson"][];
+                };
+            };
+        };
+    };
+    teacher_schedule_requests_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleRequest"][];
+                };
+            };
+        };
+    };
+    teacher_schedule_requests_withdraw_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleRequest"];
                 };
             };
         };
