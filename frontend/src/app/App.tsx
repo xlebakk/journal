@@ -7,11 +7,18 @@ import { LoginPage } from "@/features/auth/LoginPage";
 import { ProfilePage } from "@/features/auth/ProfilePage";
 import { SessionsPage } from "@/features/auth/SessionsPage";
 import { TotpSetupPage } from "@/features/auth/TotpSetupPage";
+import { CatalogsPage } from "@/features/admin/catalogs/CatalogsPage";
+import { GroupDetailPage } from "@/features/admin/groups/GroupDetailPage";
+import { GroupsPage } from "@/features/admin/groups/GroupsPage";
 import { OverviewPage } from "@/features/admin/OverviewPage";
+import { RequestsPage } from "@/features/admin/schedule/RequestsPage";
+import { SchedulePage as AdminSchedulePage } from "@/features/admin/schedule/SchedulePage";
 import { UserCreatePage } from "@/features/admin/users/UserCreatePage";
 import { UserDetailPage } from "@/features/admin/users/UserDetailPage";
 import { UsersPage } from "@/features/admin/users/UsersPage";
 import { HomePage as StudentHomePage } from "@/features/student/HomePage";
+import { SchedulePage as StudentSchedulePage } from "@/features/student/SchedulePage";
+import { SchedulePage as TeacherSchedulePage } from "@/features/teacher/SchedulePage";
 import { TodayPage } from "@/features/teacher/TodayPage";
 import { RuledSkeleton } from "@/shared/ui";
 
@@ -45,17 +52,28 @@ const routes: RouteObject[] = [
       { path: "users", Component: UsersPage },
       { path: "users/new", Component: UserCreatePage },
       { path: "users/:id", Component: UserDetailPage },
+      { path: "groups", Component: GroupsPage },
+      { path: "groups/:id", Component: GroupDetailPage },
+      { path: "schedule", Component: AdminSchedulePage },
+      { path: "requests", Component: RequestsPage },
+      { path: "catalogs", Component: CatalogsPage },
     ],
   },
   {
     path: "/teacher",
     element: <Gate section="teacher" />,
-    children: [{ index: true, Component: TodayPage }],
+    children: [
+      { index: true, Component: TodayPage },
+      { path: "schedule", Component: TeacherSchedulePage },
+    ],
   },
   {
     path: "/student",
     element: <Gate section="student" />,
-    children: [{ index: true, Component: StudentHomePage }],
+    children: [
+      { index: true, Component: StudentHomePage },
+      { path: "schedule", Component: StudentSchedulePage },
+    ],
   },
   {
     path: "/account",

@@ -27,6 +27,10 @@ export default tseslint.config(
           selector: "MemberExpression[property.name='innerHTML']",
           message: "innerHTML is forbidden (SPEC §11).",
         },
+        {
+          selector: "JSXAttribute[name.name='style']",
+          message: "Inline styles break the CSP style-src 'self' (CLAUDE.md): use CSS Modules.",
+        },
       ],
       "no-restricted-properties": [
         "error",

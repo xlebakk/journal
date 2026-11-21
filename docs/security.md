@@ -66,6 +66,31 @@
 | `GET /schema/` | 401 | 403 | 403 | 200 |
 | Администратор в активной роли «преподаватель» → `/admin/*` | — | — | 403 | — |
 
+## Этап 2: структура и расписание
+
+| Мера | Тест |
+| --- | --- |
+| Все новые `/admin/*` — только активная роль «администратор» | `test_permission_matrix.py` (строки этапа 2) |
+| Преподаватель видит только занятия своих курсов, курсов, где он ассистент, и замены; запрос по чужому занятию → 404 | `test_visibility.py::TestTeacherSchedule`, `test_cannot_request_for_someone_elses_lesson` |
+| Ученик видит только занятия групп, в которых состоял на дату занятия; после перевода — новой группы | `test_only_own_groups`, `test_transfer_splits_the_schedule_by_date` |
+| В ответе ученику нет версий, внутренних id курса и группы и ничего о других учениках | `test_no_internal_or_foreign_data` |
+| Пересечения периодов (годы, модули, членство в группе) запрещены на уровне БД | `TestYearsAndTerms`, `test_add_member_and_no_overlapping_periods` |
+| Конфликты расписания проверяет сервер при каждом сохранении | `TestSlotConflicts`, `test_move_into_a_conflict_is_blocked` |
+| Оптимистичная блокировка: устаревшая `version` → 409 | `test_stale_version_is_409` |
+| Изменения структуры, состава групп, шаблона и занятий — в аудите, отмена — с причиной | `test_crud_is_audited`, `test_transfer_closes_old_and_opens_new`, `test_cancel_with_reason_and_version` |
+| Некорректные UUID и даты в параметрах → 400, не 500 | `test_list_filters_and_range_limit` |
+| Во фронтенде нет inline-стилей (CSP `style-src 'self'`) | ESLint (`no-restricted-syntax`) |
+
+Матрица (этап 2):
+
+| Эндпоинт | Аноним | Ученик | Преподаватель | Администратор |
+| --- | --- | --- | --- | --- |
+| `/admin/` years, terms, subjects, rooms, work-types, lesson-types, holidays, groups, courses, memberships, slots, lessons, schedule-requests, teachers | 401 | 403 | 403 | 200 |
+| `GET /rooms` | 401 | 403 | 200 | 200 |
+| `GET /teacher/schedule`, `/teacher/schedule-requests`; `POST /teacher/lessons/{своё}/requests` | 401 | 403 | 200 / 201 | 403 (по активной роли) |
+| `POST /teacher/lessons/{чужое}/requests` | 401 | 403 | 404 | 403 |
+| `GET /student/schedule` | 401 | 200 (свои группы) | 403 | 403 |
+
 ## Модель угроз (кратко)
 
 1. **IDOR (подмена ID).** Объекты выбираются только из `for_user()`-queryset; чужое → 404; UUID-ключи. Начиная с этапа 2 каждая новая сущность добавляет строки в матрицу.
