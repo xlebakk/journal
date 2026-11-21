@@ -180,7 +180,7 @@ jobs:
         working-directory: frontend
       - run: npm run e2e
         working-directory: frontend
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-report
@@ -283,7 +283,7 @@ jobs:
           summary="$(grep -E '^(WARN-NEW|FAIL-NEW|FAIL-INPROG|PASS)' /tmp/zap.out | grep -v '^PASS:' | awk 'BEGIN { ORS = "%0A" } { print }')"
           totals="$(grep -E '^FAIL-NEW: [0-9]+' /tmp/zap.out)"
           echo "::notice title=ZAP baseline: $totals::$summary"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: zap-report
