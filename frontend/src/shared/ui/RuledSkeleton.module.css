@@ -1,0 +1,19 @@
+.skeleton {
+  background: var(--sheet);
+}
+
+.row {
+  height: var(--row-height);
+  border-bottom: var(--line) solid var(--rule);
+  animation: breathe 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes breathe {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.55;
+  }
+}

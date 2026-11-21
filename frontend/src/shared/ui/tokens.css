@@ -1,0 +1,119 @@
+/*
+ * Design tokens (SPEC §12). The only place where colours, fonts and sizes are defined.
+ * Theme: light by default; dark by system preference unless data-theme="light";
+ * explicit data-theme="dark" always wins. The two dark blocks must stay identical —
+ * `npm run contrast` checks it together with WCAG AA contrast.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Light «Бумага» */
+  --paper: #f4f1e8;
+  --sheet: #fbfaf5;
+  --ink: #1b2130;
+  --ink-2: #5a6170;
+  --rule: #dad4c5;
+  --accent: #2340a0;
+  --red-pen: #bf3328;
+  --pencil: #8a5a0c;
+  --marker: #ffe24a;
+  --marker-soft: rgb(255 226 74 / 40%);
+
+  /* Initials stamp inks, picked by hash of user id */
+  --stamp-1: #2e4a8c;
+  --stamp-2: #1f6363;
+  --stamp-3: #6b3a6e;
+  --stamp-4: #7a4a1e;
+  --stamp-5: #3f5160;
+  --stamp-6: #8c2f46;
+
+  /* Typography */
+  --font-display: "Literata", Georgia, serif;
+  --font-ui: "Golos Text", "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", Consolas, monospace;
+  --text-12: 0.75rem;
+  --text-14: 0.875rem;
+  --text-15: 0.9375rem;
+  --text-16: 1rem;
+  --text-20: 1.25rem;
+  --text-28: 1.75rem;
+  --text-40: 2.5rem;
+  --text-base: var(--text-15);
+  --leading: 1.45;
+
+  /* 8 px grid */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+  --space-6: 48px;
+
+  /* Shape */
+  --radius: 2px;
+  --line: 1px;
+  --line-strong: 1.5px;
+  --shadow-hard: 3px 3px 0 var(--ink);
+  --row-height: 36px;
+  --tap-target: 44px;
+
+  /* Motion */
+  --duration: 140ms;
+  --easing: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    /* Dark «Ночная тетрадь» */
+    --paper: #13161b;
+    --sheet: #1a1e25;
+    --ink: #e9e5da;
+    --ink-2: #9ba1ab;
+    --rule: #2b313b;
+    --accent: #8ea6ff;
+    --red-pen: #ff6e61;
+    --pencil: #e0a94a;
+    --marker: rgb(229 207 62 / 35%);
+    --marker-soft: rgb(229 207 62 / 12%);
+
+    --stamp-1: #9fb4f0;
+    --stamp-2: #7cc4c2;
+    --stamp-3: #d19bd4;
+    --stamp-4: #e0a979;
+    --stamp-5: #a9bccb;
+    --stamp-6: #f09aae;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Dark «Ночная тетрадь» */
+  --paper: #13161b;
+  --sheet: #1a1e25;
+  --ink: #e9e5da;
+  --ink-2: #9ba1ab;
+  --rule: #2b313b;
+  --accent: #8ea6ff;
+  --red-pen: #ff6e61;
+  --pencil: #e0a94a;
+  --marker: rgb(229 207 62 / 35%);
+  --marker-soft: rgb(229 207 62 / 12%);
+
+  --stamp-1: #9fb4f0;
+  --stamp-2: #7cc4c2;
+  --stamp-3: #d19bd4;
+  --stamp-4: #e0a979;
+  --stamp-5: #a9bccb;
+  --stamp-6: #f09aae;
+}
+
+@media (max-width: 599px) {
+  :root {
+    --text-base: var(--text-16);
+    --row-height: 44px;
+  }
+}

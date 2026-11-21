@@ -1,0 +1,6 @@
+.empty {
+  margin: 0;
+  padding: var(--space-2) 0;
+  color: var(--ink-2);
+  border-bottom: var(--line) solid var(--rule);
+}

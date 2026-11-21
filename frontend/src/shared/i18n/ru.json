@@ -1,0 +1,38 @@
+{
+  "app": {
+    "centerName": "Учебный центр",
+    "productName": "Электронный журнал"
+  },
+  "home": {
+    "stageNote": "Фундамент готов. Вход появится на этапе 1.",
+    "styleguideLink": "открыть стайлгайд"
+  },
+  "notFound": {
+    "title": "Страница не найдена",
+    "back": "на главную"
+  },
+  "theme": {
+    "label": "Тема",
+    "light": "светлая",
+    "dark": "тёмная",
+    "system": "как в системе"
+  },
+  "attendance": {
+    "absentShort": "н",
+    "lateShort": "оп",
+    "excusedShort": "у",
+    "absent": "отсутствовал",
+    "late": "опоздал",
+    "excused": "уважительная причина",
+    "present": "был"
+  },
+  "stamp": {
+    "menu": "Меню пользователя {name}"
+  },
+  "common": {
+    "save": "сохранить",
+    "cancel": "отмена",
+    "delete": "удалить",
+    "loading": "Загрузка"
+  }
+}

@@ -1,0 +1,25 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--sheet);
+  font-variant-numeric: tabular-nums;
+}
+
+.table th,
+.table td {
+  height: var(--row-height);
+  padding: 0 var(--space-1);
+  border-bottom: var(--line) solid var(--rule);
+  text-align: left;
+}
+
+.table th {
+  font-size: var(--text-12);
+  font-weight: 500;
+  color: var(--ink-2);
+  border-bottom-color: var(--ink);
+}
+
+.table tbody tr:hover {
+  background: var(--paper);
+}

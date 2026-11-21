@@ -1,0 +1,55 @@
+.stamp {
+  --stamp: var(--stamp-1);
+
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: var(--line-strong) solid var(--stamp);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--stamp) 10%, transparent);
+  color: var(--stamp);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+/* 44 px touch target on phones without changing the 32 px look. */
+@media (max-width: 599px) {
+  .stamp {
+    position: relative;
+  }
+
+  .stamp::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+  }
+}
+
+.ink1 {
+  --stamp: var(--stamp-1);
+}
+
+.ink2 {
+  --stamp: var(--stamp-2);
+}
+
+.ink3 {
+  --stamp: var(--stamp-3);
+}
+
+.ink4 {
+  --stamp: var(--stamp-4);
+}
+
+.ink5 {
+  --stamp: var(--stamp-5);
+}
+
+.ink6 {
+  --stamp: var(--stamp-6);
+}

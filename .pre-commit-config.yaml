@@ -1,0 +1,70 @@
+# Install once:  uv run --project backend pre-commit install
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: \.md$
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+        exclude: tsconfig.*\.json$
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=600"]
+      - id: detect-private-key
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+
+  - repo: local
+    hooks:
+      - id: forbid-env-files
+        name: forbid committing .env files
+        language: fail
+        entry: ".env files must not be committed; use .env.example"
+        files: (^|/)\.env(\..+)?$
+        exclude: \.env\.example$
+
+      - id: ruff-check
+        name: ruff check
+        language: system
+        entry: uv run --project backend ruff check --fix
+        types: [python]
+        files: ^backend/
+        exclude: /migrations/
+
+      - id: ruff-format
+        name: ruff format
+        language: system
+        entry: uv run --project backend ruff format
+        types: [python]
+        files: ^backend/
+        exclude: /migrations/
+
+      - id: mypy
+        name: mypy
+        language: system
+        entry: bash -c "cd backend && uv run mypy ."
+        types: [python]
+        files: ^backend/
+        pass_filenames: false
+
+      - id: prettier
+        name: prettier
+        language: system
+        entry: bash -c 'cd frontend && npx prettier --write --ignore-unknown "${@#frontend/}"' --
+        files: ^frontend/
+
+      - id: eslint
+        name: eslint
+        language: system
+        entry: bash -c "cd frontend && npx eslint --max-warnings 0 ."
+        files: ^frontend/.*\.(ts|tsx|js|mjs)$
+        pass_filenames: false
+
+      - id: contrast
+        name: design tokens contrast (WCAG AA)
+        language: system
+        entry: node frontend/scripts/check-contrast.mjs
+        files: ^frontend/src/shared/ui/tokens\.css$
+        pass_filenames: false

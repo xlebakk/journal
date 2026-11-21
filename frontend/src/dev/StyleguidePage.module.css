@@ -1,0 +1,200 @@
+.page {
+  min-height: 100vh;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-bottom: var(--line) solid var(--ink);
+  background: var(--paper);
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-size: var(--text-20);
+  font-weight: 600;
+}
+
+.tag {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: var(--text-12);
+  color: var(--ink-2);
+}
+
+.main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-2) var(--space-6);
+}
+
+.lead {
+  margin: var(--space-1) 0 0;
+  color: var(--ink-2);
+}
+
+.section {
+  margin-top: var(--space-5);
+  padding-top: var(--space-2);
+  border-top: var(--line) solid var(--rule);
+}
+
+.section > h2 {
+  margin-bottom: var(--space-2);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.caption {
+  font-size: var(--text-12);
+  color: var(--ink-2);
+}
+
+/* Colours */
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-1) var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.swatch {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  grid-template-rows: auto auto;
+  column-gap: var(--space-1);
+  align-items: center;
+}
+
+.chip {
+  grid-row: span 2;
+  width: 40px;
+  height: 40px;
+  border: var(--line) solid var(--ink);
+}
+
+.chip-paper {
+  background: var(--paper);
+}
+.chip-sheet {
+  background: var(--sheet);
+}
+.chip-ink {
+  background: var(--ink);
+}
+.chip-ink-2 {
+  background: var(--ink-2);
+}
+.chip-rule {
+  background: var(--rule);
+}
+.chip-accent {
+  background: var(--accent);
+}
+.chip-red-pen {
+  background: var(--red-pen);
+}
+.chip-pencil {
+  background: var(--pencil);
+}
+.chip-marker {
+  background: linear-gradient(var(--marker), var(--marker)), var(--sheet);
+}
+
+/* Typography */
+.display {
+  font-family: var(--font-display);
+  font-size: var(--text-28);
+  font-weight: 600;
+  margin: 0 0 var(--space-1);
+}
+
+.medium {
+  font-weight: 500;
+}
+
+.semibold {
+  font-weight: 600;
+}
+
+.scale {
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scale li {
+  line-height: 1.3;
+  border-bottom: var(--line) solid var(--rule);
+}
+
+.size-12 {
+  font-size: var(--text-12);
+}
+.size-14 {
+  font-size: var(--text-14);
+}
+.size-15 {
+  font-size: var(--text-15);
+}
+.size-16 {
+  font-size: var(--text-16);
+}
+.size-20 {
+  font-size: var(--text-20);
+}
+.size-28 {
+  font-size: var(--text-28);
+}
+.size-40 {
+  font-size: var(--text-40);
+}
+
+/* Fields */
+.fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-3);
+}
+
+.low {
+  color: var(--red-pen);
+}
+
+.iconRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: var(--space-2) 0 0;
+}
+
+.warning {
+  color: var(--pencil);
+}
+
+/* Modal: the one place for the hard shadow besides the primary button. */
+.modal {
+  max-width: 420px;
+  padding: var(--space-3);
+  border: var(--line-strong) solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--sheet);
+  box-shadow: var(--shadow-hard);
+}
+
+.modal > p {
+  margin: var(--space-1) 0 var(--space-3);
+}
