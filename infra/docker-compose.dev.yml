@@ -24,7 +24,7 @@ services:
       retries: 10
 
   redis:
-    image: redis:7-alpine
+    image: redis:8-alpine
     env_file: ../.env
     command: ["sh", "-c", 'exec redis-server --requirepass "$$REDIS_PASSWORD" --save ""']
     healthcheck:
