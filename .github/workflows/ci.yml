@@ -246,30 +246,52 @@ jobs:
               user = User.objects.create_user(login='ci.admin', password='a-long-ci-password-42', last_name='CI', first_name='CI', roles=['admin'])
               audit.record(request=None, action='user.create', entity=user)
           "
-      - name: backup → off-site → restore check
+      - name: backup tools and keys
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq age rclone
-          sudo mkdir -p /etc/journal /tmp/offsite
+          mkdir -p /tmp/offsite /tmp/local-backups
           age-keygen -o /tmp/identity.txt 2>/dev/null
           age-keygen -y /tmp/identity.txt > /tmp/recipients.txt
-          printf 'AGE_RECIPIENTS_FILE=/tmp/recipients.txt\nAGE_IDENTITY_FILE=/tmp/identity.txt\nRCLONE_REMOTE=/tmp/offsite\nLOCAL_DIR=/tmp/local-backups\n' > /tmp/backup.env
-          BACKUP_ENV=/tmp/backup.env infra/backup/backup.sh
+          {
+            echo "AGE_RECIPIENTS_FILE=/tmp/recipients.txt"
+            echo "AGE_IDENTITY_FILE=/tmp/identity.txt"
+            echo "RCLONE_REMOTE=/tmp/offsite"
+            echo "LOCAL_DIR=/tmp/local-backups"
+          } > /tmp/backup.env
+      - name: backup → encrypted off-site copy
+        run: |
+          BACKUP_ENV=/tmp/backup.env infra/backup/backup.sh 2>&1 | tee /tmp/backup.out
           ls -l /tmp/offsite
           # The off-site copy is encrypted: no SQL in clear text.
           ! grep -q "accounts_user" /tmp/offsite/*.age
-          BACKUP_ENV=/tmp/backup.env infra/backup/restore-check.sh
+      - name: restore check of the newest copy
+        run: BACKUP_ENV=/tmp/backup.env infra/backup/restore-check.sh 2>&1 | tee /tmp/restore.out
+      - name: both results reach «Настройки»
+        run: |
           docker compose -f infra/docker-compose.prod.yml --env-file .env.prod exec -T api python manage.py shell -c "
-          from apps.core.models import CenterSettings as C; s = C.load(); assert s.last_backup_ok and s.last_restore_check_ok"
+          from apps.core.models import CenterSettings as C; s = C.load(); assert s.last_backup_ok and s.last_restore_check_ok, (s.last_backup_ok, s.last_restore_check_ok)"
       - name: OWASP ZAP baseline (SPEC §11)
+        if: ${{ !cancelled() }}
         run: |
           mkdir -p zap && chmod 777 zap
-          docker run --rm --network host -v "$PWD/zap:/zap/wrk" ghcr.io/zaproxy/zaproxy:stable \
-            zap-baseline.py -t https://localhost/ -r zap-report.html -J zap-report.json -I
+          docker run --rm --network host -v "$PWD/zap:/zap/wrk" ghcr.io/zaproxy/zaproxy:stable             zap-baseline.py -t https://localhost/ -r zap-report.html -J zap-report.json -I
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: zap-report
           path: zap/
+      # Job logs need a login to read; annotations are public, so failures are summarised there.
+      - name: failure details as annotations
+        if: failure()
+        run: |
+          oneline() { awk 'BEGIN { ORS = "%0A" } { print }'; }
+          for f in /tmp/backup.out /tmp/restore.out; do
+            if [ -f "$f" ]; then echo "::error title=$(basename "$f")::$(tail -n 15 "$f" | oneline)"; fi
+          done
+          for svc in api db web; do
+            out="$(docker compose -f infra/docker-compose.prod.yml --env-file .env.prod logs --no-color --tail 15 "$svc" 2>&1 | oneline)"
+            echo "::warning title=logs of $svc::$out"
+          done
       - name: logs on failure
         if: failure()
         run: docker compose -f infra/docker-compose.prod.yml --env-file .env.prod logs --no-color --tail 200
