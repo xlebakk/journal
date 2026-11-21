@@ -1589,6 +1589,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/student/attendance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description «Посещаемость»: per subject and overall for the year so far, a month calendar (SPEC §6.5). */
+        get: operations["student_attendance_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/student/diary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description «Дневник»: a week of lessons with topics, homework, own marks and grades (SPEC §6.2). */
+        get: operations["student_diary_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/student/grades": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description «Оценки»: subjects × dates for a term or the year, weighted averages (SPEC §6.3). */
+        get: operations["student_grades_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/student/grades/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description One grade with its lesson — the student's own only; anyone else's id is 404 (SPEC §15). */
+        get: operations["student_grade_detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/student/home": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description «Главная» (SPEC §6.1). */
+        get: operations["student_home_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/student/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description «Профиль»: name, groups, target (filled in by the administrator) (SPEC §6.7). */
+        get: operations["student_profile_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/student/schedule": {
         parameters: {
             query?: never;
@@ -1848,6 +1950,12 @@ export interface components {
             center_name: string;
             contacts: string;
         };
+        CalendarDay: {
+            /** Format: date */
+            date: string;
+            lessons: number;
+            marks: components["schemas"]["DayMark"][];
+        };
         CancelRequest: {
             version: number;
             reason: string;
@@ -1868,6 +1976,19 @@ export interface components {
             assistants?: string[];
             readonly assistants_info: components["schemas"]["Person"][];
         };
+        CourseAttendance: {
+            /** Format: uuid */
+            course: string;
+            subject_name: string;
+            group_name: string;
+            /** Format: decimal */
+            percent: string | null;
+            present: number;
+            late: number;
+            absent: number;
+            excused: number;
+            eligible: number;
+        };
         CourseBrief: {
             /** Format: uuid */
             readonly id: string;
@@ -1876,6 +1997,17 @@ export interface components {
             readonly subject_name: string;
             readonly subject_short: string;
             readonly teacher: components["schemas"]["Person"];
+        };
+        CourseGrades: {
+            /** Format: uuid */
+            course: string;
+            subject_name: string;
+            group_name: string;
+            teacher_name: string;
+            /** Format: decimal */
+            average: string | null;
+            low: boolean;
+            grades: components["schemas"]["StudentGrade"][];
         };
         CourseInfo: {
             /** Format: uuid */
@@ -1903,6 +2035,55 @@ export interface components {
             /** Format: uuid */
             teacher: string;
             assistants?: string[];
+        };
+        DayMark: {
+            subject_short: string;
+            subject_name: string;
+            status: string;
+        };
+        Diary: {
+            /** Format: date */
+            week_start: string;
+            /** Format: date */
+            today: string;
+            lessons: components["schemas"]["DiaryLesson"][];
+        };
+        /** @description What a student sees: no versions, no internal links, nothing about other students. */
+        DiaryLesson: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: date */
+            readonly date: string;
+            /** Format: time */
+            readonly start_time: string;
+            /** Format: time */
+            readonly end_time: string;
+            readonly subject_name: string;
+            readonly subject_short: string;
+            readonly group_name: string;
+            readonly teacher_name: string;
+            readonly room_name: string;
+            readonly lesson_type_short: string;
+            readonly lesson_type_name: string;
+            readonly status: components["schemas"]["LessonStatusEnum"];
+            readonly cancel_reason: string;
+            readonly is_extra: boolean;
+            readonly is_moved: boolean;
+            readonly is_room_changed: boolean;
+            readonly is_substituted: boolean;
+            /** Format: date */
+            readonly planned_date: string;
+            /** Format: time */
+            readonly planned_start_time: string;
+            /** Format: time */
+            readonly planned_end_time: string;
+            readonly planned_room_name: string;
+            readonly topic: string;
+            readonly homework: string;
+            readonly attendance: string | null;
+            readonly grades: {
+                [key: string]: unknown;
+            }[];
         };
         Ended: {
             ended: number;
@@ -2029,6 +2210,17 @@ export interface components {
             /** Format: date */
             date: string;
             name: string;
+        };
+        Homework: {
+            /** Format: uuid */
+            lesson: string;
+            subject_name: string;
+            /** Format: date */
+            assigned_on: string;
+            topic: string;
+            homework: string;
+            /** Format: date */
+            due_on: string | null;
         };
         JournalRules: {
             scale: string;
@@ -2635,6 +2827,61 @@ export interface components {
             excused: number;
             eligible: number;
         };
+        StudentAttendance: {
+            /** Format: date */
+            period_from: string;
+            /** Format: date */
+            period_to: string;
+            threshold: number;
+            /** Format: decimal */
+            overall: string | null;
+            excused: number;
+            courses: components["schemas"]["CourseAttendance"][];
+            month: string;
+            days: components["schemas"]["CalendarDay"][];
+        };
+        StudentGrade: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date */
+            date: string;
+            /** Format: uuid */
+            course: string;
+            subject_name: string;
+            subject_short: string;
+            group_name: string;
+            topic: string;
+            lesson_type_short: string | null;
+            value: number;
+            work_type_name: string;
+            /** Format: decimal */
+            weight: string;
+            comment: string;
+            /** Format: date-time */
+            given_at: string;
+            low: boolean;
+        };
+        StudentGrades: {
+            /** Format: date */
+            period_from: string;
+            /** Format: date */
+            period_to: string;
+            period: string;
+            terms: components["schemas"]["TermBrief"][];
+            scale: string;
+            /** Format: decimal */
+            low_below: string;
+            courses: components["schemas"]["CourseGrades"][];
+        };
+        StudentHome: {
+            /** Format: date */
+            today: string;
+            period_name: string;
+            lessons_today: components["schemas"]["StudentLesson"][];
+            new_grades: components["schemas"]["StudentGrade"][];
+            homework: components["schemas"]["Homework"][];
+            subjects: components["schemas"]["SubjectSummary"][];
+        };
         /** @description What a student sees: no versions, no internal links, nothing about other students. */
         StudentLesson: {
             /** Format: uuid */
@@ -2686,6 +2933,15 @@ export interface components {
             parent_phone?: string;
             admin_note?: string;
         };
+        StudentProfileView: {
+            full_name: string;
+            login: string;
+            groups: string[];
+            school: string;
+            school_grade: number | null;
+            target: string;
+            target_score: number | null;
+        };
         Subject: {
             /** Format: uuid */
             readonly id: string;
@@ -2697,6 +2953,18 @@ export interface components {
             name: string;
             short_name: string;
             is_archived?: boolean;
+        };
+        SubjectSummary: {
+            /** Format: uuid */
+            course: string;
+            subject_name: string;
+            group_name: string;
+            teacher_name: string;
+            /** Format: decimal */
+            average: string | null;
+            /** Format: decimal */
+            attendance_percent: string | null;
+            low: boolean;
         };
         SubstituteRequest: {
             version: number;
@@ -2720,6 +2988,15 @@ export interface components {
             readonly id: string;
             /** Format: uuid */
             year: string;
+            name: string;
+            /** Format: date */
+            starts_on: string;
+            /** Format: date */
+            ends_on: string;
+        };
+        TermBrief: {
+            /** Format: uuid */
+            id: string;
             name: string;
             /** Format: date */
             starts_on: string;
@@ -5361,6 +5638,128 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RoomOption"][];
+                };
+            };
+        };
+    };
+    student_attendance_retrieve: {
+        parameters: {
+            query?: {
+                month?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentAttendance"];
+                };
+            };
+        };
+    };
+    student_diary_retrieve: {
+        parameters: {
+            query?: {
+                week?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Diary"];
+                };
+            };
+        };
+    };
+    student_grades_retrieve: {
+        parameters: {
+            query?: {
+                term?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentGrades"];
+                };
+            };
+        };
+    };
+    student_grade_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentGrade"];
+                };
+            };
+        };
+    };
+    student_home_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentHome"];
+                };
+            };
+        };
+    };
+    student_profile_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentProfileView"];
                 };
             };
         };

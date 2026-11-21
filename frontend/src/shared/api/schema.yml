@@ -2860,6 +2860,123 @@ paths:
                 items:
                   $ref: '#/components/schemas/RoomOption'
           description: ''
+  /api/v1/student/attendance:
+    get:
+      operationId: student_attendance_retrieve
+      description: '«Посещаемость»: per subject and overall for the year so far, a
+        month calendar (SPEC §6.5).'
+      parameters:
+      - in: query
+        name: month
+        schema:
+          type: string
+      tags:
+      - student
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentAttendance'
+          description: ''
+  /api/v1/student/diary:
+    get:
+      operationId: student_diary_retrieve
+      description: '«Дневник»: a week of lessons with topics, homework, own marks
+        and grades (SPEC §6.2).'
+      parameters:
+      - in: query
+        name: week
+        schema:
+          type: string
+      tags:
+      - student
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Diary'
+          description: ''
+  /api/v1/student/grades:
+    get:
+      operationId: student_grades_retrieve
+      description: '«Оценки»: subjects × dates for a term or the year, weighted averages
+        (SPEC §6.3).'
+      parameters:
+      - in: query
+        name: term
+        schema:
+          type: string
+      tags:
+      - student
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentGrades'
+          description: ''
+  /api/v1/student/grades/{id}:
+    get:
+      operationId: student_grade_detail
+      description: One grade with its lesson — the student's own only; anyone else's
+        id is 404 (SPEC §15).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - student
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentGrade'
+          description: ''
+  /api/v1/student/home:
+    get:
+      operationId: student_home_retrieve
+      description: «Главная» (SPEC §6.1).
+      tags:
+      - student
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentHome'
+          description: ''
+  /api/v1/student/profile:
+    get:
+      operationId: student_profile_retrieve
+      description: '«Профиль»: name, groups, target (filled in by the administrator)
+        (SPEC §6.7).'
+      tags:
+      - student
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentProfileView'
+          description: ''
   /api/v1/student/schedule:
     get:
       operationId: student_schedule_list
@@ -3421,6 +3538,22 @@ components:
       required:
       - center_name
       - contacts
+    CalendarDay:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        lessons:
+          type: integer
+        marks:
+          type: array
+          items:
+            $ref: '#/components/schemas/DayMark'
+      required:
+      - date
+      - lessons
+      - marks
     CancelRequest:
       type: object
       properties:
@@ -3483,6 +3616,41 @@ components:
       - subject_short
       - teacher
       - teacher_info
+    CourseAttendance:
+      type: object
+      properties:
+        course:
+          type: string
+          format: uuid
+        subject_name:
+          type: string
+        group_name:
+          type: string
+        percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          nullable: true
+        present:
+          type: integer
+        late:
+          type: integer
+        absent:
+          type: integer
+        excused:
+          type: integer
+        eligible:
+          type: integer
+      required:
+      - absent
+      - course
+      - eligible
+      - excused
+      - group_name
+      - late
+      - percent
+      - present
+      - subject_name
     CourseBrief:
       type: object
       properties:
@@ -3510,6 +3678,37 @@ components:
       - subject_name
       - subject_short
       - teacher
+    CourseGrades:
+      type: object
+      properties:
+        course:
+          type: string
+          format: uuid
+        subject_name:
+          type: string
+        group_name:
+          type: string
+        teacher_name:
+          type: string
+        average:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          nullable: true
+        low:
+          type: boolean
+        grades:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentGrade'
+      required:
+      - average
+      - course
+      - grades
+      - group_name
+      - low
+      - subject_name
+      - teacher_name
     CourseInfo:
       type: object
       properties:
@@ -3575,6 +3774,154 @@ components:
       - group
       - subject
       - teacher
+    DayMark:
+      type: object
+      properties:
+        subject_short:
+          type: string
+        subject_name:
+          type: string
+        status:
+          type: string
+      required:
+      - status
+      - subject_name
+      - subject_short
+    Diary:
+      type: object
+      properties:
+        week_start:
+          type: string
+          format: date
+        today:
+          type: string
+          format: date
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiaryLesson'
+      required:
+      - lessons
+      - today
+      - week_start
+    DiaryLesson:
+      type: object
+      description: 'What a student sees: no versions, no internal links, nothing about
+        other students.'
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        date:
+          type: string
+          format: date
+          readOnly: true
+        start_time:
+          type: string
+          format: time
+          readOnly: true
+        end_time:
+          type: string
+          format: time
+          readOnly: true
+        subject_name:
+          type: string
+          readOnly: true
+        subject_short:
+          type: string
+          readOnly: true
+        group_name:
+          type: string
+          readOnly: true
+        teacher_name:
+          type: string
+          readOnly: true
+        room_name:
+          type: string
+          readOnly: true
+        lesson_type_short:
+          type: string
+          readOnly: true
+        lesson_type_name:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/LessonStatusEnum'
+          readOnly: true
+        cancel_reason:
+          type: string
+          readOnly: true
+        is_extra:
+          type: boolean
+          readOnly: true
+        is_moved:
+          type: boolean
+          readOnly: true
+        is_room_changed:
+          type: boolean
+          readOnly: true
+        is_substituted:
+          type: boolean
+          readOnly: true
+        planned_date:
+          type: string
+          format: date
+          readOnly: true
+        planned_start_time:
+          type: string
+          format: time
+          readOnly: true
+        planned_end_time:
+          type: string
+          format: time
+          readOnly: true
+        planned_room_name:
+          type: string
+          readOnly: true
+        topic:
+          type: string
+          readOnly: true
+        homework:
+          type: string
+          readOnly: true
+        attendance:
+          type: string
+          nullable: true
+          readOnly: true
+        grades:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          readOnly: true
+      required:
+      - attendance
+      - cancel_reason
+      - date
+      - end_time
+      - grades
+      - group_name
+      - homework
+      - id
+      - is_extra
+      - is_moved
+      - is_room_changed
+      - is_substituted
+      - lesson_type_name
+      - lesson_type_short
+      - planned_date
+      - planned_end_time
+      - planned_room_name
+      - planned_start_time
+      - room_name
+      - start_time
+      - status
+      - subject_name
+      - subject_short
+      - teacher_name
+      - topic
     Ended:
       type: object
       properties:
@@ -3897,6 +4244,32 @@ components:
       required:
       - date
       - name
+    Homework:
+      type: object
+      properties:
+        lesson:
+          type: string
+          format: uuid
+        subject_name:
+          type: string
+        assigned_on:
+          type: string
+          format: date
+        topic:
+          type: string
+        homework:
+          type: string
+        due_on:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - assigned_on
+      - due_on
+      - homework
+      - lesson
+      - subject_name
+      - topic
     JournalRules:
       type: object
       properties:
@@ -5340,6 +5713,160 @@ components:
       - grades
       - late
       - present
+    StudentAttendance:
+      type: object
+      properties:
+        period_from:
+          type: string
+          format: date
+        period_to:
+          type: string
+          format: date
+        threshold:
+          type: integer
+        overall:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          nullable: true
+        excused:
+          type: integer
+        courses:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseAttendance'
+        month:
+          type: string
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/CalendarDay'
+      required:
+      - courses
+      - days
+      - excused
+      - month
+      - overall
+      - period_from
+      - period_to
+      - threshold
+    StudentGrade:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        course:
+          type: string
+          format: uuid
+        subject_name:
+          type: string
+        subject_short:
+          type: string
+        group_name:
+          type: string
+        topic:
+          type: string
+        lesson_type_short:
+          type: string
+          nullable: true
+        value:
+          type: integer
+        work_type_name:
+          type: string
+        weight:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,2})?$
+        comment:
+          type: string
+        given_at:
+          type: string
+          format: date-time
+        low:
+          type: boolean
+      required:
+      - comment
+      - course
+      - date
+      - given_at
+      - group_name
+      - id
+      - lesson_type_short
+      - low
+      - subject_name
+      - subject_short
+      - topic
+      - value
+      - weight
+      - work_type_name
+    StudentGrades:
+      type: object
+      properties:
+        period_from:
+          type: string
+          format: date
+        period_to:
+          type: string
+          format: date
+        period:
+          type: string
+        terms:
+          type: array
+          items:
+            $ref: '#/components/schemas/TermBrief'
+        scale:
+          type: string
+        low_below:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+        courses:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseGrades'
+      required:
+      - courses
+      - low_below
+      - period
+      - period_from
+      - period_to
+      - scale
+      - terms
+    StudentHome:
+      type: object
+      properties:
+        today:
+          type: string
+          format: date
+        period_name:
+          type: string
+        lessons_today:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentLesson'
+        new_grades:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentGrade'
+        homework:
+          type: array
+          items:
+            $ref: '#/components/schemas/Homework'
+        subjects:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubjectSummary'
+      required:
+      - homework
+      - lessons_today
+      - new_grades
+      - period_name
+      - subjects
+      - today
     StudentLesson:
       type: object
       description: 'What a student sees: no versions, no internal links, nothing about
@@ -5502,6 +6029,35 @@ components:
           maxLength: 32
         admin_note:
           type: string
+    StudentProfileView:
+      type: object
+      properties:
+        full_name:
+          type: string
+        login:
+          type: string
+        groups:
+          type: array
+          items:
+            type: string
+        school:
+          type: string
+        school_grade:
+          type: integer
+          nullable: true
+        target:
+          type: string
+        target_score:
+          type: integer
+          nullable: true
+      required:
+      - full_name
+      - groups
+      - login
+      - school
+      - school_grade
+      - target
+      - target_score
     Subject:
       type: object
       properties:
@@ -5537,6 +6093,38 @@ components:
       required:
       - name
       - short_name
+    SubjectSummary:
+      type: object
+      properties:
+        course:
+          type: string
+          format: uuid
+        subject_name:
+          type: string
+        group_name:
+          type: string
+        teacher_name:
+          type: string
+        average:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          nullable: true
+        attendance_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          nullable: true
+        low:
+          type: boolean
+      required:
+      - attendance_percent
+      - average
+      - course
+      - group_name
+      - low
+      - subject_name
+      - teacher_name
     SubstituteRequest:
       type: object
       properties:
@@ -5607,6 +6195,25 @@ components:
       - name
       - starts_on
       - year
+    TermBrief:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        starts_on:
+          type: string
+          format: date
+        ends_on:
+          type: string
+          format: date
+      required:
+      - ends_on
+      - id
+      - name
+      - starts_on
     TermOption:
       type: object
       properties:

@@ -1,6 +1,6 @@
 from django.urls import URLPattern, URLResolver, path
 
-from . import views
+from . import student_views, views
 
 urlpatterns: list[URLPattern | URLResolver] = [
     path("journal/courses", views.JournalCoursesView.as_view(), name="journal-courses"),
@@ -42,4 +42,18 @@ urlpatterns: list[URLPattern | URLResolver] = [
         name="journal-grade-restore",
     ),
     path("teacher/today", views.TeacherTodayView.as_view(), name="teacher-today"),
+    path("student/home", student_views.StudentHomeView.as_view(), name="student-home"),
+    path("student/diary", student_views.StudentDiaryView.as_view(), name="student-diary"),
+    path("student/grades", student_views.StudentGradesView.as_view(), name="student-grades"),
+    path(
+        "student/grades/<uuid:pk>",
+        student_views.StudentGradeDetailView.as_view(),
+        name="student-grade",
+    ),
+    path(
+        "student/attendance",
+        student_views.StudentAttendanceView.as_view(),
+        name="student-attendance",
+    ),
+    path("student/profile", student_views.StudentProfileView.as_view(), name="student-profile"),
 ]
