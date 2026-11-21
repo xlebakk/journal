@@ -3,6 +3,160 @@ info:
   title: Journal API
   version: 1.0.0
 paths:
+  /api/v1/admin/access-cards:
+    get:
+      operationId: admin_access_cards_retrieve
+      description: 'What every access card shows besides the login and the password:
+        the site and its QR.'
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessCardInfo'
+          description: ''
+  /api/v1/admin/announcements:
+    get:
+      operationId: admin_announcements_list
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAnnouncementList'
+          description: ''
+    post:
+      operationId: admin_announcements_create
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnnouncementRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+  /api/v1/admin/announcements/{id}:
+    get:
+      operationId: admin_announcements_retrieve
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+    patch:
+      operationId: admin_announcements_partial_update
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAnnouncementRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+    delete:
+      operationId: admin_announcements_destroy
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/admin/audit:
     get:
       operationId: admin_audit_list
@@ -53,6 +207,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedAuditLogList'
+          description: ''
+  /api/v1/admin/audit/export:
+    get:
+      operationId: admin_audit_export_retrieve
+      description: |-
+        The filtered audit as XLSX/CSV (at most 10 000 rows). An export of personal data:
+        the password must have been entered within the last 5 minutes.
+      parameters:
+      - in: query
+        name: action
+        schema:
+          type: string
+      - in: query
+        name: actor
+        schema:
+          type: string
+      - in: query
+        name: date_from
+        schema:
+          type: string
+      - in: query
+        name: date_to
+        schema:
+          type: string
+      - in: query
+        name: entity_id
+        schema:
+          type: string
+      - in: query
+        name: entity_type
+        schema:
+          type: string
+      - in: query
+        name: export
+        schema:
+          type: string
+          enum:
+          - csv
+          - xlsx
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
           description: ''
   /api/v1/admin/courses:
     get:
@@ -513,6 +717,49 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/admin/import/students:
+    post:
+      operationId: admin_import_students_create
+      description: |-
+        Without `apply=true` — the preview; with it — all rows in one transaction, only if
+        no row has errors. Warnings (a possible duplicate) do not block the import.
+      tags:
+      - admin
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                apply:
+                  type: boolean
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentImportResult'
+          description: ''
+  /api/v1/admin/import/students/template:
+    get:
+      operationId: admin_import_students_template_retrieve
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          description: ''
   /api/v1/admin/lesson-types:
     get:
       operationId: admin_lesson_types_list
@@ -974,6 +1221,138 @@ paths:
               schema:
                 $ref: '#/components/schemas/Membership'
           description: ''
+  /api/v1/admin/overview:
+    get:
+      operationId: admin_overview_retrieve
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Overview'
+          description: ''
+  /api/v1/admin/reports/fill-rate:
+    get:
+      operationId: admin_reports_fill_rate_retrieve
+      description: |-
+        How teachers fill the journal: lessons due by today, conducted, unfilled, no topic.
+        A lesson counts for the teacher who taught it (a substitute included).
+      parameters:
+      - in: query
+        name: export
+        schema:
+          type: string
+          enum:
+          - csv
+          - xlsx
+      - in: query
+        name: from
+        schema:
+          type: string
+      - in: query
+        name: term
+        schema:
+          type: string
+      - in: query
+        name: to
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FillRate'
+          description: ''
+  /api/v1/admin/reports/performance:
+    get:
+      operationId: admin_reports_performance_retrieve
+      description: |-
+        Courses of the current year by group / subject / period; with a group — the student ×
+        subject table as well (SPEC §8.8).
+      parameters:
+      - in: query
+        name: export
+        schema:
+          type: string
+          enum:
+          - csv
+          - xlsx
+      - in: query
+        name: from
+        schema:
+          type: string
+      - in: query
+        name: group
+        schema:
+          type: string
+      - in: query
+        name: subject
+        schema:
+          type: string
+      - in: query
+        name: term
+        schema:
+          type: string
+      - in: query
+        name: to
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Performance'
+          description: ''
+  /api/v1/admin/reports/students/{id}:
+    get:
+      operationId: admin_reports_students_retrieve
+      description: |-
+        One printed sheet for parents: per subject — average, attendance, absences; the last
+        mock exams against the goal (SPEC §8.8). JSON only: the browser prints it.
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: term
+        schema:
+          type: string
+      - in: query
+        name: to
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentSummary'
+          description: ''
   /api/v1/admin/rooms:
     get:
       operationId: admin_rooms_list
@@ -1205,6 +1584,76 @@ paths:
               schema:
                 $ref: '#/components/schemas/ScheduleRequest'
           description: ''
+  /api/v1/admin/settings:
+    get:
+      operationId: admin_settings_retrieve
+      description: |-
+        GET for the form; PATCH changes security and journal rules, so the password must have
+        been entered within the last 5 minutes.
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CenterSettings'
+          description: ''
+    patch:
+      operationId: admin_settings_partial_update
+      description: |-
+        GET for the form; PATCH changes security and journal rules, so the password must have
+        been entered within the last 5 minutes.
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCenterSettingsRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CenterSettings'
+          description: ''
+  /api/v1/admin/settings/logo:
+    post:
+      operationId: admin_settings_logo_create
+      tags:
+      - admin
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CenterSettings'
+          description: ''
+    delete:
+      operationId: admin_settings_logo_destroy
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/admin/slots:
     get:
       operationId: admin_slots_list
@@ -1924,6 +2373,63 @@ paths:
               schema:
                 $ref: '#/components/schemas/EndedSessions'
           description: ''
+  /api/v1/admin/users/{id}/targets:
+    get:
+      operationId: admin_users_targets_list
+      description: The administrator sets a student's goals per subject, in % (decision
+        of stage 5).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Target'
+          description: ''
+    put:
+      operationId: admin_users_targets_update
+      description: The administrator sets a student's goals per subject, in % (decision
+        of stage 5).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TargetRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Target'
+          description: ''
   /api/v1/admin/users/{id}/unblock:
     post:
       operationId: admin_users_unblock_create
@@ -2220,6 +2726,29 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/announcements:
+    get:
+      operationId: announcements_list
+      description: 'Live announcements for the active role: pinned first, then the
+        newest.'
+      parameters:
+      - in: query
+        name: pinned
+        schema:
+          type: boolean
+      tags:
+      - announcements
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FeedItem'
+          description: ''
   /api/v1/auth/login:
     get:
       operationId: auth_login_retrieve
@@ -2458,6 +2987,276 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/exams:
+    get:
+      operationId: exams_list
+      parameters:
+      - in: query
+        name: subject
+        schema:
+          type: string
+      tags:
+      - exams
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Exam'
+          description: ''
+    post:
+      operationId: exams_create
+      tags:
+      - exams
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExamWriteRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exam'
+          description: ''
+  /api/v1/exams/{id}:
+    get:
+      operationId: exams_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - exams
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exam'
+          description: ''
+    patch:
+      operationId: exams_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - exams
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExamUpdateRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exam'
+          description: ''
+    delete:
+      operationId: exams_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - exams
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/exams/{id}/import:
+    post:
+      operationId: exams_import_create
+      description: |-
+        Results from an XLSX/CSV: «Логин» (or «ФИО»), «Балл» or one column per section; «н» —
+        absent. Without `apply=true` only the preview with errors per line is returned; with it,
+        all rows are written in one transaction, and only if there are no errors.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - exams
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                apply:
+                  type: boolean
+                reason:
+                  type: string
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportResult'
+          description: ''
+  /api/v1/exams/{id}/results:
+    get:
+      operationId: exams_results_retrieve
+      description: 'The results table: students of the visible courses on the exam
+        date.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - exams
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultsTable'
+          description: ''
+  /api/v1/exams/{id}/results/{student_id}:
+    put:
+      operationId: exams_results_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: student_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - exams
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResultWriteRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultRow'
+          description: ''
+  /api/v1/exams/{id}/results/{student_id}/clear:
+    post:
+      operationId: exams_results_clear_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: student_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - exams
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClearRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/exams/{id}/stats:
+    get:
+      operationId: exams_stats_retrieve
+      description: Mean, median, distribution, groups compared, sections (SPEC §7.6,
+        §8.7).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - exams
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamStats'
+          description: ''
+  /api/v1/exams/dynamics:
+    get:
+      operationId: exams_dynamics_list
+      description: 'Mean % per exam of a subject over time: the center''s dynamics
+        (SPEC §8.7).'
+      parameters:
+      - in: query
+        name: subject
+        schema:
+          type: string
+      tags:
+      - exams
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DynamicsPoint'
+          description: ''
   /api/v1/health:
     get:
       operationId: health_retrieve
@@ -2843,6 +3642,48 @@ paths:
               schema:
                 $ref: '#/components/schemas/Me'
           description: ''
+  /api/v1/reports/courses/{id}:
+    get:
+      operationId: reports_courses_retrieve
+      description: '«Ведомость» of one course for a period: average, attendance, absences
+        per student.'
+      parameters:
+      - in: query
+        name: export
+        schema:
+          type: string
+          enum:
+          - csv
+          - xlsx
+      - in: query
+        name: from
+        schema:
+          type: string
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: term
+        schema:
+          type: string
+      - in: query
+        name: to
+        schema:
+          type: string
+      tags:
+      - reports
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseStatement'
+          description: ''
   /api/v1/rooms:
     get:
       operationId: rooms_list
@@ -2901,6 +3742,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Diary'
+          description: ''
+  /api/v1/student/exams:
+    get:
+      operationId: student_exams_list
+      description: '«Пробные тесты» of a student: per subject, own results only, target
+        in % (SPEC §6.4).'
+      tags:
+      - student
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentSubjectExams'
           description: ''
   /api/v1/student/grades:
     get:
@@ -3160,6 +4019,19 @@ components:
       - ends_on
       - name
       - starts_on
+    AccessCardInfo:
+      type: object
+      properties:
+        center_name:
+          type: string
+        site_url:
+          type: string
+        qr:
+          type: string
+      required:
+      - center_name
+      - qr
+      - site_url
     AddMemberRequest:
       type: object
       properties:
@@ -3347,6 +4219,94 @@ components:
       - first_name
       - last_name
       - roles
+    Announcement:
+      type: object
+      description: The administrator's form. The author is the current user; the body
+        is plain text.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        body:
+          type: string
+          maxLength: 5000
+        audience:
+          $ref: '#/components/schemas/AudienceEnum'
+        role:
+          type: string
+          maxLength: 16
+        groups:
+          type: array
+          items:
+            type: string
+            format: uuid
+        group_names:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        pinned:
+          type: boolean
+        published_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        author_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author_name
+      - body
+      - created_at
+      - group_names
+      - id
+      - title
+    AnnouncementRequest:
+      type: object
+      description: The administrator's form. The author is the current user; the body
+        is plain text.
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        body:
+          type: string
+          minLength: 1
+          maxLength: 5000
+        audience:
+          $ref: '#/components/schemas/AudienceEnum'
+        role:
+          type: string
+          maxLength: 16
+        groups:
+          type: array
+          items:
+            type: string
+            format: uuid
+        pinned:
+          type: boolean
+        published_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - body
+      - title
     Attendance:
       type: object
       properties:
@@ -3462,6 +4422,16 @@ components:
       description: |-
         * `attendance` - attendance
         * `low_grades` - low_grades
+    AudienceEnum:
+      enum:
+      - all
+      - role
+      - groups
+      type: string
+      description: |-
+        * `all` - все
+        * `role` - роль
+        * `groups` - группы
     AuditLog:
       type: object
       properties:
@@ -3528,6 +4498,20 @@ components:
             type: string
       required:
       - backup_codes
+    BlockedLogin:
+      type: object
+      properties:
+        login:
+          type: string
+        attempts:
+          type: integer
+        last_at:
+          type: string
+          format: date-time
+      required:
+      - attempts
+      - last_at
+      - login
     Branding:
       type: object
       properties:
@@ -3535,9 +4519,26 @@ components:
           type: string
         contacts:
           type: string
+        logo:
+          type: string
+          nullable: true
       required:
       - center_name
       - contacts
+      - logo
+    Bucket:
+      type: object
+      properties:
+        from_percent:
+          type: integer
+        to_percent:
+          type: integer
+        count:
+          type: integer
+      required:
+      - count
+      - from_percent
+      - to_percent
     CalendarDay:
       type: object
       properties:
@@ -3566,6 +4567,117 @@ components:
           maxLength: 300
       required:
       - reason
+      - version
+    CenterSettings:
+      type: object
+      properties:
+        center_name:
+          type: string
+          maxLength: 200
+        contacts:
+          type: string
+          maxLength: 300
+        site_url:
+          type: string
+          maxLength: 200
+        lockout_threshold:
+          type: integer
+          maximum: 20
+          minimum: 3
+        lockout_base_minutes:
+          type: integer
+          maximum: 1440
+          minimum: 1
+        lockout_max_hours:
+          type: integer
+          maximum: 168
+          minimum: 1
+        admin_idle_minutes:
+          type: integer
+          maximum: 240
+          minimum: 5
+        admin_absolute_hours:
+          type: integer
+          maximum: 24
+          minimum: 1
+        teacher_idle_minutes:
+          type: integer
+          maximum: 720
+          minimum: 5
+        teacher_absolute_hours:
+          type: integer
+          maximum: 72
+          minimum: 1
+        teacher_remember_days:
+          type: integer
+          maximum: 90
+          minimum: 1
+        student_absolute_hours:
+          type: integer
+          maximum: 72
+          minimum: 1
+        student_remember_days:
+          type: integer
+          maximum: 90
+          minimum: 1
+        edit_window_days:
+          type: integer
+          maximum: 60
+          minimum: 0
+        max_grades_per_lesson:
+          type: integer
+          maximum: 9
+          minimum: 1
+        low_grade_percent:
+          type: integer
+          maximum: 99
+          minimum: 1
+        attendance_threshold_percent:
+          type: integer
+          maximum: 100
+          minimum: 1
+        attendance_window_days:
+          type: integer
+          maximum: 365
+          minimum: 7
+        require_teacher_2fa:
+          type: boolean
+        default_grade_scale:
+          $ref: '#/components/schemas/GradeScaleEnum'
+        logo:
+          type: string
+          nullable: true
+          readOnly: true
+        last_backup_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        last_backup_ok:
+          type: boolean
+          readOnly: true
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - default_grade_scale
+      - last_backup_at
+      - last_backup_ok
+      - logo
+      - updated_at
+    ClearRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          default: ''
+          maxLength: 300
+      required:
       - version
     Course:
       type: object
@@ -3740,6 +4852,9 @@ components:
           format: uuid
         group_name:
           type: string
+        subject:
+          type: string
+          format: uuid
         subject_name:
           type: string
         teacher_name:
@@ -3750,6 +4865,7 @@ components:
       required:
       - group_name
       - id
+      - subject
       - subject_name
       - teacher_name
       - year
@@ -3774,6 +4890,74 @@ components:
       - group
       - subject
       - teacher
+    CourseStatement:
+      type: object
+      properties:
+        course:
+          $ref: '#/components/schemas/StatementCourse'
+        first:
+          type: string
+          format: date
+        last:
+          type: string
+          format: date
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatementRow'
+        summary:
+          $ref: '#/components/schemas/CourseSummary'
+      required:
+      - course
+      - first
+      - last
+      - rows
+      - summary
+    CourseSummary:
+      type: object
+      properties:
+        students:
+          type: integer
+        average:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        attendance_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        low_attendance:
+          type: integer
+        low_average:
+          type: integer
+      required:
+      - attendance_percent
+      - average
+      - low_attendance
+      - low_average
+      - students
+    Credential:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        login:
+          type: string
+        temporary_password:
+          type: string
+        group_name:
+          type: string
+      required:
+      - full_name
+      - group_name
+      - id
+      - login
+      - temporary_password
     DayMark:
       type: object
       properties:
@@ -3948,6 +5132,30 @@ components:
       - subject_short
       - teacher_name
       - topic
+    DynamicsPoint:
+      type: object
+      properties:
+        exam:
+          type: string
+          format: uuid
+        title:
+          type: string
+        date:
+          type: string
+          format: date
+        count:
+          type: integer
+        mean_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,1})?$
+          nullable: true
+      required:
+      - count
+      - date
+      - exam
+      - mean_percent
+      - title
     Ended:
       type: object
       properties:
@@ -3962,6 +5170,202 @@ components:
           type: integer
       required:
       - ended
+    Exam:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        subject:
+          type: string
+          format: uuid
+          readOnly: true
+        subject_name:
+          type: string
+          readOnly: true
+        date:
+          type: string
+          format: date
+          readOnly: true
+        max_score:
+          type: integer
+          readOnly: true
+        courses:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExamCourse'
+          readOnly: true
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Section'
+          readOnly: true
+        results_count:
+          type: integer
+          readOnly: true
+          default: 0
+        version:
+          type: integer
+          readOnly: true
+      required:
+      - courses
+      - date
+      - id
+      - max_score
+      - results_count
+      - sections
+      - subject
+      - subject_name
+      - title
+      - version
+    ExamCourse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        group_name:
+          type: string
+          readOnly: true
+        teacher_name:
+          type: string
+          readOnly: true
+      required:
+      - group_name
+      - id
+      - teacher_name
+    ExamGroupSummary:
+      type: object
+      properties:
+        count:
+          type: integer
+        absent:
+          type: integer
+        mean:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        median:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        min:
+          type: integer
+          nullable: true
+        max:
+          type: integer
+          nullable: true
+        group_name:
+          type: string
+        mean_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,1})?$
+          nullable: true
+      required:
+      - absent
+      - count
+      - group_name
+      - max
+      - mean
+      - mean_percent
+      - median
+      - min
+    ExamImportRow:
+      type: object
+      properties:
+        line:
+          type: integer
+        student_name:
+          type: string
+        login:
+          type: string
+        total:
+          type: integer
+          nullable: true
+        was_absent:
+          type: boolean
+        issues:
+          type: array
+          items:
+            type: string
+      required:
+      - issues
+      - line
+      - login
+      - student_name
+      - total
+      - was_absent
+    ExamStats:
+      type: object
+      properties:
+        exam:
+          $ref: '#/components/schemas/Exam'
+        summary:
+          $ref: '#/components/schemas/Summary'
+        mean_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,1})?$
+          nullable: true
+        distribution:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bucket'
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExamGroupSummary'
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/SectionStat'
+      required:
+      - distribution
+      - exam
+      - groups
+      - mean_percent
+      - sections
+      - summary
+    ExamWriteRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        subject:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        max_score:
+          type: integer
+          maximum: 1000
+          minimum: 1
+        courses:
+          type: array
+          items:
+            type: string
+            format: uuid
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/SectionWriteRequest'
+      required:
+      - courses
+      - date
+      - max_score
+      - subject
+      - title
     ExtraLessonRequest:
       type: object
       properties:
@@ -3994,6 +5398,86 @@ components:
       - date
       - end_time
       - start_time
+    FeedItem:
+      type: object
+      description: 'What a reader sees: no audience details.'
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        body:
+          type: string
+          readOnly: true
+        pinned:
+          type: boolean
+          readOnly: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+        author_name:
+          type: string
+          readOnly: true
+      required:
+      - author_name
+      - body
+      - id
+      - pinned
+      - published_at
+      - title
+    FillRate:
+      type: object
+      properties:
+        first:
+          type: string
+          format: date
+        last:
+          type: string
+          format: date
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/FillRateRow'
+      required:
+      - first
+      - last
+      - rows
+    FillRateRow:
+      type: object
+      properties:
+        teacher:
+          type: string
+          format: uuid
+        teacher_name:
+          type: string
+        due:
+          type: integer
+        conducted:
+          type: integer
+        unfilled:
+          type: integer
+        overdue:
+          type: integer
+        no_topic:
+          type: integer
+        filled_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,1})?$
+          nullable: true
+      required:
+      - conducted
+      - due
+      - filled_percent
+      - no_topic
+      - overdue
+      - teacher
+      - teacher_name
+      - unfilled
     Grade:
       type: object
       properties:
@@ -4296,6 +5780,18 @@ components:
       - lesson
       - subject_name
       - topic
+    ImportResult:
+      type: object
+      properties:
+        applied:
+          type: boolean
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExamImportRow'
+      required:
+      - applied
+      - rows
     JournalRules:
       type: object
       properties:
@@ -4720,6 +6216,32 @@ components:
           type: string
       required:
       - step
+    LowAttendance:
+      type: object
+      properties:
+        student:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        course:
+          type: string
+          format: uuid
+        group_name:
+          type: string
+        subject_name:
+          type: string
+        attendance_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+      required:
+      - attendance_percent
+      - course
+      - full_name
+      - group_name
+      - student
+      - subject_name
     Me:
       type: object
       properties:
@@ -4858,6 +6380,62 @@ components:
     NullEnum:
       enum:
       - null
+    Overview:
+      type: object
+      properties:
+        today:
+          type: string
+          format: date
+        lessons:
+          $ref: '#/components/schemas/OverviewToday'
+        unfilled:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnfilledTeacher'
+        low_attendance:
+          type: array
+          items:
+            $ref: '#/components/schemas/LowAttendance'
+        attendance_threshold:
+          type: integer
+        attendance_window_days:
+          type: integer
+        blocked_logins:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockedLogin'
+        failed_logins_24h:
+          type: integer
+        audit:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditLog'
+      required:
+      - attendance_threshold
+      - attendance_window_days
+      - audit
+      - blocked_logins
+      - failed_logins_24h
+      - lessons
+      - low_attendance
+      - today
+      - unfilled
+    OverviewToday:
+      type: object
+      properties:
+        total:
+          type: integer
+        conducted:
+          type: integer
+        to_fill:
+          type: integer
+        cancelled:
+          type: integer
+      required:
+      - cancelled
+      - conducted
+      - to_fill
+      - total
     PaginatedAdminUserListList:
       type: object
       required:
@@ -4881,6 +6459,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdminUserList'
+    PaginatedAnnouncementList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Announcement'
     PaginatedAuditLogList:
       type: object
       required:
@@ -5042,6 +6643,116 @@ components:
           $ref: '#/components/schemas/StudentProfileRequest'
         teacher_profile:
           $ref: '#/components/schemas/TeacherProfileRequest'
+    PatchedAnnouncementRequest:
+      type: object
+      description: The administrator's form. The author is the current user; the body
+        is plain text.
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        body:
+          type: string
+          minLength: 1
+          maxLength: 5000
+        audience:
+          $ref: '#/components/schemas/AudienceEnum'
+        role:
+          type: string
+          maxLength: 16
+        groups:
+          type: array
+          items:
+            type: string
+            format: uuid
+        pinned:
+          type: boolean
+        published_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+    PatchedCenterSettingsRequest:
+      type: object
+      properties:
+        center_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        contacts:
+          type: string
+          maxLength: 300
+        site_url:
+          type: string
+          minLength: 1
+          maxLength: 200
+        lockout_threshold:
+          type: integer
+          maximum: 20
+          minimum: 3
+        lockout_base_minutes:
+          type: integer
+          maximum: 1440
+          minimum: 1
+        lockout_max_hours:
+          type: integer
+          maximum: 168
+          minimum: 1
+        admin_idle_minutes:
+          type: integer
+          maximum: 240
+          minimum: 5
+        admin_absolute_hours:
+          type: integer
+          maximum: 24
+          minimum: 1
+        teacher_idle_minutes:
+          type: integer
+          maximum: 720
+          minimum: 5
+        teacher_absolute_hours:
+          type: integer
+          maximum: 72
+          minimum: 1
+        teacher_remember_days:
+          type: integer
+          maximum: 90
+          minimum: 1
+        student_absolute_hours:
+          type: integer
+          maximum: 72
+          minimum: 1
+        student_remember_days:
+          type: integer
+          maximum: 90
+          minimum: 1
+        edit_window_days:
+          type: integer
+          maximum: 60
+          minimum: 0
+        max_grades_per_lesson:
+          type: integer
+          maximum: 9
+          minimum: 1
+        low_grade_percent:
+          type: integer
+          maximum: 99
+          minimum: 1
+        attendance_threshold_percent:
+          type: integer
+          maximum: 100
+          minimum: 1
+        attendance_window_days:
+          type: integer
+          maximum: 365
+          minimum: 7
+        require_teacher_2fa:
+          type: boolean
+        default_grade_scale:
+          $ref: '#/components/schemas/GradeScaleEnum'
     PatchedCourseRequest:
       type: object
       properties:
@@ -5059,6 +6770,35 @@ components:
           items:
             type: string
             format: uuid
+    PatchedExamUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        subject:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        max_score:
+          type: integer
+          maximum: 1000
+          minimum: 1
+        courses:
+          type: array
+          items:
+            type: string
+            format: uuid
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/SectionWriteRequest'
+        version:
+          type: integer
+          minimum: 1
     PatchedGradeUpdateRequest:
       type: object
       properties:
@@ -5249,6 +6989,102 @@ components:
           pattern: ^-?\d{0,2}(?:\.\d{0,2})?$
         is_archived:
           type: boolean
+    Performance:
+      type: object
+      properties:
+        first:
+          type: string
+          format: date
+        last:
+          type: string
+          format: date
+        courses:
+          type: array
+          items:
+            $ref: '#/components/schemas/PerformanceCourse'
+        students:
+          type: array
+          items:
+            $ref: '#/components/schemas/PerformanceStudent'
+      required:
+      - courses
+      - first
+      - last
+      - students
+    PerformanceCell:
+      type: object
+      properties:
+        course:
+          type: string
+          format: uuid
+        average:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        attendance_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+      required:
+      - attendance_percent
+      - average
+      - course
+    PerformanceCourse:
+      type: object
+      properties:
+        students:
+          type: integer
+        average:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        attendance_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        low_attendance:
+          type: integer
+        low_average:
+          type: integer
+        course:
+          type: string
+          format: uuid
+        group_name:
+          type: string
+        subject_name:
+          type: string
+        teacher_name:
+          type: string
+      required:
+      - attendance_percent
+      - average
+      - course
+      - group_name
+      - low_attendance
+      - low_average
+      - students
+      - subject_name
+      - teacher_name
+    PerformanceStudent:
+      type: object
+      properties:
+        student:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        cells:
+          type: array
+          items:
+            $ref: '#/components/schemas/PerformanceCell'
+      required:
+      - cells
+      - full_name
+      - student
     Period:
       type: object
       properties:
@@ -5292,6 +7128,102 @@ components:
         comment:
           type: string
           maxLength: 300
+    ResultRow:
+      type: object
+      properties:
+        student:
+          type: string
+          format: uuid
+        student_name:
+          type: string
+        login:
+          type: string
+        group_name:
+          type: string
+        result:
+          type: string
+          format: uuid
+          nullable: true
+        total:
+          type: integer
+          nullable: true
+        percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,1})?$
+          nullable: true
+        was_absent:
+          type: boolean
+        comment:
+          type: string
+        sections:
+          type: object
+          additionalProperties:
+            type: integer
+        version:
+          type: integer
+          nullable: true
+      required:
+      - comment
+      - group_name
+      - login
+      - percent
+      - result
+      - sections
+      - student
+      - student_name
+      - total
+      - version
+      - was_absent
+    ResultWriteRequest:
+      type: object
+      properties:
+        total:
+          type: integer
+          nullable: true
+        sections:
+          type: object
+          additionalProperties:
+            type: integer
+        was_absent:
+          type: boolean
+          default: false
+        comment:
+          type: string
+          maxLength: 300
+        version:
+          type: integer
+          nullable: true
+        reason:
+          type: string
+          default: ''
+          maxLength: 300
+    ResultsTable:
+      type: object
+      properties:
+        exam:
+          $ref: '#/components/schemas/Exam'
+        editable:
+          type: boolean
+        needs_reason:
+          type: boolean
+        locked:
+          type: string
+          nullable: true
+        window_closes_on:
+          type: string
+          format: date
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResultRow'
+      required:
+      - editable
+      - exam
+      - locked
+      - needs_reason
+      - rows
+      - window_closes_on
     RoleEnum:
       enum:
       - admin
@@ -5519,6 +7451,60 @@ components:
         * `9` - 9
         * `10` - 10
         * `11` - 11
+    Section:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 120
+        max_score:
+          type: integer
+          maximum: 32767
+          minimum: 0
+      required:
+      - id
+      - max_score
+      - name
+    SectionStat:
+      type: object
+      properties:
+        name:
+          type: string
+        max_score:
+          type: integer
+        mean:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        mean_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,1})?$
+          nullable: true
+      required:
+      - max_score
+      - mean
+      - mean_percent
+      - name
+    SectionWriteRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        max_score:
+          type: integer
+          maximum: 1000
+          minimum: 1
+      required:
+      - max_score
+      - name
     Session:
       type: object
       properties:
@@ -5705,6 +7691,67 @@ components:
         * `to_fill` - to_fill
         * `filled` - filled
         * `cancelled` - cancelled
+    StatementCourse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        group_name:
+          type: string
+        subject_name:
+          type: string
+        teacher_name:
+          type: string
+        scale:
+          $ref: '#/components/schemas/GradeScaleEnum'
+      required:
+      - group_name
+      - id
+      - scale
+      - subject_name
+      - teacher_name
+    StatementRow:
+      type: object
+      properties:
+        average:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        grades:
+          type: integer
+        attendance_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        present:
+          type: integer
+        late:
+          type: integer
+        absent:
+          type: integer
+        excused:
+          type: integer
+        eligible:
+          type: integer
+        student:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+      required:
+      - absent
+      - attendance_percent
+      - average
+      - eligible
+      - excused
+      - full_name
+      - grades
+      - late
+      - present
+      - student
     Stats:
       type: object
       properties:
@@ -5776,6 +7823,67 @@ components:
       - period_from
       - period_to
       - threshold
+    StudentExam:
+      type: object
+      properties:
+        exam:
+          type: string
+          format: uuid
+        title:
+          type: string
+        date:
+          type: string
+          format: date
+        total:
+          type: integer
+          nullable: true
+        max_score:
+          type: integer
+        percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,1})?$
+          nullable: true
+        change:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,1})?$
+          nullable: true
+        was_absent:
+          type: boolean
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentExamSection'
+      required:
+      - change
+      - date
+      - exam
+      - max_score
+      - percent
+      - sections
+      - title
+      - total
+      - was_absent
+    StudentExamSection:
+      type: object
+      properties:
+        name:
+          type: string
+        score:
+          type: integer
+        max_score:
+          type: integer
+        percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,1})?$
+          nullable: true
+      required:
+      - max_score
+      - name
+      - percent
+      - score
     StudentGrade:
       type: object
       properties:
@@ -5893,6 +8001,55 @@ components:
       - period_name
       - subjects
       - today
+    StudentImportResult:
+      type: object
+      properties:
+        applied:
+          type: boolean
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentImportRow'
+        created:
+          type: array
+          items:
+            $ref: '#/components/schemas/Credential'
+      required:
+      - applied
+      - created
+      - rows
+    StudentImportRow:
+      type: object
+      properties:
+        line:
+          type: integer
+        last_name:
+          type: string
+        first_name:
+          type: string
+        middle_name:
+          type: string
+        login:
+          type: string
+        group_name:
+          type: string
+        issues:
+          type: array
+          items:
+            type: string
+        warnings:
+          type: array
+          items:
+            type: string
+      required:
+      - first_name
+      - group_name
+      - issues
+      - last_name
+      - line
+      - login
+      - middle_name
+      - warnings
     StudentLesson:
       type: object
       description: 'What a student sees: no versions, no internal links, nothing about
@@ -6084,6 +8241,57 @@ components:
       - school_grade
       - target
       - target_score
+    StudentSubjectExams:
+      type: object
+      properties:
+        subject:
+          type: string
+          format: uuid
+        subject_name:
+          type: string
+        target_percent:
+          type: integer
+          nullable: true
+        exams:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentExam'
+      required:
+      - exams
+      - subject
+      - subject_name
+      - target_percent
+    StudentSummary:
+      type: object
+      properties:
+        student:
+          $ref: '#/components/schemas/SummaryStudent'
+        year_name:
+          type: string
+        scale:
+          $ref: '#/components/schemas/GradeScaleEnum'
+        first:
+          type: string
+          format: date
+        last:
+          type: string
+          format: date
+        subjects:
+          type: array
+          items:
+            $ref: '#/components/schemas/SummarySubject'
+        exams:
+          type: array
+          items:
+            $ref: '#/components/schemas/SummaryExam'
+      required:
+      - exams
+      - first
+      - last
+      - scale
+      - student
+      - subjects
+      - year_name
     Subject:
       type: object
       properties:
@@ -6164,6 +8372,161 @@ components:
       required:
       - teacher
       - version
+    Summary:
+      type: object
+      properties:
+        count:
+          type: integer
+        absent:
+          type: integer
+        mean:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        median:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        min:
+          type: integer
+          nullable: true
+        max:
+          type: integer
+          nullable: true
+      required:
+      - absent
+      - count
+      - max
+      - mean
+      - median
+      - min
+    SummaryExam:
+      type: object
+      properties:
+        subject_name:
+          type: string
+        title:
+          type: string
+        date:
+          type: string
+          format: date
+        total:
+          type: integer
+          nullable: true
+        max_score:
+          type: integer
+        percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,1})?$
+          nullable: true
+        was_absent:
+          type: boolean
+        target_percent:
+          type: integer
+          nullable: true
+      required:
+      - date
+      - max_score
+      - percent
+      - subject_name
+      - target_percent
+      - title
+      - total
+      - was_absent
+    SummaryStudent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        groups:
+          type: array
+          items:
+            type: string
+        parent_name:
+          type: string
+        target:
+          type: string
+      required:
+      - full_name
+      - groups
+      - id
+      - parent_name
+      - target
+    SummarySubject:
+      type: object
+      properties:
+        average:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        grades:
+          type: integer
+        attendance_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        present:
+          type: integer
+        late:
+          type: integer
+        absent:
+          type: integer
+        excused:
+          type: integer
+        eligible:
+          type: integer
+        subject_name:
+          type: string
+        teacher_name:
+          type: string
+        group_name:
+          type: string
+      required:
+      - absent
+      - attendance_percent
+      - average
+      - eligible
+      - excused
+      - grades
+      - group_name
+      - late
+      - present
+      - subject_name
+      - teacher_name
+    Target:
+      type: object
+      properties:
+        subject:
+          type: string
+          format: uuid
+        percent:
+          type: integer
+          maximum: 100
+          minimum: 1
+      required:
+      - percent
+      - subject
+    TargetRequest:
+      type: object
+      properties:
+        subject:
+          type: string
+          format: uuid
+        percent:
+          type: integer
+          maximum: 100
+          minimum: 1
+      required:
+      - percent
+      - subject
     TeacherProfile:
       type: object
       properties:
@@ -6376,6 +8739,43 @@ components:
       required:
       - date
       - group
+    UnfilledLesson:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        group_name:
+          type: string
+        subject_name:
+          type: string
+      required:
+      - date
+      - group_name
+      - id
+      - subject_name
+    UnfilledTeacher:
+      type: object
+      properties:
+        teacher:
+          type: string
+          format: uuid
+        teacher_name:
+          type: string
+        count:
+          type: integer
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnfilledLesson'
+      required:
+      - count
+      - lessons
+      - teacher
+      - teacher_name
     VersionReasonRequest:
       type: object
       properties:

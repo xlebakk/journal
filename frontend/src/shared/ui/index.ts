@@ -16,3 +16,8 @@ export { ThemeSwitch } from "./ThemeSwitch";
 export { lessonMarks, type ScheduleItem } from "./scheduleMarks";
 export { ScheduleIssues } from "./ScheduleIssues";
 export { WeekNav, WeekSchedule } from "./WeekSchedule";
+export { AccessCards, type AccessCard } from "./AccessCards";
+export { FileField } from "./FileField";
+export { Histogram, type Bucket } from "./Histogram";
+export { LinkifiedText, Notices, type Notice } from "./Notices";
+export { ScoreChart, type ScorePoint } from "./ScoreChart";

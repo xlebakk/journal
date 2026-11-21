@@ -125,3 +125,24 @@
     display: none !important;
   }
 }
+
+.textarea {
+  padding: 4px 0;
+  border: 0;
+  border-bottom: var(--line-strong) solid var(--ink);
+  background: transparent;
+  resize: vertical;
+}
+
+.textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.logo {
+  display: block;
+  max-width: 160px;
+  max-height: 80px;
+  border: var(--line) solid var(--rule);
+  background: var(--sheet);
+}

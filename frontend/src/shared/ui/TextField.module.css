@@ -93,3 +93,26 @@
     min-height: var(--tap-target);
   }
 }
+
+.file {
+  min-height: 36px;
+  padding: 6px 0;
+  font: inherit;
+  font-size: var(--text-14);
+}
+
+.file::file-selector-button {
+  margin-right: var(--space-1);
+  padding: 4px 12px;
+  border: var(--line) solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--sheet);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.file:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}

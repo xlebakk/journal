@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 
+import { AnnouncementsBoard } from "@/features/announcements/AnnouncementsBoard";
 import { errorMessage } from "@/shared/api/errors";
 import { t } from "@/shared/i18n";
 import { formatDayLong, hhmm } from "@/shared/lib/week";
@@ -8,7 +9,7 @@ import { EmptyState, lessonMarks, RuledSkeleton, Table } from "@/shared/ui";
 import { useStudentHome } from "./api";
 import styles from "./Student.module.css";
 
-/** «Главная» of a student (SPEC §6.1). Announcements arrive in stage 5. */
+/** «Главная» of a student (SPEC §6.1): announcements, today, new grades, homework. */
 export function HomePage() {
   const home = useStudentHome();
   if (home.isPending) return <RuledSkeleton rows={8} />;
@@ -18,6 +19,8 @@ export function HomePage() {
   return (
     <section className={styles.page}>
       <h1>{formatDayLong(data.today)}</h1>
+
+      <AnnouncementsBoard className={styles.section} />
 
       <section className={styles.section} aria-labelledby="home-today">
         <h2 id="home-today">{t("student.today")}</h2>

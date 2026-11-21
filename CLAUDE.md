@@ -14,7 +14,8 @@
 ```
 backend/            Django 5.2 LTS + DRF, Python 3.13, uv
   config/settings/  base · dev · test · prod; секреты только из окружения (config/env.py)
-  apps/core/        общее: health, SessionAuthentication с 401, обработчики 404/500
+  apps/core/        общее: health, SessionAuthentication с 401, обработчики 404/500,
+                    files.py (чтение XLSX/CSV, выгрузки с защитой от формул), настройки и логотип
   apps/accounts/    пользователи, профили, вход, 2FA (totp.py), блокировки (lockout.py),
                     сеансы и тайм-ауты (sessions.py, middleware.py), права (permissions.py)
   apps/audit/       AuditLog (только INSERT, триггер) и services.record()
@@ -23,7 +24,9 @@ backend/            Django 5.2 LTS + DRF, Python 3.13, uv
   apps/schedule/    шаблон недели (ScheduleSlot), занятия (Lesson, planned_* для переносов),
                     запросы преподавателей; вся логика — services.py (генерация, конфликты, план)
   apps/journal/     посещаемость и оценки; правила — services.py, формулы — stats.py (одна функция)
-  apps/<остальные>/ exams, reports, announcements — создаются на своих этапах
+  apps/exams/       пробные тесты, разделы, результаты, цели учеников; правила — services.py
+  apps/announcements/ объявления: для всех, роли или групп (for_user, live)
+  apps/reports/     отчёты и выгрузки (?export=xlsx|csv), обзор администратора
 frontend/           React + TypeScript + Vite, CSS Modules, TanStack Query, React Router
   src/app/          роутинг, лэйауты
   src/features/     auth, student, teacher, admin
@@ -69,7 +72,8 @@ docs/               decisions.md, security.md, позже deploy.md, admin-guide
 13. Админский CRUD — `apps.core.viewsets.AuditedAdminViewSet`: аудит, 409 `in_use`, коды нарушений ограничений через `constraint_codes`. Сериалайзеры моделей — `apps.core.serializers.DatabaseUniqueModelSerializer`: уникальность проверяет БД.
 14. Query-параметры с id и датами — через `apps.core.params.uuid_param` / `date_param` (мусор → 400).
 15. Занятия по ролям — `Lesson.objects.for_user(user, role)` с **активной** ролью; изменение занятия — под `services.lock_lesson(id, version)` (оптимистичная блокировка).
-16. Любая запись в журнал — только через `apps/journal/services.py` (окно, причина, членство, автор оценки, версии, аудит). Средние и проценты — только `apps/journal/stats.py:course_stats`; новый экран или отчёт с цифрами вызывает её же.
+16. Любая запись в журнал — только через `apps/journal/services.py` (окно, причина, членство, автор оценки, версии, аудит). Средние и проценты — только `apps/journal/stats.py:course_stats` (по курсу — `summarise_group`); новый экран или отчёт с цифрами вызывает их же.
+17. Выгрузка файла (`?export=xlsx|csv`) — экспорт ПД: `require_recent_password` и `throttle_scope = "export"`; файлы — только через `apps/core/files.py` (`read_table`, `export`). Результаты тестов — только через `apps/exams/services.py`.
 
 ## Время и данные
 

@@ -7,17 +7,26 @@ import { LoginPage } from "@/features/auth/LoginPage";
 import { ProfilePage } from "@/features/auth/ProfilePage";
 import { SessionsPage } from "@/features/auth/SessionsPage";
 import { TotpSetupPage } from "@/features/auth/TotpSetupPage";
+import { AuditPage } from "@/features/admin/audit/AuditPage";
 import { CatalogsPage } from "@/features/admin/catalogs/CatalogsPage";
 import { GroupDetailPage } from "@/features/admin/groups/GroupDetailPage";
 import { GroupsPage } from "@/features/admin/groups/GroupsPage";
+import { ImportPage } from "@/features/admin/import/ImportPage";
 import { OverviewPage } from "@/features/admin/OverviewPage";
 import { RequestsPage } from "@/features/admin/schedule/RequestsPage";
 import { SchedulePage as AdminSchedulePage } from "@/features/admin/schedule/SchedulePage";
+import { SettingsPage } from "@/features/admin/settings/SettingsPage";
 import { UserCreatePage } from "@/features/admin/users/UserCreatePage";
 import { UserDetailPage } from "@/features/admin/users/UserDetailPage";
 import { UsersPage } from "@/features/admin/users/UsersPage";
+import { AnnouncementsPage } from "@/features/announcements/AnnouncementsPage";
+import { ExamPage } from "@/features/exams/ExamPage";
+import { ExamsPage } from "@/features/exams/ExamsPage";
 import { JournalPage } from "@/features/journal/JournalPage";
 import { LessonPage } from "@/features/journal/LessonPage";
+import { AdminReportsPage } from "@/features/reports/AdminReportsPage";
+import { TeacherReportsPage } from "@/features/reports/StatementPanel";
+import { StudentSummaryPage } from "@/features/reports/StudentSummaryPage";
 import { AttendancePage } from "@/features/student/AttendancePage";
 import { DiaryPage } from "@/features/student/DiaryPage";
 import { GradesPage } from "@/features/student/GradesPage";
@@ -58,6 +67,7 @@ const routes: RouteObject[] = [
       { path: "users", Component: UsersPage },
       { path: "users/new", Component: UserCreatePage },
       { path: "users/:id", Component: UserDetailPage },
+      { path: "import", Component: ImportPage },
       { path: "groups", Component: GroupsPage },
       { path: "groups/:id", Component: GroupDetailPage },
       { path: "schedule", Component: AdminSchedulePage },
@@ -65,6 +75,13 @@ const routes: RouteObject[] = [
       { path: "catalogs", Component: CatalogsPage },
       { path: "journal", Component: JournalPage },
       { path: "journal/lessons/:id", Component: LessonPage },
+      { path: "exams", Component: ExamsPage },
+      { path: "exams/:id", Component: ExamPage },
+      { path: "reports", Component: AdminReportsPage },
+      { path: "reports/students/:id", Component: StudentSummaryPage },
+      { path: "announcements", Component: AnnouncementsPage },
+      { path: "audit", Component: AuditPage },
+      { path: "settings", Component: SettingsPage },
     ],
   },
   {
@@ -75,6 +92,9 @@ const routes: RouteObject[] = [
       { path: "schedule", Component: TeacherSchedulePage },
       { path: "journal", Component: JournalPage },
       { path: "journal/lessons/:id", Component: LessonPage },
+      { path: "exams", Component: ExamsPage },
+      { path: "exams/:id", Component: ExamPage },
+      { path: "reports", Component: TeacherReportsPage },
     ],
   },
   {
