@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
 
 import react from "@vitejs/plugin-react";
@@ -8,7 +9,21 @@ const apiTarget = process.env.VITE_API_PROXY ?? "http://localhost:8000";
 // --paper: the browser bar and the splash match the page (SPEC §13).
 const PAPER = "#f4f1e8";
 
-export default defineConfig(({ mode }) => {
+/**
+ * The security headers of production, read from the Caddy config itself (one source):
+ * `vite preview` serves the production build with them, so e2e runs under the real CSP.
+ */
+function productionHeaders(): Record<string, string> {
+  const caddy = readFileSync(new URL("../infra/caddy/common.caddy", import.meta.url), "utf8");
+  const block = caddy.slice(caddy.indexOf("(security_headers)"), caddy.indexOf("(journal_app)"));
+  const headers: Record<string, string> = {};
+  for (const match of block.matchAll(/^\s+([A-Z][\w-]+) "([^"]+)"$/gm)) {
+    headers[match[1]!] = match[2]!;
+  }
+  return headers;
+}
+
+export default defineConfig(({ mode, isPreview }) => {
   // `vite build --mode mobile`: the bundle inside the Android app (stage 6). It has no
   // service worker (the files are already on the phone) and needs the server address.
   const mobile = mode === "mobile";
@@ -63,6 +78,11 @@ export default defineConfig(({ mode }) => {
       port: 5173,
       strictPort: true,
       // Same origin in dev as in prod: the API is proxied, so cookies work without CORS.
+      proxy: { "/api": { target: apiTarget, changeOrigin: false } },
+    },
+    preview: {
+      // Read only for `vite preview`: the Docker build of the web image has no infra/ next to it.
+      headers: isPreview ? productionHeaders() : {},
       proxy: { "/api": { target: apiTarget, changeOrigin: false } },
     },
     build: {

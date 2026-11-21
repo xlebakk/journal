@@ -1,3 +1,5 @@
+// Must stay the first import (see the file).
+import "@/shared/lib/zodConfig";
 import "@/shared/ui/global.css";
 
 import { StrictMode } from "react";

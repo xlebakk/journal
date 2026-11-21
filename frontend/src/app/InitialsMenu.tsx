@@ -22,8 +22,9 @@ export function InitialsMenu({ me }: { me: Me }) {
     navigate(homePath(updated.active_role), { replace: true });
   };
 
+  // Not modal: a modal menu locks scrolling with an injected <style>, which the CSP blocks.
   return (
-    <Menu.Root>
+    <Menu.Root modal={false}>
       <Menu.Trigger asChild>
         <InitialsStamp userId={me.id} firstName={me.first_name} lastName={me.last_name} />
       </Menu.Trigger>

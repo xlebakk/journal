@@ -88,3 +88,9 @@ textarea {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Scroll lock while a dialog is open (shared/ui/Dialog.tsx). */
+html.dialog-open,
+html.dialog-open body {
+  overflow: hidden;
+}

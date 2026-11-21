@@ -4263,6 +4263,28 @@ components:
       required:
       - joined_on
       - student
+    AdminDeviceLogin:
+      type: object
+      properties:
+        user:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        at:
+          type: string
+          format: date-time
+        ip:
+          type: string
+          nullable: true
+        user_agent:
+          type: string
+      required:
+      - at
+      - full_name
+      - ip
+      - user
+      - user_agent
     AdminUserDetail:
       type: object
       properties:
@@ -4876,6 +4898,15 @@ components:
           type: boolean
           readOnly: true
           nullable: true
+        last_restore_check_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        last_restore_check_ok:
+          type: boolean
+          readOnly: true
+          nullable: true
         updated_at:
           type: string
           format: date-time
@@ -4884,6 +4915,8 @@ components:
       - default_grade_scale
       - last_backup_at
       - last_backup_ok
+      - last_restore_check_at
+      - last_restore_check_ok
       - logo
       - updated_at
     ClearRequest:
@@ -5190,6 +5223,30 @@ components:
       - status
       - subject_name
       - subject_short
+    DeniedUser:
+      type: object
+      properties:
+        user:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        count:
+          type: integer
+        last_hour:
+          type: integer
+        spike:
+          type: boolean
+        last_at:
+          type: string
+          format: date-time
+      required:
+      - count
+      - full_name
+      - last_at
+      - last_hour
+      - spike
+      - user
     Diary:
       type: object
       properties:
@@ -6625,15 +6682,25 @@ components:
             $ref: '#/components/schemas/BlockedLogin'
         failed_logins_24h:
           type: integer
+        denied:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeniedUser'
+        admin_new_devices:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminDeviceLogin'
         audit:
           type: array
           items:
             $ref: '#/components/schemas/AuditLog'
       required:
+      - admin_new_devices
       - attendance_threshold
       - attendance_window_days
       - audit
       - blocked_logins
+      - denied
       - failed_logins_24h
       - lessons
       - low_attendance
