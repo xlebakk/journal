@@ -1,3 +1,11 @@
+import {
+  BookOpen,
+  CalendarDays,
+  ClipboardList,
+  FileCheck,
+  House,
+  type LucideIcon,
+} from "lucide-react";
 import { NavLink, Outlet } from "react-router";
 
 import type { Me, Role } from "@/features/auth/api";
@@ -7,7 +15,7 @@ import { t, type MessageKey } from "@/shared/i18n";
 import styles from "./AppShell.module.css";
 import { InitialsMenu } from "./InitialsMenu";
 
-type NavItem = { to: string; label: MessageKey; end?: boolean };
+type NavItem = { to: string; label: MessageKey; end?: boolean; icon?: LucideIcon };
 
 // Only sections that exist today; the rest appear with their stages.
 const NAV: Record<Role, NavItem[]> = {
@@ -26,8 +34,11 @@ const NAV: Record<Role, NavItem[]> = {
     { to: "/teacher/schedule", label: "nav.schedule" },
   ],
   student: [
-    { to: "/student", label: "nav.home", end: true },
-    { to: "/student/schedule", label: "nav.schedule" },
+    { to: "/student", label: "nav.home", end: true, icon: House },
+    { to: "/student/diary", label: "nav.diary", icon: BookOpen },
+    { to: "/student/grades", label: "nav.grades", icon: ClipboardList },
+    { to: "/student/tests", label: "nav.tests", icon: FileCheck },
+    { to: "/student/schedule", label: "nav.schedule", icon: CalendarDays },
   ],
   parent: [],
 };
@@ -58,11 +69,14 @@ export function AppShell({ me }: { me: Me }) {
   const items = NAV[role];
   const isAdmin = role === "admin";
   return (
-    <div className={styles.shell}>
+    <div className={role === "student" ? `${styles.shell} ${styles.withBottomNav}` : styles.shell}>
       <header className={styles.header}>
         <span className={styles.brand}>{branding.data?.center_name || t("app.centerName")}</span>
         {!isAdmin && (
-          <nav className={styles.tabs} aria-label={t("nav.sections")}>
+          <nav
+            className={role === "student" ? `${styles.tabs} ${styles.studentTabs}` : styles.tabs}
+            aria-label={t("nav.sections")}
+          >
             <Links items={items} className={styles.tab} />
           </nav>
         )}
@@ -79,6 +93,27 @@ export function AppShell({ me }: { me: Me }) {
           <Outlet />
         </main>
       </div>
+      {role === "student" && (
+        // Phones: a bottom bar of five items with thin icons and labels (SPEC §6, §12).
+        <nav className={styles.bottomNav} aria-label={t("nav.sections")}>
+          {items.map((item) => {
+            const Icon = item.icon;
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                className={({ isActive }) =>
+                  [styles.bottomLink, isActive && styles.active].filter(Boolean).join(" ")
+                }
+              >
+                {Icon && <Icon size={20} strokeWidth={1.5} aria-hidden="true" />}
+                <span>{t(item.label)}</span>
+              </NavLink>
+            );
+          })}
+        </nav>
+      )}
     </div>
   );
 }

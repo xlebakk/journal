@@ -3,9 +3,12 @@ versions or authors' ids; the attendance comment is a staff note and is not show
 
 from typing import Any
 
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from apps.schedule.serializers import StudentLessonSerializer
+
+from .models import AttendanceStatus
 
 
 class StudentGradeSerializer(serializers.Serializer[Any]):
@@ -78,9 +81,11 @@ class DiaryLessonSerializer(StudentLessonSerializer):
         )
         read_only_fields = fields  # type: ignore[assignment]
 
+    @extend_schema_field(serializers.ChoiceField(choices=AttendanceStatus.choices, allow_null=True))
     def get_attendance(self, lesson: Any) -> str | None:
         return self.context["attendance"].get(lesson.pk)  # type: ignore[no-any-return]
 
+    @extend_schema_field(DiaryGradeSerializer(many=True))
     def get_grades(self, lesson: Any) -> list[dict[str, Any]]:
         return DiaryGradeSerializer(self.context["grades"].get(lesson.pk, []), many=True).data  # type: ignore[return-value]
 

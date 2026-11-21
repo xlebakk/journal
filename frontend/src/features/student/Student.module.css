@@ -1,0 +1,350 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: var(--line) solid var(--ink);
+  background: var(--sheet);
+}
+
+.list > li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px var(--space-2);
+  min-height: var(--row-height);
+  padding: 6px var(--space-1);
+  border-bottom: var(--line) solid var(--rule);
+}
+
+.time {
+  min-width: 96px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.meta {
+  color: var(--ink-2);
+  font-size: var(--text-14);
+}
+
+.red {
+  color: var(--red-pen);
+}
+
+.pencil {
+  color: var(--pencil);
+}
+
+.ink {
+  font-style: italic;
+}
+
+.cancelled {
+  text-decoration: line-through;
+}
+
+.grade {
+  min-width: 36px;
+  font-family: var(--font-mono);
+  font-size: var(--text-16);
+  font-weight: 700;
+}
+
+.low {
+  color: var(--red-pen);
+}
+
+.homework {
+  flex-basis: 100%;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.error {
+  margin: 0;
+  color: var(--red-pen);
+}
+
+.number {
+  font-family: var(--font-mono);
+  text-align: right;
+}
+
+/* --- Diary: two facing pages of a paper diary ------------------------------------------ */
+
+.spread {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: var(--line) solid var(--ink);
+  background: var(--sheet);
+  touch-action: pan-y;
+}
+
+.leaf {
+  display: flex;
+  flex-direction: column;
+}
+
+.leaf + .leaf {
+  border-left: var(--line-strong) solid var(--ink);
+}
+
+.day {
+  border-bottom: var(--line) solid var(--ink);
+}
+
+.day:last-child {
+  border-bottom: 0;
+}
+
+.dayHead {
+  margin: 0;
+  padding: 4px var(--space-1);
+  border-bottom: var(--line) solid var(--rule);
+  font-family: var(--font-display);
+  font-size: var(--text-16);
+}
+
+.dayHead.today {
+  background: linear-gradient(var(--marker), var(--marker)), var(--sheet);
+}
+
+.diaryTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.diaryTable td,
+.diaryTable th {
+  padding: 4px 6px;
+  border-bottom: var(--line) solid var(--rule);
+  vertical-align: top;
+  text-align: left;
+  font-size: var(--text-14);
+}
+
+.diaryTable th {
+  font-size: var(--text-12);
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.colSubject {
+  width: 34%;
+  border-right: var(--line) solid var(--rule);
+}
+
+.colMark {
+  width: 64px;
+  border-left: var(--line-strong) solid var(--red-pen);
+  text-align: center !important;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.emptyRow td {
+  height: 28px;
+  color: var(--ink-2);
+}
+
+/* --- Grades ---------------------------------------------------------------------------- */
+
+.scroller {
+  max-width: 100%;
+  overflow-x: auto;
+  border: var(--line) solid var(--rule);
+  background: var(--sheet);
+}
+
+.gradesTable {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.gradesTable th,
+.gradesTable td {
+  height: var(--row-height);
+  padding: 0 6px;
+  border-right: var(--line) solid var(--rule);
+  border-bottom: var(--line) solid var(--rule);
+  background: var(--sheet);
+  white-space: nowrap;
+}
+
+.gradesTable thead th {
+  font-family: var(--font-mono);
+  font-size: var(--text-12);
+  font-weight: 500;
+  color: var(--ink-2);
+  border-bottom-color: var(--ink);
+}
+
+.gradesTable .subjectCell {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 180px;
+  text-align: left;
+  font-weight: 400;
+  border-right: var(--line-strong) solid var(--red-pen);
+}
+
+.gradeButton {
+  min-width: 32px;
+  min-height: 28px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--text-15);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.gradeButton:hover {
+  text-decoration: underline;
+}
+
+.gradeButton.low {
+  color: var(--red-pen);
+}
+
+.averageCell {
+  min-width: 72px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-align: right;
+}
+
+.subjectBlock {
+  border-top: var(--line) solid var(--ink);
+}
+
+.subjectBlock > summary {
+  display: flex;
+  justify-content: space-between;
+  min-height: var(--tap-target);
+  align-items: center;
+  padding: 0 var(--space-1);
+  cursor: pointer;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px var(--space-2);
+  margin: 0;
+}
+
+.facts dt {
+  font-size: var(--text-12);
+  color: var(--ink-2);
+  line-height: 22px;
+}
+
+.facts dd {
+  margin: 0;
+}
+
+/* --- Attendance calendar --------------------------------------------------------------- */
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border-top: var(--line) solid var(--ink);
+  border-left: var(--line) solid var(--rule);
+  background: var(--sheet);
+}
+
+.weekday {
+  padding: 4px;
+  border-right: var(--line) solid var(--rule);
+  border-bottom: var(--line) solid var(--rule);
+  font-size: var(--text-12);
+  color: var(--ink-2);
+}
+
+.calendarDay {
+  min-height: 64px;
+  padding: 4px;
+  border-right: var(--line) solid var(--rule);
+  border-bottom: var(--line) solid var(--rule);
+}
+
+.calendarDay.today {
+  background: linear-gradient(var(--marker-soft), var(--marker-soft)), var(--sheet);
+}
+
+.dayNumber {
+  font-family: var(--font-mono);
+  font-size: var(--text-12);
+  color: var(--ink-2);
+}
+
+.hasLessons .dayNumber {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.dayMarks {
+  display: flex;
+  flex-direction: column;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-12);
+}
+
+.blank {
+  background: var(--paper);
+}
+
+.monthNav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.monthName {
+  min-width: 160px;
+  text-align: center;
+  font-family: var(--font-mono);
+}
+
+@media (max-width: 599px) {
+  .spread {
+    grid-template-columns: 1fr;
+  }
+
+  .leaf + .leaf {
+    border-left: 0;
+    border-top: var(--line-strong) solid var(--ink);
+  }
+
+  .calendarDay {
+    min-height: 48px;
+  }
+}

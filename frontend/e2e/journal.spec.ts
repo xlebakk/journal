@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-import { login } from "./helpers";
+import { login, logout } from "./helpers";
 
-test("teacher fills a lesson; the grade and the average appear in the journal", async ({
+test("teacher fills a lesson; the journal shows it and the student sees the grade", async ({
   page,
 }) => {
   await login(page, "e2e.teacher");
@@ -36,4 +36,24 @@ test("teacher fills a lesson; the grade and the average appear in the journal", 
   await expect(grid.getByText("92", { exact: true }).first()).toBeVisible();
   await expect(grid.getByText("92.00")).toBeVisible();
   await expect(grid.getByText("100%")).toBeVisible();
+
+  await logout(page);
+
+  // SPEC §15: «преподаватель заполняет занятие → ученик видит оценку».
+  await login(page, "e2e.student");
+  await expect(page).toHaveURL(/\/student$/);
+  const newGrades = page.getByRole("region", { name: "Новые оценки за 7 дней" });
+  await expect(newGrades.getByText("92")).toBeVisible();
+  await expect(newGrades.getByText("Физика")).toBeVisible();
+
+  await page.getByRole("link", { name: "Оценки" }).first().click();
+  await expect(page).toHaveURL(/\/student\/grades$/);
+  await page.getByRole("button", { name: /^92, Физика/ }).click();
+  await expect(page.getByRole("dialog")).toContainText("Законы Ньютона");
+  await page.getByRole("button", { name: "закрыть" }).click();
+
+  await page.getByRole("link", { name: "Дневник" }).first().click();
+  await expect(page.getByText("Законы Ньютона")).toBeVisible();
+  // The student never reaches the journal itself.
+  expect((await page.request.get("/api/v1/journal/courses")).status()).toBe(403);
 });

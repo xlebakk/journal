@@ -38,6 +38,7 @@ export const ME_STUDENT = {
   must_change_password: false,
   totp_enabled: false,
   totp_setup_required: false,
+  groups: [],
 };
 
 export const BRANDING = { center_name: "Учебный центр «Пример»", contacts: "+998 71 000 00 00" };

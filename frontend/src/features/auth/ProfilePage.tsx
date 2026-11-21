@@ -8,6 +8,8 @@ import { t } from "@/shared/i18n";
 import { useTheme } from "@/shared/lib/theme";
 import { Button, ThemeSwitch } from "@/shared/ui";
 
+import { useStudentProfile } from "@/features/student/api";
+
 import { ME_KEY, useMe } from "./api";
 import styles from "./AccountPages.module.css";
 import { useReauth } from "./reauthContext";
@@ -19,6 +21,7 @@ export function ProfilePage() {
   const withReauth = useReauth();
   const queryClient = useQueryClient();
   const [codes, setCodes] = useState<string[] | null>(null);
+  const student = useStudentProfile(me.data?.active_role === "student");
 
   const disable = useMutation({
     mutationFn: () => withReauth(() => api<void>("/auth/totp/setup", { method: "DELETE" })),
@@ -46,6 +49,21 @@ export function ProfilePage() {
         <dd>{user.roles.map((role) => t(`roles.${role}`)).join(", ")}</dd>
         <dt>{t("totp.title")}</dt>
         <dd>{user.totp_enabled ? t("totp.enabled") : t("totp.disabled")}</dd>
+        {student.data && (
+          <>
+            <dt>{t("student.groups")}</dt>
+            <dd>{student.data.groups.join(", ") || "—"}</dd>
+            <dt>{t("student.school")}</dt>
+            <dd>
+              {student.data.school || "—"}
+              {student.data.school_grade && <>, {student.data.school_grade}</>}
+            </dd>
+            <dt>{t("student.target")}</dt>
+            <dd>{student.data.target || "—"}</dd>
+            <dt>{t("student.targetScore")}</dt>
+            <dd className="mono">{student.data.target_score ?? "—"}</dd>
+          </>
+        )}
       </dl>
 
       <h2>{t("profile.security")}</h2>

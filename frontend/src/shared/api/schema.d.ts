@@ -2048,6 +2048,16 @@ export interface components {
             today: string;
             lessons: components["schemas"]["DiaryLesson"][];
         };
+        DiaryGrade: {
+            /** Format: uuid */
+            id: string;
+            value: number;
+            work_type_name: string;
+            /** Format: decimal */
+            weight: string;
+            comment: string;
+            low: boolean;
+        };
         /** @description What a student sees: no versions, no internal links, nothing about other students. */
         DiaryLesson: {
             /** Format: uuid */
@@ -2080,10 +2090,8 @@ export interface components {
             readonly planned_room_name: string;
             readonly topic: string;
             readonly homework: string;
-            readonly attendance: string | null;
-            readonly grades: {
-                [key: string]: unknown;
-            }[];
+            readonly attendance: (components["schemas"]["AttendanceStatusEnum"] | components["schemas"]["NullEnum"]) | null;
+            readonly grades: components["schemas"]["DiaryGrade"][];
         };
         Ended: {
             ended: number;

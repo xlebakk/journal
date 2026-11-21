@@ -5,7 +5,7 @@ import { ADMIN_TOTP_SECRET, login, logout, PASSWORD, totp } from "./helpers";
 test("student lands on the student home and cannot open the admin section", async ({ page }) => {
   await login(page, "e2e.student");
   await expect(page).toHaveURL(/\/student$/);
-  await expect(page.getByRole("heading", { name: "Главная" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Новые оценки за 7 дней" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Меню пользователя Фарход Алиев" })).toHaveText(
     "ФА",
   );
