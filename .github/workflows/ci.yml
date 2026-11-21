@@ -92,7 +92,7 @@ jobs:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -119,7 +119,7 @@ jobs:
     needs: [frontend]
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -169,7 +169,7 @@ jobs:
           enable-cache: true
       - run: uv sync --frozen
         working-directory: backend
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -274,7 +274,7 @@ jobs:
           docker compose -f infra/docker-compose.prod.yml --env-file .env.prod exec -T api python manage.py shell -c "
           from apps.core.models import CenterSettings as C; s = C.load(); assert s.last_backup_ok and s.last_restore_check_ok, (s.last_backup_ok, s.last_restore_check_ok)"
       # SPEC §15 numbers, measured against the real stack (Caddy, compression, HTTPS).
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         if: ${{ !cancelled() }}
         with:
           node-version: 24
