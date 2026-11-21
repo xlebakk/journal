@@ -132,3 +132,106 @@ def student(make_user: MakeUser) -> User:
 @pytest.fixture
 def admin_client(admin: User, client_for: Callable[..., APIClient]) -> APIClient:
     return client_for(admin)
+
+
+# --- Center structure (stage 2) -----------------------------------------------------------
+
+from datetime import date, time  # noqa: E402
+
+TODAY = date(2026, 11, 16)  # a Monday inside the 2026/2027 year
+
+
+@pytest.fixture
+def frozen_today(monkeypatch: pytest.MonkeyPatch) -> date:
+    """«Today» for the schedule logic (generation horizon, editable lessons)."""
+    from apps.schedule import services
+
+    monkeypatch.setattr(services, "today", lambda: TODAY)
+    return TODAY
+
+
+@pytest.fixture
+def year(db: None) -> Any:
+    from apps.academics.models import AcademicYear
+
+    return AcademicYear.objects.create(
+        name="2026/2027", starts_on=date(2026, 9, 1), ends_on=date(2027, 6, 30), is_current=True
+    )
+
+
+@pytest.fixture
+def room(db: None) -> Any:
+    from apps.academics.models import Room
+
+    return Room.objects.create(name="101", capacity=12)
+
+
+@pytest.fixture
+def big_room(db: None) -> Any:
+    from apps.academics.models import Room
+
+    return Room.objects.create(name="Актовый зал", capacity=60)
+
+
+@pytest.fixture
+def math(db: None) -> Any:
+    from apps.academics.models import Subject
+
+    return Subject.objects.create(name="Математика", short_name="Мат")
+
+
+@pytest.fixture
+def physics(db: None) -> Any:
+    from apps.academics.models import Subject
+
+    return Subject.objects.create(name="Физика", short_name="Физ")
+
+
+@pytest.fixture
+def group(year: Any) -> Any:
+    from apps.academics.models import Group
+
+    return Group.objects.create(name="11-М вечерняя", academic_year=year, level="11 класс")
+
+
+@pytest.fixture
+def other_group(year: Any) -> Any:
+    from apps.academics.models import Group
+
+    return Group.objects.create(name="11-Ф утренняя", academic_year=year, level="11 класс")
+
+
+def enroll(
+    group: Any, student: User, joined: date = date(2026, 9, 1), left: date | None = None
+) -> Any:
+    from apps.academics.models import GroupMembership
+
+    return GroupMembership.objects.create(
+        group=group, student=student, joined_on=joined, left_on=left
+    )
+
+
+@pytest.fixture
+def course(group: Any, math: Any, teacher: User, student: User) -> Any:
+    from apps.academics.models import Course
+
+    enroll(group, student)
+    return Course.objects.create(group=group, subject=math, teacher=teacher)
+
+
+@pytest.fixture
+def slot(course: Any, room: Any, frozen_today: date) -> Any:
+    """Mondays 14:00–15:30 in room 101, from the start of the year; lessons generated."""
+    from apps.schedule import services
+    from apps.schedule.models import ScheduleSlot
+
+    s = ScheduleSlot.objects.create(
+        course=course,
+        weekday=1,
+        start_time=time(14, 0),
+        end_time=time(15, 30),
+        room=room,
+        valid_from=date(2026, 9, 1),
+    )
+    services.generate_lessons(slots=[s])
+    return s

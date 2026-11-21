@@ -54,6 +54,798 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedAuditLogList'
           description: ''
+  /api/v1/admin/courses:
+    get:
+      operationId: admin_courses_list
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: query
+        name: group
+        schema:
+          type: string
+      - in: query
+        name: teacher
+        schema:
+          type: string
+      - in: query
+        name: year
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+          description: ''
+    post:
+      operationId: admin_courses_create
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+          description: ''
+  /api/v1/admin/courses/{id}:
+    get:
+      operationId: admin_courses_retrieve
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+          description: ''
+    patch:
+      operationId: admin_courses_partial_update
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCourseRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+          description: ''
+    delete:
+      operationId: admin_courses_destroy
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/admin/groups:
+    get:
+      operationId: admin_groups_list
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: query
+        name: archived
+        schema:
+          type: boolean
+      - in: query
+        name: year
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+          description: ''
+    post:
+      operationId: admin_groups_create
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+          description: ''
+  /api/v1/admin/groups/{id}:
+    get:
+      operationId: admin_groups_retrieve
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+          description: ''
+    patch:
+      operationId: admin_groups_partial_update
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGroupRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+          description: ''
+    delete:
+      operationId: admin_groups_destroy
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/admin/groups/{id}/members:
+    get:
+      operationId: admin_groups_members_list
+      description: 'Full history of the composition: current and former members.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Membership'
+          description: ''
+    post:
+      operationId: admin_groups_members_create
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddMemberRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+          description: ''
+  /api/v1/admin/holidays:
+    get:
+      operationId: admin_holidays_list
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Holiday'
+          description: ''
+    post:
+      operationId: admin_holidays_create
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HolidayRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Holiday'
+          description: ''
+  /api/v1/admin/holidays/{id}:
+    get:
+      operationId: admin_holidays_retrieve
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Holiday'
+          description: ''
+    patch:
+      operationId: admin_holidays_partial_update
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedHolidayRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Holiday'
+          description: ''
+    delete:
+      operationId: admin_holidays_destroy
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/admin/lesson-types:
+    get:
+      operationId: admin_lesson_types_list
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LessonType'
+          description: ''
+    post:
+      operationId: admin_lesson_types_create
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LessonTypeRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonType'
+          description: ''
+  /api/v1/admin/lesson-types/{id}:
+    get:
+      operationId: admin_lesson_types_retrieve
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonType'
+          description: ''
+    patch:
+      operationId: admin_lesson_types_partial_update
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedLessonTypeRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonType'
+          description: ''
+    delete:
+      operationId: admin_lesson_types_destroy
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/admin/lessons:
+    get:
+      operationId: admin_lessons_list
+      description: 'Concrete lessons and their exceptions: cancel, restore, move,
+        substitute, extra lesson.'
+      parameters:
+      - in: query
+        name: course
+        schema:
+          type: string
+      - in: query
+        name: from
+        schema:
+          type: string
+      - in: query
+        name: group
+        schema:
+          type: string
+      - in: query
+        name: room
+        schema:
+          type: string
+      - in: query
+        name: student
+        schema:
+          type: string
+      - in: query
+        name: teacher
+        schema:
+          type: string
+      - in: query
+        name: to
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Lesson'
+          description: ''
+    post:
+      operationId: admin_lessons_create
+      description: A one-off extra lesson (consultation, mock test).
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtraLessonRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonChange'
+          description: ''
+  /api/v1/admin/lessons/{id}:
+    get:
+      operationId: admin_lessons_retrieve
+      description: 'Concrete lessons and their exceptions: cancel, restore, move,
+        substitute, extra lesson.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lesson'
+          description: ''
+  /api/v1/admin/lessons/{id}/cancel:
+    post:
+      operationId: admin_lessons_cancel_create
+      description: 'Concrete lessons and their exceptions: cancel, restore, move,
+        substitute, extra lesson.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonChange'
+          description: ''
+  /api/v1/admin/lessons/{id}/move:
+    post:
+      operationId: admin_lessons_move_create
+      description: |-
+        Another date, time or room. The lesson stays the same row (planned_* keep the
+        template values), so «перенесено с …» can be shown.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonChange'
+          description: ''
+  /api/v1/admin/lessons/{id}/restore:
+    post:
+      operationId: admin_lessons_restore_create
+      description: Undo a cancellation, if the time is still free.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonChange'
+          description: ''
+  /api/v1/admin/lessons/{id}/substitute:
+    post:
+      operationId: admin_lessons_substitute_create
+      description: 'A substitute teacher for this one lesson; `teacher: null` returns
+        the course teacher.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubstituteRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonChange'
+          description: ''
   /api/v1/admin/login-events:
     get:
       operationId: admin_login_events_list
@@ -97,6 +889,763 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedLoginEventList'
           description: ''
+  /api/v1/admin/memberships/{id}:
+    patch:
+      operationId: admin_memberships_partial_update
+      description: 'PATCH: fix dates of a membership. Every change is audited.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMembershipRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+          description: ''
+  /api/v1/admin/memberships/{id}/leave:
+    post:
+      operationId: admin_memberships_leave_create
+      description: 'Exclude from the group: the membership ends on `left_on` (inclusive).'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaveRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+          description: ''
+  /api/v1/admin/memberships/{id}/transfer:
+    post:
+      operationId: admin_memberships_transfer_create
+      description: |-
+        Transfer (SPEC §10.9): the old membership ends the day before `date`, a new one starts
+        on `date`. Old grades stay in the old course.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+          description: ''
+  /api/v1/admin/rooms:
+    get:
+      operationId: admin_rooms_list
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Room'
+          description: ''
+    post:
+      operationId: admin_rooms_create
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: ''
+  /api/v1/admin/rooms/{id}:
+    get:
+      operationId: admin_rooms_retrieve
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: ''
+    patch:
+      operationId: admin_rooms_partial_update
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRoomRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: ''
+    delete:
+      operationId: admin_rooms_destroy
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/admin/schedule-requests:
+    get:
+      operationId: admin_schedule_requests_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedScheduleRequestList'
+          description: ''
+  /api/v1/admin/schedule-requests/{id}:
+    get:
+      operationId: admin_schedule_requests_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleRequest'
+          description: ''
+  /api/v1/admin/schedule-requests/{id}/approve:
+    post:
+      operationId: admin_schedule_requests_approve_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResolveRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleRequest'
+          description: ''
+  /api/v1/admin/schedule-requests/{id}/reject:
+    post:
+      operationId: admin_schedule_requests_reject_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResolveRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleRequest'
+          description: ''
+  /api/v1/admin/slots:
+    get:
+      operationId: admin_slots_list
+      description: |-
+        Week template. Changes apply only to future, untouched lessons, after the administrator
+        confirms the list of affected dates (SPEC §9).
+      parameters:
+      - in: query
+        name: active_on
+        schema:
+          type: string
+      - in: query
+        name: course
+        schema:
+          type: string
+      - in: query
+        name: group
+        schema:
+          type: string
+      - in: query
+        name: room
+        schema:
+          type: string
+      - in: query
+        name: teacher
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Slot'
+          description: ''
+    post:
+      operationId: admin_slots_create
+      description: |-
+        Week template. Changes apply only to future, untouched lessons, after the administrator
+        confirms the list of affected dates (SPEC §9).
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SlotWriteRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotChange'
+          description: ''
+  /api/v1/admin/slots/{id}:
+    get:
+      operationId: admin_slots_retrieve
+      description: |-
+        Week template. Changes apply only to future, untouched lessons, after the administrator
+        confirms the list of affected dates (SPEC §9).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Slot'
+          description: ''
+    patch:
+      operationId: admin_slots_partial_update
+      description: |-
+        Week template. Changes apply only to future, untouched lessons, after the administrator
+        confirms the list of affected dates (SPEC §9).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSlotWriteRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotChange'
+          description: ''
+    delete:
+      operationId: admin_slots_destroy
+      description: 'Removes the slot: untouched future lessons go, past lessons and
+        exceptions stay.'
+      parameters:
+      - in: query
+        name: confirm
+        schema:
+          type: boolean
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/admin/slots/{id}/preview:
+    post:
+      operationId: admin_slots_preview_create
+      description: 'What PATCH would do, without saving: affected dates, conflicts,
+        warnings.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SlotWriteRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotChange'
+          description: ''
+  /api/v1/admin/subjects:
+    get:
+      operationId: admin_subjects_list
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subject'
+          description: ''
+    post:
+      operationId: admin_subjects_create
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubjectRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+          description: ''
+  /api/v1/admin/subjects/{id}:
+    get:
+      operationId: admin_subjects_retrieve
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+          description: ''
+    patch:
+      operationId: admin_subjects_partial_update
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSubjectRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+          description: ''
+    delete:
+      operationId: admin_subjects_destroy
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/admin/teachers:
+    get:
+      operationId: admin_teachers_list
+      description: Active teachers for selects in admin forms.
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Person'
+          description: ''
+  /api/v1/admin/terms:
+    get:
+      operationId: admin_terms_list
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: query
+        name: year
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Term'
+          description: ''
+    post:
+      operationId: admin_terms_create
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TermRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Term'
+          description: ''
+  /api/v1/admin/terms/{id}:
+    get:
+      operationId: admin_terms_retrieve
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Term'
+          description: ''
+    patch:
+      operationId: admin_terms_partial_update
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTermRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Term'
+          description: ''
+    delete:
+      operationId: admin_terms_destroy
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/admin/users:
     get:
       operationId: admin_users_list
@@ -417,6 +1966,260 @@ paths:
               schema:
                 $ref: '#/components/schemas/AdminUserDetail'
           description: ''
+  /api/v1/admin/work-types:
+    get:
+      operationId: admin_work_types_list
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WorkType'
+          description: ''
+    post:
+      operationId: admin_work_types_create
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkTypeRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkType'
+          description: ''
+  /api/v1/admin/work-types/{id}:
+    get:
+      operationId: admin_work_types_retrieve
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkType'
+          description: ''
+    patch:
+      operationId: admin_work_types_partial_update
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkTypeRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkType'
+          description: ''
+    delete:
+      operationId: admin_work_types_destroy
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/admin/years:
+    get:
+      operationId: admin_years_list
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AcademicYear'
+          description: ''
+    post:
+      operationId: admin_years_create
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcademicYearRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcademicYear'
+          description: ''
+  /api/v1/admin/years/{id}:
+    get:
+      operationId: admin_years_retrieve
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcademicYear'
+          description: ''
+    patch:
+      operationId: admin_years_partial_update
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAcademicYearRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcademicYear'
+          description: ''
+    delete:
+      operationId: admin_years_destroy
+      description: |-
+        list / create / retrieve / PATCH / delete for administrators.
+
+        Every write is audited in the same transaction. Deleting something still referenced
+        answers 409 `in_use` (archive it instead). Database constraint violations become 400
+        with `integrity_error` as the code.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/auth/login:
     get:
       operationId: auth_login_retrieve
@@ -684,8 +2487,202 @@ paths:
               schema:
                 $ref: '#/components/schemas/Me'
           description: ''
+  /api/v1/rooms:
+    get:
+      operationId: rooms_list
+      description: 'Rooms for selects: administrators and teachers (move requests).'
+      tags:
+      - rooms
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RoomOption'
+          description: ''
+  /api/v1/student/schedule:
+    get:
+      operationId: student_schedule_list
+      description: |-
+        Lessons of the groups the student belonged to on each date; cancelled ones included
+        (shown struck through).
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+      - in: query
+        name: to
+        schema:
+          type: string
+      tags:
+      - student
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentLesson'
+          description: ''
+  /api/v1/teacher/lessons/{id}/requests:
+    post:
+      operationId: teacher_lessons_requests_create
+      description: A teacher asks to cancel or move a lesson of their own (SPEC §9).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - teacher
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleRequestRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleRequest'
+          description: ''
+  /api/v1/teacher/schedule:
+    get:
+      operationId: teacher_schedule_list
+      description: '«Моя неделя»: own courses, assisted courses and substitutions.'
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+      - in: query
+        name: to
+        schema:
+          type: string
+      tags:
+      - teacher
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Lesson'
+          description: ''
+  /api/v1/teacher/schedule-requests:
+    get:
+      operationId: teacher_schedule_requests_list
+      tags:
+      - teacher
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScheduleRequest'
+          description: ''
+  /api/v1/teacher/schedule-requests/{id}/withdraw:
+    post:
+      operationId: teacher_schedule_requests_withdraw_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - teacher
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleRequest'
+          description: ''
 components:
   schemas:
+    AcademicYear:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 40
+        starts_on:
+          type: string
+          format: date
+        ends_on:
+          type: string
+          format: date
+        is_current:
+          type: boolean
+        grade_scale:
+          $ref: '#/components/schemas/GradeScaleEnum'
+      required:
+      - ends_on
+      - id
+      - name
+      - starts_on
+    AcademicYearRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 40
+        starts_on:
+          type: string
+          format: date
+        ends_on:
+          type: string
+          format: date
+        is_current:
+          type: boolean
+        grade_scale:
+          $ref: '#/components/schemas/GradeScaleEnum'
+      required:
+      - ends_on
+      - name
+      - starts_on
+    AddMemberRequest:
+      type: object
+      properties:
+        student:
+          type: string
+          format: uuid
+        joined_on:
+          type: string
+          format: date
+      required:
+      - joined_on
+      - student
     AdminUserDetail:
       type: object
       properties:
@@ -937,6 +2934,116 @@ components:
       required:
       - center_name
       - contacts
+    CancelRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 300
+      required:
+      - reason
+      - version
+    Course:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        group:
+          type: string
+          format: uuid
+        group_name:
+          type: string
+          readOnly: true
+        subject:
+          type: string
+          format: uuid
+        subject_name:
+          type: string
+          readOnly: true
+        subject_short:
+          type: string
+          readOnly: true
+        teacher:
+          type: string
+          format: uuid
+        teacher_info:
+          allOf:
+          - $ref: '#/components/schemas/Person'
+          readOnly: true
+        assistants:
+          type: array
+          items:
+            type: string
+            format: uuid
+        assistants_info:
+          type: array
+          items:
+            $ref: '#/components/schemas/Person'
+          readOnly: true
+      required:
+      - assistants_info
+      - group
+      - group_name
+      - id
+      - subject
+      - subject_name
+      - subject_short
+      - teacher
+      - teacher_info
+    CourseBrief:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        subject:
+          type: string
+          format: uuid
+          readOnly: true
+        subject_name:
+          type: string
+          readOnly: true
+        subject_short:
+          type: string
+          readOnly: true
+        teacher:
+          allOf:
+          - $ref: '#/components/schemas/Person'
+          readOnly: true
+      required:
+      - id
+      - subject
+      - subject_name
+      - subject_short
+      - teacher
+    CourseRequest:
+      type: object
+      properties:
+        group:
+          type: string
+          format: uuid
+        subject:
+          type: string
+          format: uuid
+        teacher:
+          type: string
+          format: uuid
+        assistants:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - group
+      - subject
+      - teacher
     Ended:
       type: object
       properties:
@@ -951,6 +3058,103 @@ components:
           type: integer
       required:
       - ended
+    ExtraLessonRequest:
+      type: object
+      properties:
+        course:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        start_time:
+          type: string
+          format: time
+        end_time:
+          type: string
+          format: time
+        room:
+          type: string
+          format: uuid
+          nullable: true
+        lesson_type:
+          type: string
+          format: uuid
+          nullable: true
+        teacher:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - course
+      - date
+      - end_time
+      - start_time
+    GradeScaleEnum:
+      enum:
+      - '100'
+      - '5'
+      - '10'
+      type: string
+      description: |-
+        * `100` - 100-балльная (0–100)
+        * `5` - 5-балльная (2–5)
+        * `10` - 10-балльная (1–10)
+    Group:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        academic_year:
+          type: string
+          format: uuid
+        year_name:
+          type: string
+          readOnly: true
+        level:
+          type: string
+          maxLength: 60
+        is_archived:
+          type: boolean
+        members_count:
+          type: integer
+          readOnly: true
+          default: 0
+        courses:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseBrief'
+          readOnly: true
+      required:
+      - academic_year
+      - courses
+      - id
+      - members_count
+      - name
+      - year_name
+    GroupRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        academic_year:
+          type: string
+          format: uuid
+        level:
+          type: string
+          maxLength: 60
+        is_archived:
+          type: boolean
+      required:
+      - academic_year
+      - name
     Health:
       type: object
       properties:
@@ -958,6 +3162,265 @@ components:
           type: string
       required:
       - status
+    Holiday:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        date:
+          type: string
+          format: date
+        name:
+          type: string
+          maxLength: 100
+      required:
+      - date
+      - id
+      - name
+    HolidayRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+      - date
+      - name
+    LeaveRequest:
+      type: object
+      properties:
+        left_on:
+          type: string
+          format: date
+      required:
+      - left_on
+    Lesson:
+      type: object
+      description: Admin and teacher view of a lesson in the schedule.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        course:
+          type: string
+          format: uuid
+          readOnly: true
+        group:
+          type: string
+          format: uuid
+          readOnly: true
+        group_name:
+          type: string
+          readOnly: true
+        subject_name:
+          type: string
+          readOnly: true
+        subject_short:
+          type: string
+          readOnly: true
+        date:
+          type: string
+          format: date
+          readOnly: true
+        start_time:
+          type: string
+          format: time
+          readOnly: true
+        end_time:
+          type: string
+          format: time
+          readOnly: true
+        room:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        room_name:
+          type: string
+          readOnly: true
+        teacher:
+          type: string
+          format: uuid
+          readOnly: true
+        teacher_name:
+          type: string
+          readOnly: true
+        course_teacher:
+          type: string
+          format: uuid
+          readOnly: true
+        course_teacher_name:
+          type: string
+          readOnly: true
+        lesson_type:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        lesson_type_short:
+          type: string
+          readOnly: true
+        lesson_type_name:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/LessonStatusEnum'
+          readOnly: true
+        cancel_reason:
+          type: string
+          readOnly: true
+        is_extra:
+          type: boolean
+          readOnly: true
+        is_moved:
+          type: boolean
+          readOnly: true
+        is_room_changed:
+          type: boolean
+          readOnly: true
+        is_substituted:
+          type: boolean
+          readOnly: true
+        planned_date:
+          type: string
+          format: date
+          readOnly: true
+        planned_start_time:
+          type: string
+          format: time
+          readOnly: true
+        planned_end_time:
+          type: string
+          format: time
+          readOnly: true
+        planned_room_name:
+          type: string
+          readOnly: true
+        slot:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        version:
+          type: integer
+          readOnly: true
+      required:
+      - cancel_reason
+      - course
+      - course_teacher
+      - course_teacher_name
+      - date
+      - end_time
+      - group
+      - group_name
+      - id
+      - is_extra
+      - is_moved
+      - is_room_changed
+      - is_substituted
+      - lesson_type
+      - lesson_type_name
+      - lesson_type_short
+      - planned_date
+      - planned_end_time
+      - planned_room_name
+      - planned_start_time
+      - room
+      - room_name
+      - slot
+      - start_time
+      - status
+      - subject_name
+      - subject_short
+      - teacher
+      - teacher_name
+      - version
+    LessonChange:
+      type: object
+      properties:
+        lesson:
+          $ref: '#/components/schemas/Lesson'
+        warnings:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - lesson
+      - warnings
+    LessonStatusEnum:
+      enum:
+      - planned
+      - conducted
+      - cancelled
+      type: string
+      description: |-
+        * `planned` - запланировано
+        * `conducted` - проведено
+        * `cancelled` - отменено
+    LessonType:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 60
+        short:
+          type: string
+          maxLength: 5
+        default_work_type:
+          type: string
+          format: uuid
+          nullable: true
+        counts_attendance:
+          type: boolean
+        sort_order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        is_archived:
+          type: boolean
+      required:
+      - id
+      - name
+      - short
+    LessonTypeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+        short:
+          type: string
+          minLength: 1
+          maxLength: 5
+        default_work_type:
+          type: string
+          format: uuid
+          nullable: true
+        counts_attendance:
+          type: boolean
+        sort_order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        is_archived:
+          type: boolean
+      required:
+      - name
+      - short
     LoginEvent:
       type: object
       properties:
@@ -1068,10 +3531,16 @@ components:
         totp_setup_required:
           type: boolean
           readOnly: true
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeGroup'
+          readOnly: true
       required:
       - active_role
       - first_name
       - full_name
+      - groups
       - id
       - initials
       - last_name
@@ -1081,6 +3550,77 @@ components:
       - roles
       - totp_enabled
       - totp_setup_required
+    MeGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+      required:
+      - id
+      - name
+    Membership:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        group:
+          type: string
+          format: uuid
+          readOnly: true
+        group_name:
+          type: string
+          readOnly: true
+        student:
+          allOf:
+          - $ref: '#/components/schemas/Person'
+          readOnly: true
+        joined_on:
+          type: string
+          format: date
+        left_on:
+          type: string
+          format: date
+          nullable: true
+        is_active:
+          type: boolean
+          readOnly: true
+      required:
+      - group
+      - group_name
+      - id
+      - is_active
+      - joined_on
+      - student
+    MoveRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        date:
+          type: string
+          format: date
+        start_time:
+          type: string
+          format: time
+        end_time:
+          type: string
+          format: time
+        room:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - date
+      - end_time
+      - room
+      - start_time
+      - version
     NullEnum:
       enum:
       - null
@@ -1153,6 +3693,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/LoginEvent'
+    PaginatedScheduleRequestList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleRequest'
     PaginatedSessionList:
       type: object
       required:
@@ -1199,6 +3762,23 @@ components:
           maxLength: 256
       required:
       - password
+    PatchedAcademicYearRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 40
+        starts_on:
+          type: string
+          format: date
+        ends_on:
+          type: string
+          format: date
+        is_current:
+          type: boolean
+        grade_scale:
+          $ref: '#/components/schemas/GradeScaleEnum'
     PatchedAdminUserWriteRequest:
       type: object
       description: Create and update. Profiles are created when the matching role
@@ -1228,6 +3808,189 @@ components:
           $ref: '#/components/schemas/StudentProfileRequest'
         teacher_profile:
           $ref: '#/components/schemas/TeacherProfileRequest'
+    PatchedCourseRequest:
+      type: object
+      properties:
+        group:
+          type: string
+          format: uuid
+        subject:
+          type: string
+          format: uuid
+        teacher:
+          type: string
+          format: uuid
+        assistants:
+          type: array
+          items:
+            type: string
+            format: uuid
+    PatchedGroupRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        academic_year:
+          type: string
+          format: uuid
+        level:
+          type: string
+          maxLength: 60
+        is_archived:
+          type: boolean
+    PatchedHolidayRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+    PatchedLessonTypeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+        short:
+          type: string
+          minLength: 1
+          maxLength: 5
+        default_work_type:
+          type: string
+          format: uuid
+          nullable: true
+        counts_attendance:
+          type: boolean
+        sort_order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        is_archived:
+          type: boolean
+    PatchedMembershipRequest:
+      type: object
+      properties:
+        joined_on:
+          type: string
+          format: date
+        left_on:
+          type: string
+          format: date
+          nullable: true
+    PatchedRoomRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+        capacity:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        is_archived:
+          type: boolean
+    PatchedSlotWriteRequest:
+      type: object
+      properties:
+        course:
+          type: string
+          format: uuid
+        weekday:
+          allOf:
+          - $ref: '#/components/schemas/WeekdayEnum'
+          minimum: 0
+          maximum: 32767
+        start_time:
+          type: string
+          format: time
+        end_time:
+          type: string
+          format: time
+        room:
+          type: string
+          format: uuid
+          nullable: true
+        lesson_type:
+          type: string
+          format: uuid
+          nullable: true
+        valid_from:
+          type: string
+          format: date
+        valid_to:
+          type: string
+          format: date
+          nullable: true
+        confirm:
+          type: boolean
+          writeOnly: true
+          default: false
+    PatchedSubjectRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        short_name:
+          type: string
+          minLength: 1
+          maxLength: 6
+        is_archived:
+          type: boolean
+    PatchedTermRequest:
+      type: object
+      properties:
+        year:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+        starts_on:
+          type: string
+          format: date
+        ends_on:
+          type: string
+          format: date
+    PatchedWorkTypeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+        weight:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,2})?$
+        is_archived:
+          type: boolean
+    Person:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        short_name:
+          type: string
+          readOnly: true
+      required:
+      - full_name
+      - id
+      - short_name
     ReasonEnum:
       enum:
       - ok
@@ -1248,6 +4011,12 @@ components:
         * `totp_invalid` - Totp Invalid
         * `totp_limit` - Totp Limit
         * `backup_code` - Backup Code
+    ResolveRequest:
+      type: object
+      properties:
+        comment:
+          type: string
+          maxLength: 300
     RoleEnum:
       enum:
       - admin
@@ -1267,6 +4036,182 @@ components:
           $ref: '#/components/schemas/RoleEnum'
       required:
       - role
+    Room:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 60
+        capacity:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        is_archived:
+          type: boolean
+      required:
+      - capacity
+      - id
+      - name
+    RoomOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        capacity:
+          type: integer
+          readOnly: true
+      required:
+      - capacity
+      - id
+      - name
+    RoomRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+        capacity:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        is_archived:
+          type: boolean
+      required:
+      - capacity
+      - name
+    ScheduleRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        lesson:
+          type: string
+          format: uuid
+          readOnly: true
+        lesson_info:
+          allOf:
+          - $ref: '#/components/schemas/Lesson'
+          readOnly: true
+        author_name:
+          type: string
+          readOnly: true
+        kind:
+          $ref: '#/components/schemas/ScheduleRequestKindEnum'
+        proposed_date:
+          type: string
+          format: date
+          nullable: true
+        proposed_start_time:
+          type: string
+          format: time
+          nullable: true
+        proposed_end_time:
+          type: string
+          format: time
+          nullable: true
+        proposed_room:
+          type: string
+          format: uuid
+          nullable: true
+        proposed_room_name:
+          type: string
+          readOnly: true
+        reason:
+          type: string
+          maxLength: 300
+        status:
+          allOf:
+          - $ref: '#/components/schemas/ScheduleRequestStatusEnum'
+          readOnly: true
+          default: pending
+        resolved_by_name:
+          type: string
+          readOnly: true
+        resolved_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        resolution_comment:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author_name
+      - created_at
+      - id
+      - kind
+      - lesson
+      - lesson_info
+      - proposed_room_name
+      - reason
+      - resolution_comment
+      - resolved_at
+      - resolved_by_name
+      - status
+    ScheduleRequestKindEnum:
+      enum:
+      - cancel
+      - move
+      type: string
+      description: |-
+        * `cancel` - отмена
+        * `move` - перенос
+    ScheduleRequestRequest:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/ScheduleRequestKindEnum'
+        proposed_date:
+          type: string
+          format: date
+          nullable: true
+        proposed_start_time:
+          type: string
+          format: time
+          nullable: true
+        proposed_end_time:
+          type: string
+          format: time
+          nullable: true
+        proposed_room:
+          type: string
+          format: uuid
+          nullable: true
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 300
+      required:
+      - kind
+      - reason
+    ScheduleRequestStatusEnum:
+      enum:
+      - pending
+      - approved
+      - rejected
+      - withdrawn
+      type: string
+      description: |-
+        * `pending` - ожидает
+        * `approved` - одобрен
+        * `rejected` - отклонён
+        * `withdrawn` - отозван
     SchoolGradeEnum:
       enum:
       - 9
@@ -1313,6 +4258,242 @@ components:
       - last_seen_at
       - remember
       - user_agent
+    Slot:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        course:
+          type: string
+          format: uuid
+        group:
+          type: string
+          format: uuid
+          readOnly: true
+        group_name:
+          type: string
+          readOnly: true
+        subject_name:
+          type: string
+          readOnly: true
+        subject_short:
+          type: string
+          readOnly: true
+        teacher:
+          type: string
+          format: uuid
+          readOnly: true
+        teacher_name:
+          type: string
+          readOnly: true
+        weekday:
+          allOf:
+          - $ref: '#/components/schemas/WeekdayEnum'
+          minimum: 0
+          maximum: 32767
+        start_time:
+          type: string
+          format: time
+        end_time:
+          type: string
+          format: time
+        room:
+          type: string
+          format: uuid
+          nullable: true
+        room_name:
+          type: string
+          readOnly: true
+        lesson_type:
+          type: string
+          format: uuid
+          nullable: true
+        lesson_type_short:
+          type: string
+          readOnly: true
+        valid_from:
+          type: string
+          format: date
+        valid_to:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - course
+      - end_time
+      - group
+      - group_name
+      - id
+      - lesson_type_short
+      - room_name
+      - start_time
+      - subject_name
+      - subject_short
+      - teacher
+      - teacher_name
+      - valid_from
+      - weekday
+    SlotChange:
+      type: object
+      properties:
+        slot:
+          allOf:
+          - $ref: '#/components/schemas/Slot'
+          nullable: true
+        plan:
+          type: object
+          additionalProperties: {}
+        warnings:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - plan
+      - slot
+      - warnings
+    SlotWriteRequest:
+      type: object
+      properties:
+        course:
+          type: string
+          format: uuid
+        weekday:
+          allOf:
+          - $ref: '#/components/schemas/WeekdayEnum'
+          minimum: 0
+          maximum: 32767
+        start_time:
+          type: string
+          format: time
+        end_time:
+          type: string
+          format: time
+        room:
+          type: string
+          format: uuid
+          nullable: true
+        lesson_type:
+          type: string
+          format: uuid
+          nullable: true
+        valid_from:
+          type: string
+          format: date
+        valid_to:
+          type: string
+          format: date
+          nullable: true
+        confirm:
+          type: boolean
+          writeOnly: true
+          default: false
+      required:
+      - course
+      - end_time
+      - start_time
+      - valid_from
+      - weekday
+    StudentLesson:
+      type: object
+      description: 'What a student sees: no versions, no internal links, nothing about
+        other students.'
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        date:
+          type: string
+          format: date
+          readOnly: true
+        start_time:
+          type: string
+          format: time
+          readOnly: true
+        end_time:
+          type: string
+          format: time
+          readOnly: true
+        subject_name:
+          type: string
+          readOnly: true
+        subject_short:
+          type: string
+          readOnly: true
+        group_name:
+          type: string
+          readOnly: true
+        teacher_name:
+          type: string
+          readOnly: true
+        room_name:
+          type: string
+          readOnly: true
+        lesson_type_short:
+          type: string
+          readOnly: true
+        lesson_type_name:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/LessonStatusEnum'
+          readOnly: true
+        cancel_reason:
+          type: string
+          readOnly: true
+        is_extra:
+          type: boolean
+          readOnly: true
+        is_moved:
+          type: boolean
+          readOnly: true
+        is_room_changed:
+          type: boolean
+          readOnly: true
+        is_substituted:
+          type: boolean
+          readOnly: true
+        planned_date:
+          type: string
+          format: date
+          readOnly: true
+        planned_start_time:
+          type: string
+          format: time
+          readOnly: true
+        planned_end_time:
+          type: string
+          format: time
+          readOnly: true
+        planned_room_name:
+          type: string
+          readOnly: true
+      required:
+      - cancel_reason
+      - date
+      - end_time
+      - group_name
+      - id
+      - is_extra
+      - is_moved
+      - is_room_changed
+      - is_substituted
+      - lesson_type_name
+      - lesson_type_short
+      - planned_date
+      - planned_end_time
+      - planned_room_name
+      - planned_start_time
+      - room_name
+      - start_time
+      - status
+      - subject_name
+      - subject_short
+      - teacher_name
     StudentProfile:
       type: object
       properties:
@@ -1377,18 +4558,76 @@ components:
           maxLength: 32
         admin_note:
           type: string
+    Subject:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        short_name:
+          type: string
+          maxLength: 6
+        is_archived:
+          type: boolean
+      required:
+      - id
+      - name
+      - short_name
+    SubjectRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        short_name:
+          type: string
+          minLength: 1
+          maxLength: 6
+        is_archived:
+          type: boolean
+      required:
+      - name
+      - short_name
+    SubstituteRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        teacher:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - teacher
+      - version
     TeacherProfile:
       type: object
       properties:
         phone:
           type: string
           maxLength: 32
+        subjects:
+          type: array
+          items:
+            type: string
+            format: uuid
     TeacherProfileRequest:
       type: object
       properties:
         phone:
           type: string
           maxLength: 32
+        subjects:
+          type: array
+          items:
+            type: string
+            format: uuid
     TemporaryPassword:
       type: object
       properties:
@@ -1399,6 +4638,52 @@ components:
       required:
       - temporary_password
       - user
+    Term:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        year:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 60
+        starts_on:
+          type: string
+          format: date
+        ends_on:
+          type: string
+          format: date
+      required:
+      - ends_on
+      - id
+      - name
+      - starts_on
+      - year
+    TermRequest:
+      type: object
+      properties:
+        year:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+        starts_on:
+          type: string
+          format: date
+        ends_on:
+          type: string
+          format: date
+      required:
+      - ends_on
+      - name
+      - starts_on
+      - year
     TotpCodeRequest:
       type: object
       properties:
@@ -1421,6 +4706,80 @@ components:
       - otpauth_uri
       - qr
       - secret
+    TransferRequest:
+      type: object
+      properties:
+        group:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+      required:
+      - date
+      - group
+    VersionRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 1
+      required:
+      - version
+    WeekdayEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      type: integer
+      description: |-
+        * `1` - понедельник
+        * `2` - вторник
+        * `3` - среда
+        * `4` - четверг
+        * `5` - пятница
+        * `6` - суббота
+        * `7` - воскресенье
+    WorkType:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 60
+        weight:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,2})?$
+        is_archived:
+          type: boolean
+      required:
+      - id
+      - name
+      - weight
+    WorkTypeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+        weight:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,2})?$
+        is_archived:
+          type: boolean
+      required:
+      - name
+      - weight
   securitySchemes:
     sessionCookie:
       type: apiKey

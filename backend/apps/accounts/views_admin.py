@@ -24,7 +24,6 @@ from .serializers import (
     AdminUserWriteSerializer,
     SessionSerializer,
     StudentProfileSerializer,
-    TeacherProfileSerializer,
 )
 
 USER_AUDIT_FIELDS = (
@@ -39,7 +38,6 @@ USER_AUDIT_FIELDS = (
     "totp_enabled",
 )
 STUDENT_AUDIT_FIELDS = tuple(StudentProfileSerializer.Meta.fields)
-TEACHER_AUDIT_FIELDS = tuple(TeacherProfileSerializer.Meta.fields)
 
 TemporaryPasswordSerializer = inline_serializer(
     "TemporaryPassword",
@@ -55,7 +53,11 @@ def _user_snapshot(user: User) -> dict[str, Any]:
     if hasattr(user, "student_profile"):
         data["student_profile"] = audit.snapshot(user.student_profile, STUDENT_AUDIT_FIELDS)
     if hasattr(user, "teacher_profile"):
-        data["teacher_profile"] = audit.snapshot(user.teacher_profile, TEACHER_AUDIT_FIELDS)
+        profile = user.teacher_profile
+        data["teacher_profile"] = {
+            "phone": profile.phone,
+            "subjects": sorted(str(pk) for pk in profile.subjects.values_list("pk", flat=True)),
+        }
     return data
 
 
@@ -72,9 +74,13 @@ def _apply_profiles(user: User, data: dict[str, Any]) -> None:
         profile.save()
     if user.has_role(Role.TEACHER):
         teacher, _ = TeacherProfile.objects.get_or_create(user=user)
-        for field, value in data.get("teacher_profile", {}).items():
+        values = dict(data.get("teacher_profile", {}))
+        subjects = values.pop("subjects", None)
+        for field, value in values.items():
             setattr(teacher, field, value)
         teacher.save()
+        if subjects is not None:
+            teacher.subjects.set(subjects)
 
 
 class AdminUserViewSet(

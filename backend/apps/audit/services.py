@@ -2,7 +2,7 @@
 
 import uuid
 from collections.abc import Iterable, Mapping
-from datetime import date, datetime
+from datetime import date, datetime, time
 from decimal import Decimal
 from typing import Any
 
@@ -21,7 +21,7 @@ SECRET_FIELDS = frozenset({"password", "totp_secret", "totp_last_counter", "code
 def _plain(value: Any) -> Any:
     if isinstance(value, uuid.UUID | Decimal):
         return str(value)
-    if isinstance(value, datetime | date):
+    if isinstance(value, datetime | date | time):
         return value.isoformat()
     if isinstance(value, Mapping):
         return {str(k): _plain(v) for k, v in value.items() if k not in SECRET_FIELDS}

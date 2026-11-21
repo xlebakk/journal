@@ -4,8 +4,10 @@ from typing import Any, ClassVar
 
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
-from drf_spectacular.utils import extend_schema_field
+from drf_spectacular.utils import extend_schema_field, inline_serializer
 from rest_framework import serializers
+
+from apps.academics.serializers import current_groups_of
 
 from . import credentials, lockout
 from .middleware import totp_setup_required
@@ -76,6 +78,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
     initials = serializers.CharField(read_only=True)
     active_role = serializers.SerializerMethodField()
     totp_setup_required = serializers.SerializerMethodField()
+    groups = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -92,12 +95,26 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "must_change_password",
             "totp_enabled",
             "totp_setup_required",
+            "groups",
         )
         read_only_fields = fields
 
     @extend_schema_field(serializers.ChoiceField(choices=Role.choices, allow_null=True))
     def get_active_role(self, user: User) -> str | None:
         return active_role(self.context["request"])
+
+    @extend_schema_field(
+        inline_serializer(
+            "MeGroup",
+            fields={"id": serializers.UUIDField(), "name": serializers.CharField()},
+            many=True,
+        )
+    )
+    def get_groups(self, user: User) -> list[dict[str, str]]:
+        """Current groups — shown to students in the initials menu (SPEC §4)."""
+        if active_role(self.context["request"]) != Role.STUDENT:
+            return []
+        return current_groups_of(user)
 
     def get_totp_setup_required(self, user: User) -> bool:
         return totp_setup_required(user)
@@ -142,7 +159,8 @@ class StudentProfileSerializer(serializers.ModelSerializer[StudentProfile]):
 class TeacherProfileSerializer(serializers.ModelSerializer[TeacherProfile]):
     class Meta:
         model = TeacherProfile
-        fields = ("phone",)
+        fields = ("phone", "subjects")
+        extra_kwargs: ClassVar = {"subjects": {"required": False}}
 
 
 def user_status(user: User) -> str:

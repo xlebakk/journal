@@ -94,7 +94,7 @@ class TestCreate:
             teacher_profile={"phone": "+998 90 111 22 33"},
             student_profile={"school": "ignored"},
         ).json()["user"]
-        assert body["teacher_profile"] == {"phone": "+998 90 111 22 33"}
+        assert body["teacher_profile"] == {"phone": "+998 90 111 22 33", "subjects": []}
         assert body["student_profile"] is None
 
 

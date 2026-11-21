@@ -51,6 +51,23 @@ services:
       redis:
         condition: service_healthy
 
+  # Background jobs (SPEC §3): lessons four weeks ahead, nightly. Idempotent, so running it
+  # at start and every 24 h is safe. Production gets a real schedule in stage 7.
+  cron:
+    build:
+      context: ../backend
+      target: dev
+    env_file: ../.env
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.dev
+      DB_HOST: db
+    volumes:
+      - ../backend:/app
+    command: ["sh", "-c", "while true; do python manage.py generate_lessons; sleep 86400; done"]
+    depends_on:
+      api:
+        condition: service_started
+
   frontend:
     image: node:24-alpine
     working_dir: /app
