@@ -25,6 +25,7 @@ jobs:
           POSTGRES_USER: journal
           POSTGRES_PASSWORD: journal
           POSTGRES_DB: journal
+          POSTGRES_INITDB_ARGS: "--locale-provider=icu --icu-locale=und"
         ports: ["5432:5432"]
         options: >-
           --health-cmd "pg_isready -U journal" --health-interval 5s
@@ -45,7 +46,17 @@ jobs:
       - name: migrations are up to date
         run: uv run python manage.py makemigrations --check --dry-run --settings=config.settings.test
       - name: tests
+        env:
+          TOTP_ENCRYPTION_KEYS: dGVzdC1vbmx5LWtleS10ZXN0LW9ubHkta2V5LTAwMDA=
         run: uv run pytest --cov --cov-report=term-missing
+      - name: coverage of accounts ≥ 85% (SPEC §15)
+        run: uv run coverage report --include="apps/accounts/*" --fail-under=85
+      - name: OpenAPI schema is valid and committed
+        env:
+          TOTP_ENCRYPTION_KEYS: dGVzdC1vbmx5LWtleS10ZXN0LW9ubHkta2V5LTAwMDA=
+        run: |
+          uv run python manage.py spectacular --settings=config.settings.test --validate --fail-on-warn --file /tmp/schema.yml
+          diff -u ../frontend/src/shared/api/schema.yml /tmp/schema.yml
       - name: bandit
         run: uv run bandit -q -c pyproject.toml -r apps config
       - name: pip-audit
@@ -56,6 +67,7 @@ jobs:
           DJANGO_SECRET_KEY: ci-only-${{ github.run_id }}-not-a-real-secret-0123456789abcdefghijklmnop
           DJANGO_ALLOWED_HOSTS: journal.example.com
           DJANGO_CSRF_TRUSTED_ORIGINS: https://journal.example.com
+          TOTP_ENCRYPTION_KEYS: dGVzdC1vbmx5LWtleS10ZXN0LW9ubHkta2V5LTAwMDA=
         run: uv run python manage.py check --deploy --fail-level WARNING
 
   frontend:
@@ -71,6 +83,8 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
+      - name: API types match the OpenAPI schema
+        run: npm run api:types && git diff --exit-code src/shared/api/schema.d.ts
       - run: npm run format:check
       - run: npm run lint -- --max-warnings 0
       - run: npm run typecheck
@@ -82,3 +96,45 @@ jobs:
         run: "! grep -rq 'StyleguidePage\\|Стайлгайд' dist"
       - name: npm audit
         run: npm audit --audit-level=moderate
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: journal
+          POSTGRES_PASSWORD: journal
+          POSTGRES_DB: journal_e2e
+          POSTGRES_INITDB_ARGS: "--locale-provider=icu --icu-locale=und"
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U journal" --health-interval 5s
+          --health-timeout 3s --health-retries 10
+    env:
+      DB_HOST: localhost
+      DB_PASSWORD: journal
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+        working-directory: backend
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - run: npm run e2e
+        working-directory: frontend
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: frontend/test-results/

@@ -22,3 +22,9 @@ export function t(key: MessageKey, params?: Record<string, string | number>): st
     name in params ? String(params[name]) : match,
   );
 }
+
+/** For keys built at runtime (server error codes): undefined if there is no translation. */
+export function tMaybe(key: string, params?: Record<string, string | number>): string | undefined {
+  const text = t(key as MessageKey, params);
+  return text === key ? undefined : text;
+}

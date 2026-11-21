@@ -6,10 +6,16 @@ import { formatDate, formatHumanDate, formatJournalHeader, formatTime } from "@/
 import { useTheme } from "@/shared/lib/theme";
 import {
   Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
   EmptyState,
   InitialsStamp,
   JournalCell,
+  PasswordField,
   RuledSkeleton,
+  SelectField,
+  StrengthMeter,
   Table,
   TextField,
   ThemeSwitch,
@@ -143,6 +149,8 @@ function JournalGridPreview() {
 
 export default function StyleguidePage() {
   const [theme, setTheme] = useTheme();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [password, setPassword] = useState("зелёный чай");
   const now = new Date();
 
   return (
@@ -216,6 +224,24 @@ export default function StyleguidePage() {
             <TextField label="Тема занятия" placeholder="Квадратные уравнения" />
             <TextField label="Оценка" inputMode="numeric" defaultValue="104" error="От 0 до 100" />
             <TextField label="Пароль" type="password" hint="Не короче 10 символов" />
+            <div>
+              <PasswordField
+                label="Новый пароль"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <StrengthMeter password={password} personal={["aliev.f"]} />
+            </div>
+            <SelectField
+              label="Класс"
+              defaultValue="11"
+              options={[
+                { value: "9", label: "9" },
+                { value: "10", label: "10" },
+                { value: "11", label: "11" },
+              ]}
+            />
+            <Checkbox label="Запомнить это устройство" />
           </div>
         </section>
 
@@ -287,6 +313,23 @@ export default function StyleguidePage() {
 
         <section className={styles.section} aria-labelledby="sg-modal">
           <h2 id="sg-modal">Модальное окно</h2>
+          <p>
+            <Button onClick={() => setDialogOpen(true)}>открыть диалог</Button>
+          </p>
+          <Dialog
+            open={dialogOpen}
+            onOpenChange={setDialogOpen}
+            title="Подтвердите пароль"
+            description="Для этого действия нужно ещё раз ввести пароль."
+          >
+            <PasswordField label="Пароль" />
+            <DialogActions>
+              <Button variant="primary" onClick={() => setDialogOpen(false)}>
+                подтвердить
+              </Button>
+              <Button onClick={() => setDialogOpen(false)}>отмена</Button>
+            </DialogActions>
+          </Dialog>
           <div className={styles.modal} role="presentation">
             <h3>Завершить занятие?</h3>
             <p>Тема и посещаемость заполнены. Оценки можно добавить позже.</p>

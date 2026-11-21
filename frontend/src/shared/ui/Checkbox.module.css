@@ -1,0 +1,21 @@
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 36px;
+  cursor: pointer;
+}
+
+.box {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--ink);
+  cursor: pointer;
+}
+
+@media (max-width: 599px) {
+  .checkbox {
+    min-height: var(--tap-target);
+  }
+}

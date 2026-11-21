@@ -1,0 +1,1428 @@
+openapi: 3.0.3
+info:
+  title: Journal API
+  version: 1.0.0
+paths:
+  /api/v1/admin/audit:
+    get:
+      operationId: admin_audit_list
+      parameters:
+      - in: query
+        name: action
+        schema:
+          type: string
+      - in: query
+        name: actor
+        schema:
+          type: string
+      - in: query
+        name: date_from
+        schema:
+          type: string
+      - in: query
+        name: date_to
+        schema:
+          type: string
+      - in: query
+        name: entity_id
+        schema:
+          type: string
+      - in: query
+        name: entity_type
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAuditLogList'
+          description: ''
+  /api/v1/admin/login-events:
+    get:
+      operationId: admin_login_events_list
+      parameters:
+      - in: query
+        name: date_from
+        schema:
+          type: string
+      - in: query
+        name: date_to
+        schema:
+          type: string
+      - in: query
+        name: login
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: success
+        schema:
+          type: boolean
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLoginEventList'
+          description: ''
+  /api/v1/admin/users:
+    get:
+      operationId: admin_users_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: role
+        schema:
+          type: string
+          enum:
+          - admin
+          - parent
+          - student
+          - teacher
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - active
+          - archived
+          - blocked
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminUserListList'
+          description: ''
+    post:
+      operationId: admin_users_create
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUserWriteRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemporaryPassword'
+          description: ''
+  /api/v1/admin/users/{id}:
+    get:
+      operationId: admin_users_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserDetail'
+          description: ''
+    patch:
+      operationId: admin_users_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAdminUserWriteRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserDetail'
+          description: ''
+  /api/v1/admin/users/{id}/archive:
+    post:
+      operationId: admin_users_archive_create
+      description: Login off, sessions ended, data kept. Users are never deleted (SPEC
+        §10.10).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserDetail'
+          description: ''
+  /api/v1/admin/users/{id}/block:
+    post:
+      operationId: admin_users_block_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserDetail'
+          description: ''
+  /api/v1/admin/users/{id}/reset-2fa:
+    post:
+      operationId: admin_users_reset_2fa_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserDetail'
+          description: ''
+  /api/v1/admin/users/{id}/reset-password:
+    post:
+      operationId: admin_users_reset_password_create
+      description: New temporary password; all the user's sessions end (SPEC §4).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemporaryPassword'
+          description: ''
+  /api/v1/admin/users/{id}/sessions:
+    get:
+      operationId: admin_users_sessions_list
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSessionList'
+          description: ''
+  /api/v1/admin/users/{id}/sessions/{session_id}:
+    delete:
+      operationId: admin_users_sessions_destroy
+      description: End one session of a user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: session_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/admin/users/{id}/sessions/end-all:
+    post:
+      operationId: admin_users_sessions_end_all_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EndedSessions'
+          description: ''
+  /api/v1/admin/users/{id}/unblock:
+    post:
+      operationId: admin_users_unblock_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserDetail'
+          description: ''
+  /api/v1/admin/users/{id}/unlock-login:
+    post:
+      operationId: admin_users_unlock_login_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserDetail'
+          description: ''
+  /api/v1/auth/login:
+    get:
+      operationId: auth_login_retrieve
+      description: 'GET: what the login page shows + CSRF cookie. POST: login and
+        password.'
+      tags:
+      - auth
+      security:
+      - sessionCookie: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branding'
+          description: ''
+    post:
+      operationId: auth_login_create
+      description: 'GET: what the login page shows + CSRF cookie. POST: login and
+        password.'
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginStep'
+          description: ''
+  /api/v1/auth/logout:
+    post:
+      operationId: auth_logout_create
+      tags:
+      - auth
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/auth/password:
+    post:
+      operationId: auth_password_create
+      description: Own password. The only call allowed while the temporary password
+        is in force.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/auth/reauth:
+    post:
+      operationId: auth_reauth_create
+      description: Re-enter the password before a dangerous action (SPEC §8).
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/auth/role:
+    post:
+      operationId: auth_role_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleSwitchRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+  /api/v1/auth/sessions:
+    get:
+      operationId: auth_sessions_list
+      tags:
+      - auth
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Session'
+          description: ''
+  /api/v1/auth/sessions/{id}:
+    delete:
+      operationId: auth_sessions_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - auth
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/auth/sessions/end-others:
+    post:
+      operationId: auth_sessions_end_others_create
+      tags:
+      - auth
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ended'
+          description: ''
+  /api/v1/auth/totp:
+    post:
+      operationId: auth_totp_create
+      description: 'Second login step: a 6-digit TOTP code or a backup code.'
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TotpCodeRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginStep'
+          description: ''
+  /api/v1/auth/totp/backup-codes:
+    post:
+      operationId: auth_totp_backup_codes_create
+      tags:
+      - auth
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupCodes'
+          description: ''
+  /api/v1/auth/totp/setup:
+    get:
+      operationId: auth_totp_setup_retrieve
+      description: |-
+        GET: a new secret and QR. POST: confirm with a code → 2FA on + 10 backup codes.
+        DELETE: turn 2FA off (only where it is optional; needs a fresh password).
+      tags:
+      - auth
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TotpSetup'
+          description: ''
+    post:
+      operationId: auth_totp_setup_create
+      description: |-
+        GET: a new secret and QR. POST: confirm with a code → 2FA on + 10 backup codes.
+        DELETE: turn 2FA off (only where it is optional; needs a fresh password).
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TotpCodeRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupCodes'
+          description: ''
+    delete:
+      operationId: auth_totp_setup_destroy
+      description: |-
+        GET: a new secret and QR. POST: confirm with a code → 2FA on + 10 backup codes.
+        DELETE: turn 2FA off (only where it is optional; needs a fresh password).
+      tags:
+      - auth
+      security:
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/health:
+    get:
+      operationId: health_retrieve
+      description: 'Liveness and dependency check. Public: reveals only ok / unavailable.'
+      tags:
+      - health
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+          description: ''
+  /api/v1/me:
+    get:
+      operationId: me_retrieve
+      tags:
+      - me
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+components:
+  schemas:
+    AdminUserDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        login:
+          type: string
+          readOnly: true
+        last_name:
+          type: string
+          readOnly: true
+        first_name:
+          type: string
+          readOnly: true
+        middle_name:
+          type: string
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleEnum'
+          readOnly: true
+        status:
+          type: string
+          readOnly: true
+        totp_enabled:
+          type: boolean
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          title: Последний вход
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        must_change_password:
+          type: boolean
+          readOnly: true
+        password_changed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        archived_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        student_profile:
+          allOf:
+          - $ref: '#/components/schemas/StudentProfile'
+          readOnly: true
+          nullable: true
+        teacher_profile:
+          allOf:
+          - $ref: '#/components/schemas/TeacherProfile'
+          readOnly: true
+          nullable: true
+        login_locked_minutes:
+          type: integer
+          readOnly: true
+      required:
+      - archived_at
+      - created_at
+      - first_name
+      - full_name
+      - id
+      - last_login
+      - last_name
+      - login
+      - login_locked_minutes
+      - middle_name
+      - must_change_password
+      - password_changed_at
+      - roles
+      - status
+      - student_profile
+      - teacher_profile
+      - totp_enabled
+    AdminUserList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        login:
+          type: string
+          readOnly: true
+        last_name:
+          type: string
+          readOnly: true
+        first_name:
+          type: string
+          readOnly: true
+        middle_name:
+          type: string
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleEnum'
+          readOnly: true
+        status:
+          type: string
+          readOnly: true
+        totp_enabled:
+          type: boolean
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          title: Последний вход
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - first_name
+      - full_name
+      - id
+      - last_login
+      - last_name
+      - login
+      - middle_name
+      - roles
+      - status
+      - totp_enabled
+    AdminUserWriteRequest:
+      type: object
+      description: Create and update. Profiles are created when the matching role
+        is present.
+      properties:
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        middle_name:
+          type: string
+          maxLength: 100
+        login:
+          type: string
+          maxLength: 64
+        roles:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 16
+        student_profile:
+          $ref: '#/components/schemas/StudentProfileRequest'
+        teacher_profile:
+          $ref: '#/components/schemas/TeacherProfileRequest'
+      required:
+      - first_name
+      - last_name
+      - roles
+    AuditLog:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        at:
+          type: string
+          format: date-time
+          readOnly: true
+        actor_id:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        actor_name:
+          type: string
+          nullable: true
+          readOnly: true
+        actor_role:
+          type: string
+          readOnly: true
+        ip:
+          type: string
+          readOnly: true
+          nullable: true
+        action:
+          type: string
+          readOnly: true
+        entity_type:
+          type: string
+          readOnly: true
+        entity_id:
+          type: string
+          readOnly: true
+        before:
+          readOnly: true
+          nullable: true
+        after:
+          readOnly: true
+          nullable: true
+        reason:
+          type: string
+          readOnly: true
+      required:
+      - action
+      - actor_id
+      - actor_name
+      - actor_role
+      - after
+      - at
+      - before
+      - entity_id
+      - entity_type
+      - id
+      - ip
+      - reason
+    BackupCodes:
+      type: object
+      properties:
+        backup_codes:
+          type: array
+          items:
+            type: string
+      required:
+      - backup_codes
+    Branding:
+      type: object
+      properties:
+        center_name:
+          type: string
+        contacts:
+          type: string
+      required:
+      - center_name
+      - contacts
+    Ended:
+      type: object
+      properties:
+        ended:
+          type: integer
+      required:
+      - ended
+    EndedSessions:
+      type: object
+      properties:
+        ended:
+          type: integer
+      required:
+      - ended
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+      - status
+    LoginEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        at:
+          type: string
+          format: date-time
+          readOnly: true
+        login_attempted:
+          type: string
+          readOnly: true
+        user_id:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        ip:
+          type: string
+          readOnly: true
+          nullable: true
+        user_agent:
+          type: string
+          readOnly: true
+        success:
+          type: boolean
+          readOnly: true
+        reason:
+          allOf:
+          - $ref: '#/components/schemas/ReasonEnum'
+          readOnly: true
+      required:
+      - at
+      - id
+      - ip
+      - login_attempted
+      - reason
+      - success
+      - user_agent
+      - user_id
+    LoginRequest:
+      type: object
+      properties:
+        login:
+          type: string
+          minLength: 1
+          maxLength: 64
+        password:
+          type: string
+          minLength: 1
+          maxLength: 256
+        remember:
+          type: boolean
+          default: false
+      required:
+      - login
+      - password
+    LoginStep:
+      type: object
+      properties:
+        step:
+          type: string
+      required:
+      - step
+    Me:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        login:
+          type: string
+          readOnly: true
+        last_name:
+          type: string
+          readOnly: true
+        first_name:
+          type: string
+          readOnly: true
+        middle_name:
+          type: string
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        initials:
+          type: string
+          readOnly: true
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleEnum'
+          readOnly: true
+        active_role:
+          nullable: true
+          readOnly: true
+          oneOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        must_change_password:
+          type: boolean
+          readOnly: true
+        totp_enabled:
+          type: boolean
+          readOnly: true
+        totp_setup_required:
+          type: boolean
+          readOnly: true
+      required:
+      - active_role
+      - first_name
+      - full_name
+      - id
+      - initials
+      - last_name
+      - login
+      - middle_name
+      - must_change_password
+      - roles
+      - totp_enabled
+      - totp_setup_required
+    NullEnum:
+      enum:
+      - null
+    PaginatedAdminUserListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminUserList'
+    PaginatedAuditLogList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditLog'
+    PaginatedLoginEventList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoginEvent'
+    PaginatedSessionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Session'
+    PasswordChangeRequest:
+      type: object
+      properties:
+        current_password:
+          type: string
+          minLength: 1
+          maxLength: 256
+        new_password:
+          type: string
+          minLength: 1
+          maxLength: 256
+      required:
+      - current_password
+      - new_password
+    PasswordRequest:
+      type: object
+      properties:
+        password:
+          type: string
+          minLength: 1
+          maxLength: 256
+      required:
+      - password
+    PatchedAdminUserWriteRequest:
+      type: object
+      description: Create and update. Profiles are created when the matching role
+        is present.
+      properties:
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        middle_name:
+          type: string
+          maxLength: 100
+        login:
+          type: string
+          maxLength: 64
+        roles:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 16
+        student_profile:
+          $ref: '#/components/schemas/StudentProfileRequest'
+        teacher_profile:
+          $ref: '#/components/schemas/TeacherProfileRequest'
+    ReasonEnum:
+      enum:
+      - ok
+      - invalid_credentials
+      - locked
+      - ip_limit
+      - totp_required
+      - totp_invalid
+      - totp_limit
+      - backup_code
+      type: string
+      description: |-
+        * `ok` - Ok
+        * `invalid_credentials` - Invalid Credentials
+        * `locked` - Locked
+        * `ip_limit` - Ip Limit
+        * `totp_required` - Totp Required
+        * `totp_invalid` - Totp Invalid
+        * `totp_limit` - Totp Limit
+        * `backup_code` - Backup Code
+    RoleEnum:
+      enum:
+      - admin
+      - teacher
+      - student
+      - parent
+      type: string
+      description: |-
+        * `admin` - администратор
+        * `teacher` - преподаватель
+        * `student` - ученик
+        * `parent` - родитель
+    RoleSwitchRequest:
+      type: object
+      properties:
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+      required:
+      - role
+    SchoolGradeEnum:
+      enum:
+      - 9
+      - 10
+      - 11
+      type: integer
+      description: |-
+        * `9` - 9
+        * `10` - 10
+        * `11` - 11
+    Session:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        last_seen_at:
+          type: string
+          format: date-time
+          readOnly: true
+        ip:
+          type: string
+          readOnly: true
+          nullable: true
+        user_agent:
+          type: string
+          readOnly: true
+        remember:
+          type: boolean
+          readOnly: true
+        current:
+          type: boolean
+          readOnly: true
+      required:
+      - created_at
+      - current
+      - id
+      - ip
+      - last_seen_at
+      - remember
+      - user_agent
+    StudentProfile:
+      type: object
+      properties:
+        phone:
+          type: string
+          maxLength: 32
+        school:
+          type: string
+          maxLength: 200
+        school_grade:
+          nullable: true
+          minimum: 0
+          maximum: 32767
+          oneOf:
+          - $ref: '#/components/schemas/SchoolGradeEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        target:
+          type: string
+          maxLength: 200
+        target_score:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+        parent_name:
+          type: string
+          maxLength: 200
+        parent_phone:
+          type: string
+          maxLength: 32
+        admin_note:
+          type: string
+    StudentProfileRequest:
+      type: object
+      properties:
+        phone:
+          type: string
+          maxLength: 32
+        school:
+          type: string
+          maxLength: 200
+        school_grade:
+          nullable: true
+          minimum: 0
+          maximum: 32767
+          oneOf:
+          - $ref: '#/components/schemas/SchoolGradeEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        target:
+          type: string
+          maxLength: 200
+        target_score:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+        parent_name:
+          type: string
+          maxLength: 200
+        parent_phone:
+          type: string
+          maxLength: 32
+        admin_note:
+          type: string
+    TeacherProfile:
+      type: object
+      properties:
+        phone:
+          type: string
+          maxLength: 32
+    TeacherProfileRequest:
+      type: object
+      properties:
+        phone:
+          type: string
+          maxLength: 32
+    TemporaryPassword:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/AdminUserDetail'
+        temporary_password:
+          type: string
+      required:
+      - temporary_password
+      - user
+    TotpCodeRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 16
+      required:
+      - code
+    TotpSetup:
+      type: object
+      properties:
+        otpauth_uri:
+          type: string
+        qr:
+          type: string
+        secret:
+          type: string
+      required:
+      - otpauth_uri
+      - qr
+      - secret
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: __Host-session

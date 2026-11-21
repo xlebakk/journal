@@ -1,0 +1,34 @@
+.meter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-12);
+  color: var(--ink-2);
+}
+
+.segments {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.segments > span {
+  width: 24px;
+  height: 4px;
+}
+
+.off {
+  background: var(--rule);
+}
+
+.on1 {
+  background: var(--red-pen);
+}
+
+.on2 {
+  background: var(--pencil);
+}
+
+.on3,
+.on4 {
+  background: var(--ink);
+}

@@ -1,0 +1,54 @@
+import { Navigate, Outlet } from "react-router";
+
+import { homePath, useMe, type Role } from "@/features/auth/api";
+import { ReauthProvider } from "@/features/auth/reauth";
+import { errorMessage } from "@/shared/api/errors";
+import { RuledSkeleton } from "@/shared/ui";
+
+import { AppShell } from "./AppShell";
+import { NotFoundPage } from "./NotFoundPage";
+
+type GateProps = {
+  /** Section of one role; another role sees 404 (the server would answer 403 anyway). */
+  section?: Role;
+  /** Full-screen forced steps: temporary password, 2FA setup. */
+  mode?: "password" | "totp";
+};
+
+/**
+ * Client-side routing only. Every rule here is also enforced by the server (SPEC §11);
+ * this just shows the right screen.
+ */
+export function Gate({ section, mode }: GateProps) {
+  const me = useMe();
+  if (me.isPending) return <RuledSkeleton />;
+  if (me.error) return <p role="alert">{errorMessage(me.error)}</p>;
+  const user = me.data;
+  if (!user) return <Navigate to="/login" replace />;
+
+  if (user.must_change_password) {
+    return mode === "password" ? <Outlet /> : <Navigate to="/change-password" replace />;
+  }
+  if (mode === "password") return <Navigate to="/" replace />;
+  if (mode === "totp")
+    return (
+      <ReauthProvider>
+        <Outlet />
+      </ReauthProvider>
+    );
+  if (user.totp_setup_required) return <Navigate to="/setup-2fa" replace />;
+  if (section && user.active_role !== section) return <NotFoundPage />;
+
+  return (
+    <ReauthProvider>
+      <AppShell me={user} />
+    </ReauthProvider>
+  );
+}
+
+export function RootRedirect() {
+  const me = useMe();
+  if (me.isPending) return <RuledSkeleton />;
+  if (!me.data) return <Navigate to="/login" replace />;
+  return <Navigate to={homePath(me.data.active_role)} replace />;
+}
