@@ -135,7 +135,7 @@ class TestCsrfAndCookies:
         client = APIClient(enforce_csrf_checks=True)
         branding = client.get(LOGIN)
         assert branding.status_code == 200
-        assert set(branding.json()) == {"center_name", "contacts"}
+        assert set(branding.json()) == {"center_name", "contacts", "logo"}
         token = client.cookies["__Host-csrftoken"].value
         response = client.post(
             LOGIN,

@@ -152,6 +152,7 @@ class LessonPageSerializer(serializers.Serializer[Any]):
 class CourseOptionSerializer(serializers.Serializer[Any]):
     id = serializers.UUIDField()
     group_name = serializers.CharField()
+    subject = serializers.UUIDField()
     subject_name = serializers.CharField()
     teacher_name = serializers.CharField()
     year = serializers.UUIDField()

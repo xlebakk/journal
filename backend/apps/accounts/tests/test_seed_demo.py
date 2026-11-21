@@ -44,7 +44,19 @@ def test_seed_demo_creates_people_and_prints_passwords() -> None:
         marked = set(Attendance.objects.filter(lesson=lesson).values_list("student_id", flat=True))
         assert {s.pk for s in members(lesson)} <= marked
         assert lesson.topic
-        text = out.getvalue()
+    # Stage 5: exams with results (sections add up), goals, announcements.
+    from apps.announcements.models import Announcement
+    from apps.exams.models import Exam, ExamResult, StudentTarget
+
+    assert Exam.objects.count() == 6
+    for result in ExamResult.objects.filter(was_absent=False).prefetch_related("section_scores"):
+        scores = [s.score for s in result.section_scores.all()]
+        assert result.total is not None
+        assert result.total <= result.exam.max_score
+        assert not scores or sum(scores) == result.total
+    assert StudentTarget.objects.exists()
+    assert Announcement.objects.live().count() == 4
+    text = out.getvalue()
     admin = User.objects.with_role(Role.ADMIN).get()
     assert admin.login in text
     assert admin.totp_enabled is False  # set up on first login

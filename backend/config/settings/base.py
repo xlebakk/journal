@@ -23,6 +23,9 @@ INSTALLED_APPS = [
     "apps.academics",
     "apps.schedule",
     "apps.journal",
+    "apps.exams",
+    "apps.announcements",
+    "apps.reports",
 ]
 
 MIDDLEWARE = [
@@ -115,6 +118,10 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+# Uploaded files live outside the web root and are served only through the API (SPEC §11).
+MEDIA_ROOT = Path(env_str("MEDIA_ROOT", str(BASE_DIR / "media")))
+LOGO_MAX_BYTES = 1024 * 1024
+IMPORT_MAX_BYTES = 5 * 1024 * 1024
 
 # --- Cookies. Same origin as the frontend, so no CORS.
 SESSION_COOKIE_NAME = "__Host-session"
@@ -142,8 +149,16 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.UserRateThrottle",
         "rest_framework.throttling.AnonRateThrottle",
+        # Applies only to views with `throttle_scope` (exports, imports).
+        "rest_framework.throttling.ScopedRateThrottle",
     ],
-    "DEFAULT_THROTTLE_RATES": {"user": "300/min", "anon": "60/min"},
+    # Exports and imports are stricter than the general limit (SPEC §11).
+    "DEFAULT_THROTTLE_RATES": {
+        "user": "300/min",
+        "anon": "60/min",
+        "export": "20/min",
+        "import": "10/min",
+    },
     "DEFAULT_PAGINATION_CLASS": "apps.core.pagination.Pagination",
     "PAGE_SIZE": 50,
     "EXCEPTION_HANDLER": "apps.core.exceptions.exception_handler",

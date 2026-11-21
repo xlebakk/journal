@@ -135,6 +135,7 @@ class SessionSerializer(serializers.ModelSerializer[UserSession]):
 class BrandingSerializer(serializers.Serializer[Any]):
     center_name = serializers.CharField()
     contacts = serializers.CharField()
+    logo = serializers.CharField(allow_null=True)
 
 
 # --- Administrator ---------------------------------------------------------------------

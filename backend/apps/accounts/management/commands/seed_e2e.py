@@ -30,6 +30,7 @@ E2E_PASSWORD = "e2e-password-2026"
 E2E_TOTP_SECRET = "JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP"
 # A second administrator: one TOTP code cannot be used twice within 30 seconds.
 E2E_TOTP_SECRET_2 = "KRSXG5CTMVRXEZLUKRSXG5CTMVRXEZLU"
+E2E_TOTP_SECRET_3 = "MFRGGZDFMZTWQ2LKNNWG23TPOBYXE43U"
 
 
 class Command(BaseCommand):
@@ -77,6 +78,14 @@ class Command(BaseCommand):
                 "Азиз",
                 totp_enabled=True,
                 totp_secret=totp.encrypt_secret(E2E_TOTP_SECRET_2),
+            )
+            make(
+                "e2e.admin3",
+                [Role.ADMIN],
+                "Ахмедова",
+                "Нигора",
+                totp_enabled=True,
+                totp_secret=totp.encrypt_secret(E2E_TOTP_SECRET_3),
             )
             self._schedule(teacher, student)
         logins = ", ".join(u.login for u in (admin, teacher, student, newbie))

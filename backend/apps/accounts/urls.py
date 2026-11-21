@@ -1,9 +1,9 @@
 from django.urls import URLPattern, URLResolver, path
 from rest_framework.routers import SimpleRouter
 
-from apps.audit.views import AuditLogListView, LoginEventListView
+from apps.audit.views import AuditLogExportView, AuditLogListView, LoginEventListView
 
-from . import views_admin, views_auth
+from . import views_admin, views_auth, views_import
 
 router = SimpleRouter(trailing_slash=False, use_regex_path=False)
 router.register("admin/users", views_admin.AdminUserViewSet, basename="admin-user")
@@ -31,6 +31,20 @@ urlpatterns: list[URLPattern | URLResolver] = [
         name="admin-user-session",
     ),
     path("admin/audit", AuditLogListView.as_view(), name="admin-audit"),
+    path("admin/audit/export", AuditLogExportView.as_view(), name="admin-audit-export"),
     path("admin/login-events", LoginEventListView.as_view(), name="admin-login-events"),
+    path(
+        "admin/import/students/template",
+        views_import.StudentImportTemplateView.as_view(),
+        name="admin-import-students-template",
+    ),
+    path(
+        "admin/import/students",
+        views_import.StudentImportView.as_view(),
+        name="admin-import-students",
+    ),
+    path(
+        "admin/access-cards", views_import.AccessCardInfoView.as_view(), name="admin-access-cards"
+    ),
     *router.urls,
 ]

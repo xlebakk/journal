@@ -41,6 +41,12 @@ class CenterSettings(models.Model):
     attendance_threshold_percent = models.PositiveSmallIntegerField(default=80)
     attendance_window_days = models.PositiveSmallIntegerField(default=30)
 
+    # Branding and administration (stage 5).
+    logo = models.CharField(max_length=100, blank=True)  # file name under MEDIA_ROOT/logo
+    default_grade_scale = models.CharField(max_length=3, default="100")
+    last_backup_at = models.DateTimeField(null=True, blank=True)
+    last_backup_ok = models.BooleanField(null=True, blank=True)
+
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

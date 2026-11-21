@@ -1,9 +1,12 @@
-"""Read-only audit and login history for administrators. The screens come in stage 5."""
+"""Read-only audit and login history for administrators (SPEC §8.10)."""
 
+import json
 from datetime import date
 from typing import Any
 
 from django.db.models import QuerySet
+from django.http import HttpResponse
+from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import generics, serializers
 from rest_framework.exceptions import ValidationError
@@ -11,8 +14,10 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from apps.accounts.models import LoginEvent
-from apps.accounts.permissions import IsAdmin
+from apps.accounts.permissions import IsAdmin, require_recent_password
 from apps.accounts.serializers import LoginEventSerializer
+from apps.core.files import export, export_kind
+from apps.core.params import uuid_param
 
 from .models import AuditLog
 
@@ -66,7 +71,7 @@ class AuditLogListView(generics.ListAPIView[AuditLog]):
         for name in ("action", "entity_type", "entity_id"):
             if value := params.get(name):
                 qs = qs.filter(**{name: value})
-        if actor := params.get("actor"):
+        if actor := uuid_param(self.request, "actor"):
             qs = qs.filter(actor__pk=actor)
         if since := _date_param(self.request, "date_from"):
             qs = qs.filter(at__date__gte=since)
@@ -85,6 +90,65 @@ class AuditLogListView(generics.ListAPIView[AuditLog]):
     )
     def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         return super().get(request, *args, **kwargs)
+
+
+EXPORT_LIMIT = 10_000
+EXPORT_HEADER = [
+    "Время",
+    "Кто",
+    "Роль",
+    "IP",
+    "Действие",
+    "Сущность",
+    "ID",
+    "Было",
+    "Стало",
+    "Причина",
+]
+
+
+def _json(value: Any) -> str:
+    return "" if value is None else json.dumps(value, ensure_ascii=False, sort_keys=True)
+
+
+class AuditLogExportView(AuditLogListView):
+    """The filtered audit as XLSX/CSV (at most 10 000 rows). An export of personal data:
+    the password must have been entered within the last 5 minutes."""
+
+    throttle_scope = "export"
+    pagination_class = None
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("action", str),
+            OpenApiParameter("entity_type", str),
+            OpenApiParameter("entity_id", str),
+            OpenApiParameter("actor", str),
+            *DATE_PARAMS,
+            OpenApiParameter("export", str, enum=["xlsx", "csv"]),
+        ],
+        responses={(200, "application/octet-stream"): bytes},
+    )
+    def get(self, request: Request, *args: Any, **kwargs: Any) -> HttpResponse:  # type: ignore[override]
+        require_recent_password(request)
+        kind = export_kind(request) or "xlsx"
+        rows: list[list[Any]] = [EXPORT_HEADER]
+        for e in self.get_queryset()[:EXPORT_LIMIT]:
+            rows.append(
+                [
+                    timezone.localtime(e.at).strftime("%Y-%m-%d %H:%M:%S"),
+                    e.actor.full_name if e.actor else "",
+                    e.actor_role,
+                    e.ip or "",
+                    e.action,
+                    e.entity_type,
+                    e.entity_id,
+                    _json(e.before),
+                    _json(e.after),
+                    e.reason,
+                ]
+            )
+        return export(kind, f"audit-{timezone.localdate()}", [("Аудит", rows)])
 
 
 class LoginEventListView(generics.ListAPIView[LoginEvent]):

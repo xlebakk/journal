@@ -4,6 +4,8 @@ Stage 1: people. Stage 2: year and terms, subjects, rooms, 4 groups with courses
 template without conflicts and 8 weeks of lessons (4 back, 4 ahead) with a few exceptions.
 Stage 3: past lessons are conducted with topics, homework, attendance and grades; a couple
 of recent lessons are left unfilled and two students need attention.
+Stage 5: mock exams (with and without sections, an upcoming one), goals of students per
+subject in %, announcements for everyone, a role and a group.
 """
 
 import os
@@ -14,6 +16,7 @@ from typing import Any, ClassVar
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from django.utils import timezone
 
 from apps.academics.models import (
     AcademicYear,
@@ -29,6 +32,8 @@ from apps.academics.models import (
 )
 from apps.accounts import credentials
 from apps.accounts.models import Role, StudentProfile, TeacherProfile, User
+from apps.announcements.models import Announcement, Audience
+from apps.exams.models import Exam, ExamResult, ExamSection, ExamSectionScore, StudentTarget
 from apps.journal.models import Attendance, AttendanceStatus, Grade
 from apps.schedule import services
 from apps.schedule.models import Lesson, LessonStatus, ScheduleRequest, ScheduleSlot
@@ -215,6 +220,8 @@ class Command(BaseCommand):
         )
         self._exceptions(monday, groups, subjects, rooms, teachers)
         self._journal(today, groups, students)
+        self._exams(today, groups, subjects)
+        self._announcements(groups)
 
     def _lesson(self, group: Group, subject: Subject, day: date) -> Lesson | None:
         return Lesson.objects.filter(course__group=group, course__subject=subject, date=day).first()
@@ -369,6 +376,116 @@ class Command(BaseCommand):
         Attendance.objects.bulk_create(attendance)
         Grade.objects.bulk_create(grades)
 
+    # --- Stage 5: mock exams and announcements ---------------------------------------------
+
+    def _exams(self, today: date, groups: dict[str, Group], subjects: dict[str, Subject]) -> None:
+        admin = User.objects.with_role(Role.ADMIN).get()
+        evening = [groups["11-М вечерняя"], groups["11-Г вечерняя"]]
+        maths = list(Course.objects.filter(group__in=evening, subject=subjects["Мат"]))
+        english = list(
+            Course.objects.filter(group=groups["11-М вечерняя"], subject=subjects["Англ"])
+        )
+        # (courses, title, days ago, max, sections); different maxima — the chart is in %.
+        plan: list[tuple[list[Course], str, int, int, list[tuple[str, int]]]] = [
+            (maths, "Пробный ДТМ № 1", 42, 30, []),
+            (maths, "Пробный ДТМ № 2", 21, 30, []),
+            (maths, "Пробный ДТМ № 3", 4, 100, [("Алгебра", 60), ("Геометрия", 40)]),
+            (english, "Mock test 1", 30, 50, [("Reading", 25), ("Listening", 25)]),
+            (english, "Mock test 2", 9, 50, [("Reading", 25), ("Listening", 25)]),
+        ]
+        ability: dict[Any, float] = {}
+        for step, (courses, title, ago, maximum, sections) in enumerate(plan):
+            exam = Exam.objects.create(
+                title=title,
+                subject=courses[0].subject,
+                date=today - timedelta(days=ago),
+                max_score=maximum,
+                created_by=courses[0].teacher,
+            )
+            exam.courses.set(courses)
+            parts = [
+                ExamSection.objects.create(exam=exam, name=n, max_score=m, position=i)
+                for i, (n, m) in enumerate(sections)
+            ]
+            members = GroupMembership.objects.filter(
+                group__in=[c.group_id for c in courses], left_on__isnull=True
+            ).values_list("student_id", flat=True)
+            for sid in members:
+                if self.rng.random() < 0.06:
+                    ExamResult.objects.create(
+                        exam=exam, student_id=sid, was_absent=True, entered_by=exam.created_by
+                    )
+                    continue
+                base = ability.setdefault(sid, self.rng.uniform(0.45, 0.9))
+                share = max(0.05, min(1.0, base + 0.03 * step + self.rng.gauss(0, 0.07)))
+                scores = [
+                    round(m * max(0.0, min(1.0, share + self.rng.gauss(0, 0.05))))
+                    for _, m in sections
+                ]
+                total = sum(scores) if sections else round(maximum * share)
+                result = ExamResult.objects.create(
+                    exam=exam, student_id=sid, total=total, entered_by=exam.created_by
+                )
+                ExamSectionScore.objects.bulk_create(
+                    ExamSectionScore(result=result, section=part, score=score)
+                    for part, score in zip(parts, scores, strict=True)
+                )
+        upcoming = Exam.objects.create(
+            title="Пробный ДТМ № 4",
+            subject=subjects["Мат"],
+            date=today + timedelta(days=12),
+            max_score=100,
+            created_by=admin,
+        )
+        upcoming.courses.set(maths)
+        for sid in GroupMembership.objects.filter(group=evening[0]).values_list(
+            "student_id", flat=True
+        ):
+            StudentTarget.objects.create(
+                student_id=sid, subject=subjects["Мат"], percent=self.rng.choice([70, 75, 80, 85])
+            )
+            StudentTarget.objects.create(student_id=sid, subject=subjects["Англ"], percent=75)
+
+    def _announcements(self, groups: dict[str, Group]) -> None:
+        admin = User.objects.with_role(Role.ADMIN).get()
+        now = timezone.now()
+        Announcement.objects.create(
+            author=admin,
+            title="Зимние каникулы",
+            body="С 30 декабря по 8 января занятий нет. Расписание на январь — в разделе "
+            "«Расписание».",
+            pinned=True,
+        )
+        Announcement.objects.create(
+            author=admin,
+            title="Пробный ДТМ № 4",
+            body="Через две недели — пробный тест по математике. Начало в 10:00, кабинет 201.",
+            audience=Audience.ROLE,
+            role=Role.STUDENT,
+        )
+        Announcement.objects.create(
+            author=admin,
+            title="Журналы до пятницы",
+            body="Пожалуйста, заполните все занятия прошлой недели до пятницы.",
+            audience=Audience.ROLE,
+            role=Role.TEACHER,
+            pinned=True,
+        )
+        evening = Announcement.objects.create(
+            author=admin,
+            title="Родительское собрание",
+            body="В субботу в 11:00 — собрание для родителей группы 11-М вечерняя.",
+            audience=Audience.GROUPS,
+        )
+        evening.groups.set([groups["11-М вечерняя"]])
+        Announcement.objects.create(
+            author=admin,
+            title="Старое объявление",
+            body="Срок показа истёк — его видно только администратору в списке.",
+            published_at=now - timedelta(days=20),
+            expires_at=now - timedelta(days=10),
+        )
+
     def _print(self) -> None:
         width = max(len(r[1]) for r in self.rows)
         self.stdout.write(f"{'роль':<8}  {'ФИО':<{width}}  {'логин':<14}  пароль")
@@ -379,7 +496,9 @@ class Command(BaseCommand):
                 f"\nСоздано: 1 администратор, 6 преподавателей, 60 учеников, "
                 f"{Group.objects.count()} группы, {Course.objects.count()} курсов, "
                 f"{Lesson.objects.count()} занятий (4 недели назад и 4 вперёд), "
-                f"{Attendance.objects.count()} отметок, {Grade.objects.count()} оценок. "
+                f"{Attendance.objects.count()} отметок, {Grade.objects.count()} оценок, "
+                f"{Exam.objects.count()} пробных тестов, "
+                f"{Announcement.objects.count()} объявлений. "
                 "Администратор при первом входе настроит 2FA."
             )
         )

@@ -144,3 +144,50 @@ def course_stats(
                 Decimal(stats.present + stats.late) * 100 / Decimal(denominator)
             )
     return result
+
+
+@dataclass
+class GroupSummary:
+    students: int
+    average: Decimal | None
+    attendance_percent: Decimal | None
+    low_attendance: int
+    low_average: int
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "students": self.students,
+            "average": self.average,
+            "attendance_percent": self.attendance_percent,
+            "low_attendance": self.low_attendance,
+            "low_average": self.low_average,
+        }
+
+
+def summarise_group(
+    stats: Iterable[StudentStats], *, attendance_threshold: int, low_below: Decimal
+) -> GroupSummary:
+    """Course-level numbers for reports (decision of stage 5).
+
+    * Average = the mean of the students' weighted averages: every student counts once,
+      however many grades they have.
+    * Attendance % = Σ(present + late) / Σ(eligible − excused): the same formula as for one
+      student, over the whole group.
+    """
+    rows = list(stats)
+    averages = [s.average for s in rows if s.average is not None]
+    attended = sum(s.present + s.late for s in rows)
+    denominator = sum(s.eligible - s.excused for s in rows)
+    return GroupSummary(
+        students=len(rows),
+        average=rounded(sum(averages, Decimal(0)) / len(averages)) if averages else None,
+        attendance_percent=(
+            rounded(Decimal(attended) * 100 / Decimal(denominator)) if denominator > 0 else None
+        ),
+        low_attendance=sum(
+            1
+            for s in rows
+            if s.attendance_percent is not None and s.attendance_percent < attendance_threshold
+        ),
+        low_average=sum(1 for s in rows if s.average is not None and s.average < low_below),
+    )

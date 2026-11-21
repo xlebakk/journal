@@ -75,7 +75,7 @@ def _lesson_row(lesson: Lesson, who: services.Actor) -> dict[str, Any]:
     }
 
 
-def _students(
+def course_roster(
     course: Course, first: date | None, last: date | None, stats: dict[Any, StudentStats]
 ) -> list[dict[str, Any]]:
     """Everyone who was in the group at some point of the period, with their periods."""
@@ -100,7 +100,7 @@ def _students(
     return list(people.values())
 
 
-def _period(request: Request, course: Course) -> tuple[date, date]:
+def course_period(request: Request, course: Course) -> tuple[date, date]:
     """?term= or ?from=&to=; default — the term containing today, else the whole year."""
     year = course.group.academic_year
     if term_id := uuid_param(request, "term"):
@@ -133,6 +133,7 @@ class JournalCoursesView(APIView):
             {
                 "id": c.pk,
                 "group_name": c.group.name,
+                "subject": c.subject_id,
                 "subject_name": c.subject.name,
                 "teacher_name": c.teacher.short_name,
                 "year": c.group.academic_year_id,
@@ -168,7 +169,7 @@ class JournalGridView(APIView):
     def get(self, request: Request, pk: str) -> Response:
         who = services.actor(request)
         course = get_object_or_404(courses_for(who), pk=pk)
-        first, last = _period(request, course)
+        first, last = course_period(request, course)
         lessons = list(
             Lesson.objects.filter(course=course, date__range=(first, last))
             .exclude(status=LessonStatus.CANCELLED)
@@ -184,7 +185,7 @@ class JournalGridView(APIView):
             "today": services.today(),
             "rules": _rules(course),
             "lessons": [_lesson_row(lesson, who) for lesson in lessons],
-            "students": _students(course, first, last, stats),
+            "students": course_roster(course, first, last, stats),
             "attendance": Attendance.objects.filter(lesson_id__in=lesson_ids),
             "grades": Grade.objects.alive()
             .filter(lesson_id__in=lesson_ids)
