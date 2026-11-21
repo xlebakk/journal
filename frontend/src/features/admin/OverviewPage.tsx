@@ -6,6 +6,7 @@ import { api, type Schemas } from "@/shared/api/client";
 import { errorMessage } from "@/shared/api/errors";
 import { t } from "@/shared/i18n";
 import { formatDateTime } from "@/shared/lib/time";
+import { describeUserAgent } from "@/shared/lib/userAgent";
 import { formatDate, formatDayLong } from "@/shared/lib/week";
 import { EmptyState, RuledSkeleton, Table } from "@/shared/ui";
 
@@ -147,6 +148,62 @@ export function OverviewPage() {
               ))}
             </tbody>
           </Table>
+        )}
+      </section>
+
+      <section className={styles.section} aria-labelledby="ov-denied">
+        <h2 id="ov-denied">{t("overview.denied")}</h2>
+        {data.denied.length === 0 ? (
+          <EmptyState text={t("overview.noDenied")} />
+        ) : (
+          <>
+            <p className={styles.note}>{t("overview.deniedHint")}</p>
+            <Table>
+              <tbody>
+                {data.denied.map((row) => (
+                  <tr key={row.user}>
+                    <th scope="row">
+                      <Link to={`/admin/users/${row.user}`}>{row.full_name}</Link>
+                    </th>
+                    <td className="mono">
+                      {t("overview.deniedCount", { count: row.count, hour: row.last_hour })}
+                    </td>
+                    <td className={row.spike ? styles.error : styles.status}>
+                      {row.spike ? t("overview.spike") : formatDateTime(row.last_at)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </>
+        )}
+      </section>
+
+      <section className={styles.section} aria-labelledby="ov-devices">
+        <h2 id="ov-devices">{t("overview.newDevices")}</h2>
+        {data.admin_new_devices.length === 0 ? (
+          <EmptyState text={t("overview.noNewDevices")} />
+        ) : (
+          <>
+            <p className={styles.note}>{t("overview.newDevicesHint")}</p>
+            <Table>
+              <tbody>
+                {data.admin_new_devices.map((row) => (
+                  <tr key={`${row.user}-${row.at}`}>
+                    <th scope="row">{row.full_name}</th>
+                    <td>{formatDateTime(row.at)}</td>
+                    <td>
+                      {describeUserAgent(row.user_agent)}
+                      {row.ip && <span className={styles.status}> · {row.ip}</span>}
+                    </td>
+                    <td>
+                      <Link to={`/admin/users/${row.user}`}>{t("overview.sessions")}</Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </>
         )}
       </section>
 

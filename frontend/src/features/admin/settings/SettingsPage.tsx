@@ -33,7 +33,22 @@ const JOURNAL: NumberField[] = [
   "attendance_window_days",
 ];
 const KEY = ["admin", "settings"];
-const READ_ONLY = ["logo", "last_backup_at", "last_backup_ok", "updated_at"];
+const READ_ONLY = [
+  "logo",
+  "last_backup_at",
+  "last_backup_ok",
+  "last_restore_check_at",
+  "last_restore_check_ok",
+  "updated_at",
+];
+
+function restoreText(s: Settings): string {
+  if (!s.last_restore_check_at) return t("settings.restoreNone");
+  const date = formatDateTime(s.last_restore_check_at);
+  return s.last_restore_check_ok
+    ? t("settings.restoreOk", { date })
+    : t("settings.restoreFailed", { date });
+}
 
 function backupText(s: Settings): string {
   if (!s.last_backup_at) return t("settings.backupNone");
@@ -198,7 +213,12 @@ export function SettingsPage() {
       <SettingsForm key={settings.data.updated_at} initial={settings.data} />
       <section className={styles.section} aria-labelledby="settings-backup">
         <h2 id="settings-backup">{t("settings.backup")}</h2>
-        <p className={styles.note}>{backupText(settings.data)}</p>
+        <p className={settings.data.last_backup_ok === false ? styles.error : styles.note}>
+          {backupText(settings.data)}
+        </p>
+        <p className={settings.data.last_restore_check_ok === false ? styles.error : styles.note}>
+          {restoreText(settings.data)}
+        </p>
       </section>
     </section>
   );

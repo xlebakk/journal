@@ -2339,6 +2339,15 @@ export interface components {
             /** Format: date */
             joined_on: string;
         };
+        AdminDeviceLogin: {
+            /** Format: uuid */
+            user: string;
+            full_name: string;
+            /** Format: date-time */
+            at: string;
+            ip: string | null;
+            user_agent: string;
+        };
         AdminUserDetail: {
             /** Format: uuid */
             readonly id: string;
@@ -2552,6 +2561,9 @@ export interface components {
             readonly last_backup_at: string | null;
             readonly last_backup_ok: boolean | null;
             /** Format: date-time */
+            readonly last_restore_check_at: string | null;
+            readonly last_restore_check_ok: boolean | null;
+            /** Format: date-time */
             readonly updated_at: string;
         };
         ClearRequest: {
@@ -2667,6 +2679,16 @@ export interface components {
             subject_short: string;
             subject_name: string;
             status: string;
+        };
+        DeniedUser: {
+            /** Format: uuid */
+            user: string;
+            full_name: string;
+            count: number;
+            last_hour: number;
+            spike: boolean;
+            /** Format: date-time */
+            last_at: string;
         };
         Diary: {
             /** Format: date */
@@ -3184,6 +3206,8 @@ export interface components {
             attendance_window_days: number;
             blocked_logins: components["schemas"]["BlockedLogin"][];
             failed_logins_24h: number;
+            denied: components["schemas"]["DeniedUser"][];
+            admin_new_devices: components["schemas"]["AdminDeviceLogin"][];
             audit: components["schemas"]["AuditLog"][];
         };
         OverviewToday: {

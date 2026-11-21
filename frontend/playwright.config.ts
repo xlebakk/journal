@@ -32,7 +32,9 @@ export default defineConfig({
       timeout: 120_000,
     },
     {
-      command: "npx vite --port 5174 --strictPort",
+      // The production build under the production security headers (CSP from
+      // infra/caddy/common.caddy, see vite.config.ts → preview), not the dev server.
+      command: "npm run build && npx vite preview --port 5174 --strictPort",
       url: "http://localhost:5174",
       env: { VITE_API_PROXY: "http://127.0.0.1:8001" },
       reuseExistingServer: false,
