@@ -5,3 +5,5 @@ src/shared/api/schema.d.ts
 test-results
 playwright-report
 src/shared/api/schema.yml
+dist-mobile
+dev-dist

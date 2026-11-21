@@ -82,7 +82,8 @@ jobs:
         run: uv run --project backend python -m pytest -q -p no:django infra/backup
       - name: shellcheck of the server scripts
         working-directory: .
-        run: shellcheck infra/backup/*.sh infra/scripts/*.sh infra/postgres/init-prod/*.sh
+        # warning level: at «info» shellcheck flags functions that only traps call (SC2317).
+        run: shellcheck --severity=warning infra/backup/*.sh infra/scripts/*.sh infra/postgres/*/*.sh
 
   frontend:
     runs-on: ubuntu-latest
@@ -212,7 +213,10 @@ jobs:
           REDIS_PASSWORD=$(secret)
           EOF
       - name: build and start
-        run: docker compose -f infra/docker-compose.prod.yml --env-file .env.prod up -d --build --wait
+        run: |
+          docker compose -f infra/docker-compose.prod.yml --env-file .env.prod up -d --build
+          # `migrate` finishes by design, so wait for the site itself rather than `--wait`.
+          timeout 300 bash -c 'until curl -skf https://localhost/api/v1/health; do sleep 3; done'
       - name: HTTPS, redirect and security headers
         run: |
           curl -sk -o /dev/null -w "%{http_code} %{redirect_url}\n" http://localhost/ | grep -q "^308 https://localhost/"
@@ -228,8 +232,10 @@ jobs:
           test "$(curl -sk -o /dev/null -w '%{http_code}' https://localhost/api/v1/me)" = 401
       - name: nothing but Caddy listens to the world
         run: |
-          docker compose -f infra/docker-compose.prod.yml --env-file .env.prod ps --format '{{.Service}} {{.Publishers}}'
-          test -z "$(docker compose -f infra/docker-compose.prod.yml --env-file .env.prod ps --format '{{.Service}} {{.Publishers}}' | grep -E '^(db|redis|api) .*[0-9]+->')"
+          published="$(docker compose -f infra/docker-compose.prod.yml --env-file .env.prod ps --format '{{.Service}} {{range .Publishers}}{{if .PublishedPort}}{{.PublishedPort}},{{end}}{{end}}')"
+          echo "$published"
+          echo "$published" | grep -E '^web .*443,' >/dev/null
+          ! echo "$published" | grep -E '^(db|redis|api) [0-9]'
       - name: some data to back up
         run: |
           docker compose -f infra/docker-compose.prod.yml --env-file .env.prod exec -T api python manage.py shell -c "
