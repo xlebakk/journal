@@ -1,40 +1,8 @@
 import { QueryClientProvider } from "@tanstack/react-query";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, type ComponentType } from "react";
 import { createBrowserRouter, RouterProvider, type RouteObject } from "react-router";
 
-import { ForcedPasswordChangePage, PasswordPage } from "@/features/auth/ChangePasswordPage";
 import { LoginPage } from "@/features/auth/LoginPage";
-import { ProfilePage } from "@/features/auth/ProfilePage";
-import { SessionsPage } from "@/features/auth/SessionsPage";
-import { TotpSetupPage } from "@/features/auth/TotpSetupPage";
-import { AuditPage } from "@/features/admin/audit/AuditPage";
-import { CatalogsPage } from "@/features/admin/catalogs/CatalogsPage";
-import { GroupDetailPage } from "@/features/admin/groups/GroupDetailPage";
-import { GroupsPage } from "@/features/admin/groups/GroupsPage";
-import { ImportPage } from "@/features/admin/import/ImportPage";
-import { OverviewPage } from "@/features/admin/OverviewPage";
-import { RequestsPage } from "@/features/admin/schedule/RequestsPage";
-import { SchedulePage as AdminSchedulePage } from "@/features/admin/schedule/SchedulePage";
-import { SettingsPage } from "@/features/admin/settings/SettingsPage";
-import { UserCreatePage } from "@/features/admin/users/UserCreatePage";
-import { UserDetailPage } from "@/features/admin/users/UserDetailPage";
-import { UsersPage } from "@/features/admin/users/UsersPage";
-import { AnnouncementsPage } from "@/features/announcements/AnnouncementsPage";
-import { ExamPage } from "@/features/exams/ExamPage";
-import { ExamsPage } from "@/features/exams/ExamsPage";
-import { JournalPage } from "@/features/journal/JournalPage";
-import { LessonPage } from "@/features/journal/LessonPage";
-import { AdminReportsPage } from "@/features/reports/AdminReportsPage";
-import { TeacherReportsPage } from "@/features/reports/StatementPanel";
-import { StudentSummaryPage } from "@/features/reports/StudentSummaryPage";
-import { AttendancePage } from "@/features/student/AttendancePage";
-import { DiaryPage } from "@/features/student/DiaryPage";
-import { GradesPage } from "@/features/student/GradesPage";
-import { HomePage as StudentHomePage } from "@/features/student/HomePage";
-import { TestsPage } from "@/features/student/TestsPage";
-import { SchedulePage as StudentSchedulePage } from "@/features/student/SchedulePage";
-import { SchedulePage as TeacherSchedulePage } from "@/features/teacher/SchedulePage";
-import { TodayPage } from "@/features/teacher/TodayPage";
 import { onBackButton } from "@/platform";
 import { RuledSkeleton } from "@/shared/ui";
 
@@ -43,6 +11,14 @@ import { NotFoundPage } from "./NotFoundPage";
 import { createQueryClient } from "./queryClient";
 
 const queryClient = createQueryClient();
+
+/**
+ * Screens load on first visit (SPEC §15: the login page must stay light — performance ≥ 90 on
+ * a phone). React Router fetches the module before rendering the route.
+ */
+function page<M extends Record<string, unknown>>(load: () => Promise<M>, name: keyof M & string) {
+  return async () => ({ Component: (await load())[name] as ComponentType });
+}
 
 // import.meta.env.DEV is a build-time constant: the styleguide is not in the production bundle.
 const devRoutes: RouteObject[] = import.meta.env.DEV
@@ -54,69 +30,145 @@ const routes: RouteObject[] = [
   { path: "/login", Component: LoginPage },
   {
     element: <Gate mode="password" />,
-    children: [{ path: "/change-password", Component: ForcedPasswordChangePage }],
+    children: [
+      {
+        path: "/change-password",
+        lazy: page(() => import("@/features/auth/ChangePasswordPage"), "ForcedPasswordChangePage"),
+      },
+    ],
   },
   {
     element: <Gate mode="totp" />,
-    children: [{ path: "/setup-2fa", Component: TotpSetupPage }],
+    children: [
+      {
+        path: "/setup-2fa",
+        lazy: page(() => import("@/features/auth/TotpSetupPage"), "TotpSetupPage"),
+      },
+    ],
   },
   {
     path: "/admin",
     element: <Gate section="admin" />,
     children: [
-      { index: true, Component: OverviewPage },
-      { path: "users", Component: UsersPage },
-      { path: "users/new", Component: UserCreatePage },
-      { path: "users/:id", Component: UserDetailPage },
-      { path: "import", Component: ImportPage },
-      { path: "groups", Component: GroupsPage },
-      { path: "groups/:id", Component: GroupDetailPage },
-      { path: "schedule", Component: AdminSchedulePage },
-      { path: "requests", Component: RequestsPage },
-      { path: "catalogs", Component: CatalogsPage },
-      { path: "journal", Component: JournalPage },
-      { path: "journal/lessons/:id", Component: LessonPage },
-      { path: "exams", Component: ExamsPage },
-      { path: "exams/:id", Component: ExamPage },
-      { path: "reports", Component: AdminReportsPage },
-      { path: "reports/students/:id", Component: StudentSummaryPage },
-      { path: "announcements", Component: AnnouncementsPage },
-      { path: "audit", Component: AuditPage },
-      { path: "settings", Component: SettingsPage },
+      { index: true, lazy: page(() => import("@/features/admin/OverviewPage"), "OverviewPage") },
+      { path: "users", lazy: page(() => import("@/features/admin/users/UsersPage"), "UsersPage") },
+      {
+        path: "users/new",
+        lazy: page(() => import("@/features/admin/users/UserCreatePage"), "UserCreatePage"),
+      },
+      {
+        path: "users/:id",
+        lazy: page(() => import("@/features/admin/users/UserDetailPage"), "UserDetailPage"),
+      },
+      {
+        path: "import",
+        lazy: page(() => import("@/features/admin/import/ImportPage"), "ImportPage"),
+      },
+      {
+        path: "groups",
+        lazy: page(() => import("@/features/admin/groups/GroupsPage"), "GroupsPage"),
+      },
+      {
+        path: "groups/:id",
+        lazy: page(() => import("@/features/admin/groups/GroupDetailPage"), "GroupDetailPage"),
+      },
+      {
+        path: "schedule",
+        lazy: page(() => import("@/features/admin/schedule/SchedulePage"), "SchedulePage"),
+      },
+      {
+        path: "requests",
+        lazy: page(() => import("@/features/admin/schedule/RequestsPage"), "RequestsPage"),
+      },
+      {
+        path: "catalogs",
+        lazy: page(() => import("@/features/admin/catalogs/CatalogsPage"), "CatalogsPage"),
+      },
+      {
+        path: "journal",
+        lazy: page(() => import("@/features/journal/JournalPage"), "JournalPage"),
+      },
+      {
+        path: "journal/lessons/:id",
+        lazy: page(() => import("@/features/journal/LessonPage"), "LessonPage"),
+      },
+      { path: "exams", lazy: page(() => import("@/features/exams/ExamsPage"), "ExamsPage") },
+      { path: "exams/:id", lazy: page(() => import("@/features/exams/ExamPage"), "ExamPage") },
+      {
+        path: "reports",
+        lazy: page(() => import("@/features/reports/AdminReportsPage"), "AdminReportsPage"),
+      },
+      {
+        path: "reports/students/:id",
+        lazy: page(() => import("@/features/reports/StudentSummaryPage"), "StudentSummaryPage"),
+      },
+      {
+        path: "announcements",
+        lazy: page(() => import("@/features/announcements/AnnouncementsPage"), "AnnouncementsPage"),
+      },
+      { path: "audit", lazy: page(() => import("@/features/admin/audit/AuditPage"), "AuditPage") },
+      {
+        path: "settings",
+        lazy: page(() => import("@/features/admin/settings/SettingsPage"), "SettingsPage"),
+      },
     ],
   },
   {
     path: "/teacher",
     element: <Gate section="teacher" />,
     children: [
-      { index: true, Component: TodayPage },
-      { path: "schedule", Component: TeacherSchedulePage },
-      { path: "journal", Component: JournalPage },
-      { path: "journal/lessons/:id", Component: LessonPage },
-      { path: "exams", Component: ExamsPage },
-      { path: "exams/:id", Component: ExamPage },
-      { path: "reports", Component: TeacherReportsPage },
+      { index: true, lazy: page(() => import("@/features/teacher/TodayPage"), "TodayPage") },
+      {
+        path: "schedule",
+        lazy: page(() => import("@/features/teacher/SchedulePage"), "SchedulePage"),
+      },
+      {
+        path: "journal",
+        lazy: page(() => import("@/features/journal/JournalPage"), "JournalPage"),
+      },
+      {
+        path: "journal/lessons/:id",
+        lazy: page(() => import("@/features/journal/LessonPage"), "LessonPage"),
+      },
+      { path: "exams", lazy: page(() => import("@/features/exams/ExamsPage"), "ExamsPage") },
+      { path: "exams/:id", lazy: page(() => import("@/features/exams/ExamPage"), "ExamPage") },
+      {
+        path: "reports",
+        lazy: page(() => import("@/features/reports/StatementPanel"), "TeacherReportsPage"),
+      },
     ],
   },
   {
     path: "/student",
     element: <Gate section="student" />,
     children: [
-      { index: true, Component: StudentHomePage },
-      { path: "diary", Component: DiaryPage },
-      { path: "grades", Component: GradesPage },
-      { path: "tests", Component: TestsPage },
-      { path: "attendance", Component: AttendancePage },
-      { path: "schedule", Component: StudentSchedulePage },
+      { index: true, lazy: page(() => import("@/features/student/HomePage"), "HomePage") },
+      { path: "diary", lazy: page(() => import("@/features/student/DiaryPage"), "DiaryPage") },
+      { path: "grades", lazy: page(() => import("@/features/student/GradesPage"), "GradesPage") },
+      { path: "tests", lazy: page(() => import("@/features/student/TestsPage"), "TestsPage") },
+      {
+        path: "attendance",
+        lazy: page(() => import("@/features/student/AttendancePage"), "AttendancePage"),
+      },
+      {
+        path: "schedule",
+        lazy: page(() => import("@/features/student/SchedulePage"), "SchedulePage"),
+      },
     ],
   },
   {
     path: "/account",
     element: <Gate />,
     children: [
-      { path: "profile", Component: ProfilePage },
-      { path: "password", Component: PasswordPage },
-      { path: "sessions", Component: SessionsPage },
+      { path: "profile", lazy: page(() => import("@/features/auth/ProfilePage"), "ProfilePage") },
+      {
+        path: "password",
+        lazy: page(() => import("@/features/auth/ChangePasswordPage"), "PasswordPage"),
+      },
+      {
+        path: "sessions",
+        lazy: page(() => import("@/features/auth/SessionsPage"), "SessionsPage"),
+      },
     ],
   },
   ...devRoutes,

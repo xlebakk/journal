@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { z } from "zod";
+import { z } from "@/shared/lib/zod";
 
 import { errorMessage, fieldError } from "@/shared/api/errors";
 import { ApiError } from "@/shared/api/client";

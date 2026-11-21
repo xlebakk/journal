@@ -1,8 +1,6 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router";
-import { z } from "zod";
 
 import { ApiError } from "@/shared/api/client";
 import { errorMessage } from "@/shared/api/errors";
@@ -15,15 +13,10 @@ import { Button, Checkbox, PasswordField, TextField } from "@/shared/ui";
 import { homePath, useBranding, useLogin, useMe, useTotpLogin } from "./api";
 import styles from "./AuthPage.module.css";
 
-const loginSchema = z.object({
-  login: z.string().trim().min(1, t("common.required")),
-  password: z.string().min(1, t("common.required")),
-  remember: z.boolean(),
-});
-type LoginForm = z.infer<typeof loginSchema>;
-
-const totpSchema = z.object({ code: z.string().trim().min(6, t("common.required")) });
-type TotpForm = z.infer<typeof totpSchema>;
+// No zod here: the login page is the first screen and must stay light (SPEC §15).
+type LoginForm = { login: string; password: string; remember: boolean };
+type TotpForm = { code: string };
+const required = (value: string) => value.trim() !== "" || t("common.required");
 
 export function AuthColumn({ children }: { children: React.ReactNode }) {
   const branding = useBranding();
@@ -52,7 +45,6 @@ function PasswordStep({ onTotp }: { onTotp: () => void }) {
   const login = useLogin();
   const navigate = useNavigate();
   const form = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
     defaultValues: { login: "", password: "", remember: false },
   });
 
@@ -74,13 +66,13 @@ function PasswordStep({ onTotp }: { onTotp: () => void }) {
         autoCapitalize="off"
         spellCheck={false}
         error={form.formState.errors.login?.message}
-        {...form.register("login")}
+        {...form.register("login", { validate: required, setValueAs: (v: string) => v.trim() })}
       />
       <PasswordField
         label={t("login.password")}
         autoComplete="current-password"
         error={form.formState.errors.password?.message}
-        {...form.register("password")}
+        {...form.register("password", { validate: required })}
       />
       {/* The app always stays signed in for 30 days (refresh token); the choice is web-only. */}
       {!isNativeApp && <Checkbox label={t("login.remember")} {...form.register("remember")} />}
@@ -99,10 +91,7 @@ function PasswordStep({ onTotp }: { onTotp: () => void }) {
 function TotpStep({ onBack }: { onBack: () => void }) {
   const totp = useTotpLogin();
   const navigate = useNavigate();
-  const form = useForm<TotpForm>({
-    resolver: zodResolver(totpSchema),
-    defaultValues: { code: "" },
-  });
+  const form = useForm<TotpForm>({ defaultValues: { code: "" } });
 
   const submit = form.handleSubmit(async ({ code }) => {
     try {
@@ -125,7 +114,10 @@ function TotpStep({ onBack }: { onBack: () => void }) {
         maxLength={9}
         className="mono"
         error={form.formState.errors.code?.message}
-        {...form.register("code")}
+        {...form.register("code", {
+          validate: (v: string) => v.trim().length >= 6 || t("common.required"),
+          setValueAs: (v: string) => v.trim(),
+        })}
       />
       {totp.error && (
         <p className={styles.error} role="alert">

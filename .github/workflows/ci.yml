@@ -198,11 +198,11 @@ jobs:
           secret() { python3 -c "import secrets; print(secrets.token_urlsafe(32))"; }
           fernet() { python3 -c "import base64, os; print(base64.urlsafe_b64encode(os.urandom(32)).decode())"; }
           cat > .env.prod <<EOF
-          JOURNAL_DOMAIN=localhost
+          JOURNAL_DOMAIN=journal.localhost
           ACME_EMAIL=ci@example.com
           DJANGO_SECRET_KEY=$(secret)$(secret)
-          DJANGO_ALLOWED_HOSTS=localhost
-          DJANGO_CSRF_TRUSTED_ORIGINS=https://localhost
+          DJANGO_ALLOWED_HOSTS=journal.localhost
+          DJANGO_CSRF_TRUSTED_ORIGINS=https://journal.localhost
           TOTP_ENCRYPTION_KEYS=$(fernet)
           POSTGRES_PASSWORD=$(secret)
           DB_NAME=journal
@@ -214,13 +214,15 @@ jobs:
           EOF
       - name: build and start
         run: |
+          # A name with a dot (the Observatory requires one) that Caddy serves from its local CA.
+          echo "127.0.0.1 journal.localhost" | sudo tee -a /etc/hosts
           docker compose -f infra/docker-compose.prod.yml --env-file .env.prod up -d --build
           # `migrate` finishes by design, so wait for the site itself rather than `--wait`.
-          timeout 300 bash -c 'until curl -skf https://localhost/api/v1/health; do sleep 3; done'
+          timeout 300 bash -c 'until curl -skf https://journal.localhost/api/v1/health; do sleep 3; done'
       - name: HTTPS, redirect and security headers
         run: |
-          curl -sk -o /dev/null -w "%{http_code} %{redirect_url}\n" http://localhost/ | grep -q "^308 https://localhost/"
-          headers="$(curl -skI https://localhost/)"
+          curl -sk -o /dev/null -w "%{http_code} %{redirect_url}\n" http://journal.localhost/ | grep -q "^308 https://journal.localhost/"
+          headers="$(curl -skI https://journal.localhost/)"
           echo "$headers"
           for h in "strict-transport-security: max-age=31536000" "content-security-policy: default-src 'self'" \
                    "x-content-type-options: nosniff" "referrer-policy: same-origin" \
@@ -228,9 +230,9 @@ jobs:
             echo "$headers" | grep -qi "^$h" || { echo "missing: $h"; exit 1; }
           done
           ! echo "$headers" | grep -qi "^server:"
-          curl -sk https://localhost/api/v1/health | grep -q ok
-          curl -skI https://localhost/api/v1/health | grep -qi "^cache-control: no-store"
-          test "$(curl -sk -o /dev/null -w '%{http_code}' https://localhost/api/v1/me)" = 401
+          curl -sk https://journal.localhost/api/v1/health | grep -q ok
+          curl -skI https://journal.localhost/api/v1/health | grep -qi "^cache-control: no-store"
+          test "$(curl -sk -o /dev/null -w '%{http_code}' https://journal.localhost/api/v1/me)" = 401
       - name: nothing but Caddy listens to the world
         run: |
           published="$(docker compose -f infra/docker-compose.prod.yml --env-file .env.prod ps --format '{{.Service}} {{range .Publishers}}{{if .PublishedPort}}{{.PublishedPort}},{{end}}{{end}}')"
@@ -287,7 +289,7 @@ jobs:
         run: |
           docker compose -f infra/docker-compose.prod.yml --env-file .env.prod cp             web:/data/caddy/pki/authorities/local/root.crt /tmp/caddy-root.crt
           cd frontend
-          NODE_EXTRA_CA_CERTS=/tmp/caddy-root.crt node node_modules/@mdn/mdn-http-observatory/src/scan.js localhost > /tmp/observatory.json
+          NODE_EXTRA_CA_CERTS=/tmp/caddy-root.crt node node_modules/@mdn/mdn-http-observatory/src/scan.js journal.localhost > /tmp/observatory.json
           python3 - <<'PY'
           import json
           result = json.load(open("/tmp/observatory.json"))
@@ -308,14 +310,14 @@ jobs:
           from apps.accounts.models import StudentProfile, User
           today = timezone.localdate()
           AcademicYear.objects.create(name='CI', starts_on=today - timedelta(days=60), ends_on=today + timedelta(days=200), is_current=True)
-          student = User.objects.create_user(login='ci.student', password='a-long-ci-password-42', last_name='CI', first_name='Student', roles=['student'])
+          student = User.objects.create_user(login='ci.student', password='a-long-ci-password-42', last_name='CI', first_name='Student', roles=['student'], must_change_password=False)
           StudentProfile.objects.create(user=student)
           "
       - name: Lighthouse — accessibility ≥ 95, performance ≥ 90 (SPEC §15)
         if: ${{ !cancelled() }}
         working-directory: frontend
         env:
-          BASE_URL: https://localhost
+          BASE_URL: https://journal.localhost
           STUDENT_LOGIN: ci.student
           STUDENT_PASSWORD: a-long-ci-password-42
         run: |
@@ -327,8 +329,8 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p zap && chmod 777 zap
-          docker run --rm --network host -v "$PWD/zap:/zap/wrk" ghcr.io/zaproxy/zaproxy:stable \
-            zap-baseline.py -t https://localhost/ -r zap-report.html -J zap-report.json -I \
+          docker run --rm --network host --add-host journal.localhost:127.0.0.1 -v "$PWD/zap:/zap/wrk" ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t https://journal.localhost/ -r zap-report.html -J zap-report.json -I \
             2>&1 | tee /tmp/zap.out
       - name: ZAP summary as a public annotation
         if: ${{ !cancelled() }}
