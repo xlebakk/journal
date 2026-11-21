@@ -176,3 +176,23 @@
     color: var(--accent);
   }
 }
+
+/* Printed statements and access cards: only the page itself. */
+@media print {
+  .header,
+  .sidebar,
+  .bottomNav {
+    display: none;
+  }
+
+  .withSidebar,
+  .body {
+    display: block;
+    min-height: 0;
+    padding: 0;
+  }
+
+  .withSidebar .main {
+    padding: 0;
+  }
+}

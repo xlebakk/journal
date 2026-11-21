@@ -4,6 +4,90 @@
  */
 
 export interface paths {
+    "/api/v1/admin/access-cards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description What every access card shows besides the login and the password: the site and its QR. */
+        get: operations["admin_access_cards_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/announcements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_announcements_list"];
+        put?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        post: operations["admin_announcements_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/announcements/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        get: operations["admin_announcements_retrieve"];
+        put?: never;
+        post?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        delete: operations["admin_announcements_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description list / create / retrieve / PATCH / delete for administrators.
+         *
+         *     Every write is audited in the same transaction. Deleting something still referenced
+         *     answers 409 `in_use` (archive it instead). Database constraint violations become 400
+         *     with `integrity_error` as the code.
+         */
+        patch: operations["admin_announcements_partial_update"];
+        trace?: never;
+    };
     "/api/v1/admin/audit": {
         parameters: {
             query?: never;
@@ -12,6 +96,26 @@ export interface paths {
             cookie?: never;
         };
         get: operations["admin_audit_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/audit/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description The filtered audit as XLSX/CSV (at most 10 000 rows). An export of personal data:
+         *     the password must have been entered within the last 5 minutes.
+         */
+        get: operations["admin_audit_export_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -243,6 +347,42 @@ export interface paths {
          *     with `integrity_error` as the code.
          */
         patch: operations["admin_holidays_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/admin/import/students": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Without `apply=true` — the preview; with it — all rows in one transaction, only if
+         *     no row has errors. Warnings (a possible duplicate) do not block the import.
+         */
+        post: operations["admin_import_students_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/import/students/template": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["admin_import_students_template_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/admin/lesson-types": {
@@ -488,6 +628,82 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["admin_overview_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/reports/fill-rate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description How teachers fill the journal: lessons due by today, conducted, unfilled, no topic.
+         *     A lesson counts for the teacher who taught it (a substitute included).
+         */
+        get: operations["admin_reports_fill_rate_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/reports/performance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Courses of the current year by group / subject / period; with a group — the student ×
+         *     subject table as well (SPEC §8.8).
+         */
+        get: operations["admin_reports_performance_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/reports/students/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description One printed sheet for parents: per subject — average, attendance, absences; the last
+         *     mock exams against the goal (SPEC §8.8). JSON only: the browser prints it.
+         */
+        get: operations["admin_reports_students_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/rooms": {
         parameters: {
             query?: never;
@@ -614,6 +830,46 @@ export interface paths {
         put?: never;
         post: operations["admin_schedule_requests_reject_create"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description GET for the form; PATCH changes security and journal rules, so the password must have
+         *     been entered within the last 5 minutes.
+         */
+        get: operations["admin_settings_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * @description GET for the form; PATCH changes security and journal rules, so the password must have
+         *     been entered within the last 5 minutes.
+         */
+        patch: operations["admin_settings_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/admin/settings/logo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["admin_settings_logo_create"];
+        delete: operations["admin_settings_logo_destroy"];
         options?: never;
         head?: never;
         patch?: never;
@@ -983,6 +1239,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/users/{id}/targets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The administrator sets a student's goals per subject, in % (decision of stage 5). */
+        get: operations["admin_users_targets_list"];
+        /** @description The administrator sets a student's goals per subject, in % (decision of stage 5). */
+        put: operations["admin_users_targets_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/users/{id}/unblock": {
         parameters: {
             query?: never;
@@ -1147,6 +1421,23 @@ export interface paths {
          *     with `integrity_error` as the code.
          */
         patch: operations["admin_years_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/announcements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Live announcements for the active role: pinned first, then the newest. */
+        get: operations["announcements_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/auth/login": {
@@ -1337,6 +1628,142 @@ export interface paths {
          *     DELETE: turn 2FA off (only where it is optional; needs a fresh password).
          */
         delete: operations["auth_totp_setup_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/exams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["exams_list"];
+        put?: never;
+        post: operations["exams_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/exams/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["exams_retrieve"];
+        put?: never;
+        post?: never;
+        delete: operations["exams_destroy"];
+        options?: never;
+        head?: never;
+        patch: operations["exams_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/exams/{id}/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Results from an XLSX/CSV: «Логин» (or «ФИО»), «Балл» or one column per section; «н» —
+         *     absent. Without `apply=true` only the preview with errors per line is returned; with it,
+         *     all rows are written in one transaction, and only if there are no errors.
+         */
+        post: operations["exams_import_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/exams/{id}/results": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The results table: students of the visible courses on the exam date. */
+        get: operations["exams_results_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/exams/{id}/results/{student_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["exams_results_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/exams/{id}/results/{student_id}/clear": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["exams_results_clear_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/exams/{id}/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Mean, median, distribution, groups compared, sections (SPEC §7.6, §8.7). */
+        get: operations["exams_stats_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/exams/dynamics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Mean % per exam of a subject over time: the center's dynamics (SPEC §8.7). */
+        get: operations["exams_dynamics_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1572,6 +1999,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/reports/courses/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description «Ведомость» of one course for a period: average, attendance, absences per student. */
+        get: operations["reports_courses_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/rooms": {
         parameters: {
             query?: never;
@@ -1615,6 +2059,23 @@ export interface paths {
         };
         /** @description «Дневник»: a week of lessons with topics, homework, own marks and grades (SPEC §6.2). */
         get: operations["student_diary_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/student/exams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description «Пробные тесты» of a student: per subject, own results only, target in % (SPEC §6.4). */
+        get: operations["student_exams_list"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1818,6 +2279,11 @@ export interface components {
             is_current?: boolean;
             grade_scale?: components["schemas"]["GradeScaleEnum"];
         };
+        AccessCardInfo: {
+            center_name: string;
+            site_url: string;
+            qr: string;
+        };
         AddMemberRequest: {
             /** Format: uuid */
             student: string;
@@ -1880,6 +2346,38 @@ export interface components {
             student_profile?: components["schemas"]["StudentProfileRequest"];
             teacher_profile?: components["schemas"]["TeacherProfileRequest"];
         };
+        /** @description The administrator's form. The author is the current user; the body is plain text. */
+        Announcement: {
+            /** Format: uuid */
+            readonly id: string;
+            title: string;
+            body: string;
+            audience?: components["schemas"]["AudienceEnum"];
+            role?: string;
+            groups?: string[];
+            readonly group_names: string[];
+            pinned?: boolean;
+            /** Format: date-time */
+            published_at?: string;
+            /** Format: date-time */
+            expires_at?: string | null;
+            readonly author_name: string;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /** @description The administrator's form. The author is the current user; the body is plain text. */
+        AnnouncementRequest: {
+            title: string;
+            body: string;
+            audience?: components["schemas"]["AudienceEnum"];
+            role?: string;
+            groups?: string[];
+            pinned?: boolean;
+            /** Format: date-time */
+            published_at?: string;
+            /** Format: date-time */
+            expires_at?: string | null;
+        };
         Attendance: {
             /** Format: uuid */
             readonly id: string;
@@ -1927,6 +2425,13 @@ export interface components {
          * @enum {string}
          */
         AttentionReasonEnum: "attendance" | "low_grades";
+        /**
+         * @description * `all` - все
+         *     * `role` - роль
+         *     * `groups` - группы
+         * @enum {string}
+         */
+        AudienceEnum: "all" | "role" | "groups";
         AuditLog: {
             readonly id: number;
             /** Format: date-time */
@@ -1946,9 +2451,21 @@ export interface components {
         BackupCodes: {
             backup_codes: string[];
         };
+        BlockedLogin: {
+            login: string;
+            attempts: number;
+            /** Format: date-time */
+            last_at: string;
+        };
         Branding: {
             center_name: string;
             contacts: string;
+            logo: string | null;
+        };
+        Bucket: {
+            from_percent: number;
+            to_percent: number;
+            count: number;
         };
         CalendarDay: {
             /** Format: date */
@@ -1958,6 +2475,39 @@ export interface components {
         };
         CancelRequest: {
             version: number;
+            reason: string;
+        };
+        CenterSettings: {
+            center_name?: string;
+            contacts?: string;
+            site_url?: string;
+            lockout_threshold?: number;
+            lockout_base_minutes?: number;
+            lockout_max_hours?: number;
+            admin_idle_minutes?: number;
+            admin_absolute_hours?: number;
+            teacher_idle_minutes?: number;
+            teacher_absolute_hours?: number;
+            teacher_remember_days?: number;
+            student_absolute_hours?: number;
+            student_remember_days?: number;
+            edit_window_days?: number;
+            max_grades_per_lesson?: number;
+            low_grade_percent?: number;
+            attendance_threshold_percent?: number;
+            attendance_window_days?: number;
+            require_teacher_2fa?: boolean;
+            default_grade_scale: components["schemas"]["GradeScaleEnum"];
+            readonly logo: string | null;
+            /** Format: date-time */
+            readonly last_backup_at: string | null;
+            readonly last_backup_ok: boolean | null;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        ClearRequest: {
+            version: number;
+            /** @default  */
             reason: string;
         };
         Course: {
@@ -2022,6 +2572,8 @@ export interface components {
             /** Format: uuid */
             id: string;
             group_name: string;
+            /** Format: uuid */
+            subject: string;
             subject_name: string;
             teacher_name: string;
             /** Format: uuid */
@@ -2035,6 +2587,32 @@ export interface components {
             /** Format: uuid */
             teacher: string;
             assistants?: string[];
+        };
+        CourseStatement: {
+            course: components["schemas"]["StatementCourse"];
+            /** Format: date */
+            first: string;
+            /** Format: date */
+            last: string;
+            rows: components["schemas"]["StatementRow"][];
+            summary: components["schemas"]["CourseSummary"];
+        };
+        CourseSummary: {
+            students: number;
+            /** Format: decimal */
+            average: string | null;
+            /** Format: decimal */
+            attendance_percent: string | null;
+            low_attendance: number;
+            low_average: number;
+        };
+        Credential: {
+            /** Format: uuid */
+            id: string;
+            full_name: string;
+            login: string;
+            temporary_password: string;
+            group_name: string;
         };
         DayMark: {
             subject_short: string;
@@ -2093,11 +2671,83 @@ export interface components {
             readonly attendance: (components["schemas"]["AttendanceStatusEnum"] | components["schemas"]["NullEnum"]) | null;
             readonly grades: components["schemas"]["DiaryGrade"][];
         };
+        DynamicsPoint: {
+            /** Format: uuid */
+            exam: string;
+            title: string;
+            /** Format: date */
+            date: string;
+            count: number;
+            /** Format: decimal */
+            mean_percent: string | null;
+        };
         Ended: {
             ended: number;
         };
         EndedSessions: {
             ended: number;
+        };
+        Exam: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly title: string;
+            /** Format: uuid */
+            readonly subject: string;
+            readonly subject_name: string;
+            /** Format: date */
+            readonly date: string;
+            readonly max_score: number;
+            readonly courses: components["schemas"]["ExamCourse"][];
+            readonly sections: components["schemas"]["Section"][];
+            /** @default 0 */
+            readonly results_count: number;
+            readonly version: number;
+        };
+        ExamCourse: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly group_name: string;
+            readonly teacher_name: string;
+        };
+        ExamGroupSummary: {
+            count: number;
+            absent: number;
+            /** Format: decimal */
+            mean: string | null;
+            /** Format: decimal */
+            median: string | null;
+            min: number | null;
+            max: number | null;
+            group_name: string;
+            /** Format: decimal */
+            mean_percent: string | null;
+        };
+        ExamImportRow: {
+            line: number;
+            student_name: string;
+            login: string;
+            total: number | null;
+            was_absent: boolean;
+            issues: string[];
+        };
+        ExamStats: {
+            exam: components["schemas"]["Exam"];
+            summary: components["schemas"]["Summary"];
+            /** Format: decimal */
+            mean_percent: string | null;
+            distribution: components["schemas"]["Bucket"][];
+            groups: components["schemas"]["ExamGroupSummary"][];
+            sections: components["schemas"]["SectionStat"][];
+        };
+        ExamWriteRequest: {
+            title: string;
+            /** Format: uuid */
+            subject: string;
+            /** Format: date */
+            date: string;
+            max_score: number;
+            courses: string[];
+            sections?: components["schemas"]["SectionWriteRequest"][];
         };
         ExtraLessonRequest: {
             /** Format: uuid */
@@ -2114,6 +2764,36 @@ export interface components {
             lesson_type?: string | null;
             /** Format: uuid */
             teacher?: string | null;
+        };
+        /** @description What a reader sees: no audience details. */
+        FeedItem: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly title: string;
+            readonly body: string;
+            readonly pinned: boolean;
+            /** Format: date-time */
+            readonly published_at: string;
+            readonly author_name: string;
+        };
+        FillRate: {
+            /** Format: date */
+            first: string;
+            /** Format: date */
+            last: string;
+            rows: components["schemas"]["FillRateRow"][];
+        };
+        FillRateRow: {
+            /** Format: uuid */
+            teacher: string;
+            teacher_name: string;
+            due: number;
+            conducted: number;
+            unfilled: number;
+            overdue: number;
+            no_topic: number;
+            /** Format: decimal */
+            filled_percent: string | null;
         };
         Grade: {
             /** Format: uuid */
@@ -2229,6 +2909,10 @@ export interface components {
             homework: string;
             /** Format: date */
             due_on: string | null;
+        };
+        ImportResult: {
+            applied: boolean;
+            rows: components["schemas"]["ExamImportRow"][];
         };
         JournalRules: {
             scale: string;
@@ -2383,6 +3067,17 @@ export interface components {
         LoginStep: {
             step: string;
         };
+        LowAttendance: {
+            /** Format: uuid */
+            student: string;
+            full_name: string;
+            /** Format: uuid */
+            course: string;
+            group_name: string;
+            subject_name: string;
+            /** Format: decimal */
+            attendance_percent: string;
+        };
         Me: {
             /** Format: uuid */
             readonly id: string;
@@ -2430,6 +3125,24 @@ export interface components {
         };
         /** @enum {unknown} */
         NullEnum: null;
+        Overview: {
+            /** Format: date */
+            today: string;
+            lessons: components["schemas"]["OverviewToday"];
+            unfilled: components["schemas"]["UnfilledTeacher"][];
+            low_attendance: components["schemas"]["LowAttendance"][];
+            attendance_threshold: number;
+            attendance_window_days: number;
+            blocked_logins: components["schemas"]["BlockedLogin"][];
+            failed_logins_24h: number;
+            audit: components["schemas"]["AuditLog"][];
+        };
+        OverviewToday: {
+            total: number;
+            conducted: number;
+            to_fill: number;
+            cancelled: number;
+        };
         PaginatedAdminUserListList: {
             /** @example 123 */
             count: number;
@@ -2444,6 +3157,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["AdminUserList"][];
+        };
+        PaginatedAnnouncementList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Announcement"][];
         };
         PaginatedAuditLogList: {
             /** @example 123 */
@@ -2531,6 +3259,41 @@ export interface components {
             student_profile?: components["schemas"]["StudentProfileRequest"];
             teacher_profile?: components["schemas"]["TeacherProfileRequest"];
         };
+        /** @description The administrator's form. The author is the current user; the body is plain text. */
+        PatchedAnnouncementRequest: {
+            title?: string;
+            body?: string;
+            audience?: components["schemas"]["AudienceEnum"];
+            role?: string;
+            groups?: string[];
+            pinned?: boolean;
+            /** Format: date-time */
+            published_at?: string;
+            /** Format: date-time */
+            expires_at?: string | null;
+        };
+        PatchedCenterSettingsRequest: {
+            center_name?: string;
+            contacts?: string;
+            site_url?: string;
+            lockout_threshold?: number;
+            lockout_base_minutes?: number;
+            lockout_max_hours?: number;
+            admin_idle_minutes?: number;
+            admin_absolute_hours?: number;
+            teacher_idle_minutes?: number;
+            teacher_absolute_hours?: number;
+            teacher_remember_days?: number;
+            student_absolute_hours?: number;
+            student_remember_days?: number;
+            edit_window_days?: number;
+            max_grades_per_lesson?: number;
+            low_grade_percent?: number;
+            attendance_threshold_percent?: number;
+            attendance_window_days?: number;
+            require_teacher_2fa?: boolean;
+            default_grade_scale?: components["schemas"]["GradeScaleEnum"];
+        };
         PatchedCourseRequest: {
             /** Format: uuid */
             group?: string;
@@ -2539,6 +3302,17 @@ export interface components {
             /** Format: uuid */
             teacher?: string;
             assistants?: string[];
+        };
+        PatchedExamUpdateRequest: {
+            title?: string;
+            /** Format: uuid */
+            subject?: string;
+            /** Format: date */
+            date?: string;
+            max_score?: number;
+            courses?: string[];
+            sections?: components["schemas"]["SectionWriteRequest"][];
+            version?: number;
         };
         PatchedGradeUpdateRequest: {
             /** @default  */
@@ -2630,6 +3404,42 @@ export interface components {
             weight?: string;
             is_archived?: boolean;
         };
+        Performance: {
+            /** Format: date */
+            first: string;
+            /** Format: date */
+            last: string;
+            courses: components["schemas"]["PerformanceCourse"][];
+            students: components["schemas"]["PerformanceStudent"][];
+        };
+        PerformanceCell: {
+            /** Format: uuid */
+            course: string;
+            /** Format: decimal */
+            average: string | null;
+            /** Format: decimal */
+            attendance_percent: string | null;
+        };
+        PerformanceCourse: {
+            students: number;
+            /** Format: decimal */
+            average: string | null;
+            /** Format: decimal */
+            attendance_percent: string | null;
+            low_attendance: number;
+            low_average: number;
+            /** Format: uuid */
+            course: string;
+            group_name: string;
+            subject_name: string;
+            teacher_name: string;
+        };
+        PerformanceStudent: {
+            /** Format: uuid */
+            student: string;
+            full_name: string;
+            cells: components["schemas"]["PerformanceCell"][];
+        };
         Period: {
             /** Format: date */
             start: string;
@@ -2648,6 +3458,45 @@ export interface components {
         };
         ResolveRequest: {
             comment?: string;
+        };
+        ResultRow: {
+            /** Format: uuid */
+            student: string;
+            student_name: string;
+            login: string;
+            group_name: string;
+            /** Format: uuid */
+            result: string | null;
+            total: number | null;
+            /** Format: decimal */
+            percent: string | null;
+            was_absent: boolean;
+            comment: string;
+            sections: {
+                [key: string]: number;
+            };
+            version: number | null;
+        };
+        ResultWriteRequest: {
+            total?: number | null;
+            sections?: {
+                [key: string]: number;
+            };
+            /** @default false */
+            was_absent: boolean;
+            comment?: string;
+            version?: number | null;
+            /** @default  */
+            reason: string;
+        };
+        ResultsTable: {
+            exam: components["schemas"]["Exam"];
+            editable: boolean;
+            needs_reason: boolean;
+            locked: string | null;
+            /** Format: date */
+            window_closes_on: string;
+            rows: components["schemas"]["ResultRow"][];
         };
         /**
          * @description * `admin` - администратор
@@ -2746,6 +3595,24 @@ export interface components {
          * @enum {integer}
          */
         SchoolGradeEnum: 9 | 10 | 11;
+        Section: {
+            /** Format: uuid */
+            readonly id: string;
+            name: string;
+            max_score: number;
+        };
+        SectionStat: {
+            name: string;
+            max_score: number;
+            /** Format: decimal */
+            mean: string | null;
+            /** Format: decimal */
+            mean_percent: string | null;
+        };
+        SectionWriteRequest: {
+            name: string;
+            max_score: number;
+        };
         Session: {
             /** Format: uuid */
             readonly id: string;
@@ -2823,6 +3690,29 @@ export interface components {
          * @enum {string}
          */
         StateEnum: "upcoming" | "to_fill" | "filled" | "cancelled";
+        StatementCourse: {
+            /** Format: uuid */
+            id: string;
+            group_name: string;
+            subject_name: string;
+            teacher_name: string;
+            scale: components["schemas"]["GradeScaleEnum"];
+        };
+        StatementRow: {
+            /** Format: decimal */
+            average: string | null;
+            grades: number;
+            /** Format: decimal */
+            attendance_percent: string | null;
+            present: number;
+            late: number;
+            absent: number;
+            excused: number;
+            eligible: number;
+            /** Format: uuid */
+            student: string;
+            full_name: string;
+        };
         Stats: {
             /** Format: decimal */
             average: string | null;
@@ -2847,6 +3737,28 @@ export interface components {
             courses: components["schemas"]["CourseAttendance"][];
             month: string;
             days: components["schemas"]["CalendarDay"][];
+        };
+        StudentExam: {
+            /** Format: uuid */
+            exam: string;
+            title: string;
+            /** Format: date */
+            date: string;
+            total: number | null;
+            max_score: number;
+            /** Format: decimal */
+            percent: string | null;
+            /** Format: decimal */
+            change: string | null;
+            was_absent: boolean;
+            sections: components["schemas"]["StudentExamSection"][];
+        };
+        StudentExamSection: {
+            name: string;
+            score: number;
+            max_score: number;
+            /** Format: decimal */
+            percent: string | null;
         };
         StudentGrade: {
             /** Format: uuid */
@@ -2889,6 +3801,21 @@ export interface components {
             new_grades: components["schemas"]["StudentGrade"][];
             homework: components["schemas"]["Homework"][];
             subjects: components["schemas"]["SubjectSummary"][];
+        };
+        StudentImportResult: {
+            applied: boolean;
+            rows: components["schemas"]["StudentImportRow"][];
+            created: components["schemas"]["Credential"][];
+        };
+        StudentImportRow: {
+            line: number;
+            last_name: string;
+            first_name: string;
+            middle_name: string;
+            login: string;
+            group_name: string;
+            issues: string[];
+            warnings: string[];
         };
         /** @description What a student sees: no versions, no internal links, nothing about other students. */
         StudentLesson: {
@@ -2950,6 +3877,24 @@ export interface components {
             target: string;
             target_score: number | null;
         };
+        StudentSubjectExams: {
+            /** Format: uuid */
+            subject: string;
+            subject_name: string;
+            target_percent: number | null;
+            exams: components["schemas"]["StudentExam"][];
+        };
+        StudentSummary: {
+            student: components["schemas"]["SummaryStudent"];
+            year_name: string;
+            scale: components["schemas"]["GradeScaleEnum"];
+            /** Format: date */
+            first: string;
+            /** Format: date */
+            last: string;
+            subjects: components["schemas"]["SummarySubject"][];
+            exams: components["schemas"]["SummaryExam"][];
+        };
         Subject: {
             /** Format: uuid */
             readonly id: string;
@@ -2978,6 +3923,61 @@ export interface components {
             version: number;
             /** Format: uuid */
             teacher: string | null;
+        };
+        Summary: {
+            count: number;
+            absent: number;
+            /** Format: decimal */
+            mean: string | null;
+            /** Format: decimal */
+            median: string | null;
+            min: number | null;
+            max: number | null;
+        };
+        SummaryExam: {
+            subject_name: string;
+            title: string;
+            /** Format: date */
+            date: string;
+            total: number | null;
+            max_score: number;
+            /** Format: decimal */
+            percent: string | null;
+            was_absent: boolean;
+            target_percent: number | null;
+        };
+        SummaryStudent: {
+            /** Format: uuid */
+            id: string;
+            full_name: string;
+            groups: string[];
+            parent_name: string;
+            target: string;
+        };
+        SummarySubject: {
+            /** Format: decimal */
+            average: string | null;
+            grades: number;
+            /** Format: decimal */
+            attendance_percent: string | null;
+            present: number;
+            late: number;
+            absent: number;
+            excused: number;
+            eligible: number;
+            subject_name: string;
+            teacher_name: string;
+            group_name: string;
+        };
+        Target: {
+            /** Format: uuid */
+            subject: string;
+            percent: number;
+        };
+        TargetRequest: {
+            /** Format: uuid */
+            subject: string;
+            percent: number;
         };
         TeacherProfile: {
             phone?: string;
@@ -3066,6 +4066,21 @@ export interface components {
             /** Format: date */
             date: string;
         };
+        UnfilledLesson: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date */
+            date: string;
+            group_name: string;
+            subject_name: string;
+        };
+        UnfilledTeacher: {
+            /** Format: uuid */
+            teacher: string;
+            teacher_name: string;
+            count: number;
+            lessons: components["schemas"]["UnfilledLesson"][];
+        };
         VersionReasonRequest: {
             /** @default  */
             reason: string;
@@ -3115,6 +4130,138 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    admin_access_cards_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessCardInfo"];
+                };
+            };
+        };
+    };
+    admin_announcements_list: {
+        parameters: {
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedAnnouncementList"];
+                };
+            };
+        };
+    };
+    admin_announcements_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnnouncementRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Announcement"];
+                };
+            };
+        };
+    };
+    admin_announcements_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Announcement"];
+                };
+            };
+        };
+    };
+    admin_announcements_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    admin_announcements_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedAnnouncementRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Announcement"];
+                };
+            };
+        };
+    };
     admin_audit_list: {
         parameters: {
             query?: {
@@ -3141,6 +4288,33 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaginatedAuditLogList"];
+                };
+            };
+        };
+    };
+    admin_audit_export_retrieve: {
+        parameters: {
+            query?: {
+                action?: string;
+                actor?: string;
+                date_from?: string;
+                date_to?: string;
+                entity_id?: string;
+                entity_type?: string;
+                export?: "csv" | "xlsx";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": string;
                 };
             };
         };
@@ -3518,6 +4692,52 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Holiday"];
+                };
+            };
+        };
+    };
+    admin_import_students_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file?: string;
+                    apply?: boolean;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentImportResult"];
+                };
+            };
+        };
+    };
+    admin_import_students_template_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": string;
                 };
             };
         };
@@ -3904,6 +5124,100 @@ export interface operations {
             };
         };
     };
+    admin_overview_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Overview"];
+                };
+            };
+        };
+    };
+    admin_reports_fill_rate_retrieve: {
+        parameters: {
+            query?: {
+                export?: "csv" | "xlsx";
+                from?: string;
+                term?: string;
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FillRate"];
+                };
+            };
+        };
+    };
+    admin_reports_performance_retrieve: {
+        parameters: {
+            query?: {
+                export?: "csv" | "xlsx";
+                from?: string;
+                group?: string;
+                subject?: string;
+                term?: string;
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Performance"];
+                };
+            };
+        };
+    };
+    admin_reports_students_retrieve: {
+        parameters: {
+            query?: {
+                from?: string;
+                term?: string;
+                to?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentSummary"];
+                };
+            };
+        };
+    };
     admin_rooms_list: {
         parameters: {
             query?: never;
@@ -4105,6 +5419,92 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ScheduleRequest"];
                 };
+            };
+        };
+    };
+    admin_settings_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CenterSettings"];
+                };
+            };
+        };
+    };
+    admin_settings_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCenterSettingsRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CenterSettings"];
+                };
+            };
+        };
+    };
+    admin_settings_logo_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file?: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CenterSettings"];
+                };
+            };
+        };
+    };
+    admin_settings_logo_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -4734,6 +6134,52 @@ export interface operations {
             };
         };
     };
+    admin_users_targets_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Target"][];
+                };
+            };
+        };
+    };
+    admin_users_targets_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TargetRequest"][];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Target"][];
+                };
+            };
+        };
+    };
     admin_users_unblock_create: {
         parameters: {
             query?: never;
@@ -4988,6 +6434,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AcademicYear"];
+                };
+            };
+        };
+    };
+    announcements_list: {
+        parameters: {
+            query?: {
+                pinned?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedItem"][];
                 };
             };
         };
@@ -5276,6 +6743,260 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    exams_list: {
+        parameters: {
+            query?: {
+                subject?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Exam"][];
+                };
+            };
+        };
+    };
+    exams_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExamWriteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Exam"];
+                };
+            };
+        };
+    };
+    exams_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Exam"];
+                };
+            };
+        };
+    };
+    exams_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    exams_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedExamUpdateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Exam"];
+                };
+            };
+        };
+    };
+    exams_import_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file?: string;
+                    apply?: boolean;
+                    reason?: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResult"];
+                };
+            };
+        };
+    };
+    exams_results_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultsTable"];
+                };
+            };
+        };
+    };
+    exams_results_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                student_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ResultWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultRow"];
+                };
+            };
+        };
+    };
+    exams_results_clear_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                student_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClearRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    exams_stats_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExamStats"];
+                };
+            };
+        };
+    };
+    exams_dynamics_list: {
+        parameters: {
+            query?: {
+                subject?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DynamicsPoint"][];
+                };
             };
         };
     };
@@ -5631,6 +7352,32 @@ export interface operations {
             };
         };
     };
+    reports_courses_retrieve: {
+        parameters: {
+            query?: {
+                export?: "csv" | "xlsx";
+                from?: string;
+                term?: string;
+                to?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseStatement"];
+                };
+            };
+        };
+    };
     rooms_list: {
         parameters: {
             query?: never;
@@ -5688,6 +7435,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Diary"];
+                };
+            };
+        };
+    };
+    student_exams_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentSubjectExams"][];
                 };
             };
         };

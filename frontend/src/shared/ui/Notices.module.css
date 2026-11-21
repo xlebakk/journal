@@ -1,0 +1,38 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  padding: var(--space-1) 0 var(--space-1) var(--space-2);
+  border-bottom: var(--line) solid var(--rule);
+  border-left: var(--line-strong) solid transparent;
+}
+
+.pinned {
+  border-left-color: var(--red-pen);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-16);
+}
+
+.meta {
+  margin: 2px 0 4px;
+  font-size: var(--text-12);
+  color: var(--ink-2);
+}
+
+.pin {
+  color: var(--red-pen);
+}
+
+.body {
+  margin: 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}

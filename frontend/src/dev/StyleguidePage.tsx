@@ -5,12 +5,17 @@ import { useState } from "react";
 import { formatDate, formatHumanDate, formatJournalHeader, formatTime } from "@/shared/lib/time";
 import { useTheme } from "@/shared/lib/theme";
 import {
+  AccessCards,
   Button,
   Checkbox,
   Dialog,
   DialogActions,
   EmptyState,
+  FileField,
+  Histogram,
   InitialsStamp,
+  Notices,
+  ScoreChart,
   JournalCell,
   PasswordField,
   RuledSkeleton,
@@ -400,6 +405,93 @@ export default function StyleguidePage() {
               },
             ]}
             warnings={[{ kind: "students", date: "2026-11-21", students: ["Алиев Ф.", "Ким М."] }]}
+          />
+        </section>
+
+        <section className={styles.section} aria-labelledby="sg-charts">
+          <h2 id="sg-charts">Графики</h2>
+          <p className={styles.caption}>
+            Результаты пробных тестов — в процентах от максимума, над точкой — балл; цель — пунктир.
+            Распределение — по 10 % максимума. Только SVG и цвета из токенов.
+          </p>
+          <ScoreChart
+            label="Математика: результаты пробных тестов"
+            target={80}
+            targetLabel="цель 80%"
+            points={[
+              { key: "1", label: "05.10", percent: 63.3, score: "19 / 30" },
+              { key: "2", label: "26.10", percent: 76.7, score: "23 / 30" },
+              { key: "3", label: "09.11", percent: null, score: "не был" },
+              { key: "4", label: "16.11", percent: 84, score: "84 / 100" },
+            ]}
+          />
+          <Histogram
+            label="Распределение результатов"
+            buckets={[0, 1, 0, 2, 4, 6, 9, 7, 3, 1].map((count, i) => ({
+              key: String(i),
+              label: `${i * 10}–${i === 9 ? 100 : i * 10 + 9}`,
+              count,
+            }))}
+          />
+        </section>
+
+        <section className={styles.section} aria-labelledby="sg-notices">
+          <h2 id="sg-notices">Объявления и файлы</h2>
+          <Notices
+            pinnedLabel="закреплено"
+            items={[
+              {
+                id: "1",
+                title: "Зимние каникулы",
+                body: "С 30 декабря по 8 января занятий нет. Подробности: https://example.com/rules",
+                pinned: true,
+                published_at: "2026-11-20T09:00:00Z",
+                author_name: "Каримова Д.",
+              },
+              {
+                id: "2",
+                title: "Пробный ДТМ № 4",
+                body: "В субботу в 10:00, кабинет 201.",
+                pinned: false,
+                published_at: "2026-11-18T12:30:00Z",
+                author_name: "Каримова Д.",
+              },
+            ]}
+          />
+          <FileField label="Файл XLSX или CSV" hint="До 5 МБ." accept=".xlsx,.csv" />
+        </section>
+
+        <section className={styles.section} aria-labelledby="sg-cards">
+          <h2 id="sg-cards">Карточки доступа</h2>
+          <p className={styles.caption}>
+            Лист A4 по 8 карточек; пароль виден только на этой странице, потом — только сброс.
+          </p>
+          <AccessCards
+            centerName="Учебный центр"
+            siteUrl="https://journal.example.com"
+            qr="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3MiIgaGVpZ2h0PSI3MiI+PHJlY3Qgd2lkdGg9IjcyIiBoZWlnaHQ9IjcyIiBmaWxsPSIjZGRkIi8+PC9zdmc+"
+            labels={{
+              login: "Логин",
+              password: "Пароль",
+              site: "Сайт",
+              note: "При первом входе система попросит сменить пароль.",
+            }}
+            cards={[
+              {
+                id: "a",
+                full_name: "Алиев Фарход Рустамович",
+                login: "aliev.f",
+                temporary_password: "hK7mPq2xRt9z",
+                group_name: "11-М вечерняя",
+              },
+              {
+                id: "b",
+                full_name: "Ганиева Мадина",
+                login: "ganieva.m",
+                temporary_password: "Wn4bTe8sLp3d",
+                group_name: "11-М вечерняя",
+              },
+            ]}
           />
         </section>
 

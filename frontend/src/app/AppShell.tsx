@@ -17,21 +17,28 @@ import { InitialsMenu } from "./InitialsMenu";
 
 type NavItem = { to: string; label: MessageKey; end?: boolean; icon?: LucideIcon };
 
-// Only sections that exist today; the rest appear with their stages.
 const NAV: Record<Role, NavItem[]> = {
   admin: [
     { to: "/admin", label: "nav.overview", end: true },
     { to: "/admin/users", label: "nav.users" },
+    { to: "/admin/import", label: "nav.import" },
     { to: "/admin/groups", label: "nav.groups" },
-    { to: "/admin/schedule", label: "nav.schedule" },
-    { to: "/admin/journal", label: "nav.journal" },
-    { to: "/admin/requests", label: "nav.requests" },
     { to: "/admin/catalogs", label: "nav.catalogs" },
+    { to: "/admin/schedule", label: "nav.schedule" },
+    { to: "/admin/requests", label: "nav.requests" },
+    { to: "/admin/journal", label: "nav.journal" },
+    { to: "/admin/exams", label: "nav.exams" },
+    { to: "/admin/reports", label: "nav.reports" },
+    { to: "/admin/announcements", label: "nav.announcements" },
+    { to: "/admin/audit", label: "nav.audit" },
+    { to: "/admin/settings", label: "nav.settings" },
   ],
   teacher: [
     { to: "/teacher", label: "nav.today", end: true },
     { to: "/teacher/journal", label: "nav.journal" },
     { to: "/teacher/schedule", label: "nav.schedule" },
+    { to: "/teacher/exams", label: "nav.exams" },
+    { to: "/teacher/reports", label: "nav.reports" },
   ],
   student: [
     { to: "/student", label: "nav.home", end: true, icon: House },

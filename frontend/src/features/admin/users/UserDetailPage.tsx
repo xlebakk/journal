@@ -14,6 +14,7 @@ import { usersApi, useInvalidateUsers, useUser, useUserSessions, type UserDetail
 import { TemporaryPasswordDialog } from "./TemporaryPasswordDialog";
 import { UserForm } from "./UserForm";
 import { statusLabel } from "./labels";
+import { StudentExtras } from "./TargetsEditor";
 import styles from "./Users.module.css";
 
 function Actions({ user }: { user: UserDetail }) {
@@ -170,6 +171,7 @@ export function UserDetailPage() {
           await invalidate();
         }}
       />
+      {data.roles.includes("student") && <StudentExtras userId={data.id} />}
       <Actions user={data} />
       <UserSessions userId={data.id} />
     </div>

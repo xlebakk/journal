@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 
+import { AnnouncementsBoard } from "@/features/announcements/AnnouncementsBoard";
 import { useTeacherToday, type Today } from "@/features/journal/api";
 import styles from "@/features/schedule/SchedulePage.module.css";
 import { errorMessage } from "@/shared/api/errors";
@@ -55,6 +56,8 @@ export function TodayPage() {
   return (
     <section className={styles.page}>
       <h1>{formatDayLong(data.today)}</h1>
+
+      <AnnouncementsBoard className={styles.section} />
 
       <section className={styles.section} aria-labelledby="today-lessons">
         <h2 id="today-lessons">{t("today.lessons")}</h2>

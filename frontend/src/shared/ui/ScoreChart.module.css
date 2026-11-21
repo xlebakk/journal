@@ -1,0 +1,64 @@
+.chart {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  background: var(--sheet);
+  border: var(--line) solid var(--rule);
+}
+
+.grid {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+
+.axis {
+  fill: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+.dot {
+  fill: var(--sheet);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+.score {
+  fill: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.target {
+  stroke: var(--red-pen);
+  stroke-width: 1;
+  stroke-dasharray: 6 4;
+}
+
+.targetLabel {
+  fill: var(--red-pen);
+  font-size: 11px;
+}
+
+.absent {
+  fill: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.bar {
+  fill: var(--accent);
+}
+
+.count {
+  fill: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
