@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.accounts.models import Role, User
-from apps.accounts.permissions import IsAdmin
+from apps.accounts.permissions import IsAdmin, require_recent_password
 from apps.audit import services as audit
 from apps.core.params import uuid_param
 from apps.core.viewsets import AuditedAdminViewSet
@@ -55,6 +55,13 @@ class AcademicYearViewSet(AuditedAdminViewSet):
     audit_name = "academic_year"
     integrity_error = "years_overlap"
     constraint_codes: ClassVar = {"name": "name_taken", "one_current": "current_year_exists"}
+
+    def perform_update(self, serializer: Any) -> None:
+        # Changing the grade scale is a dangerous action (SPEC §8): fresh password needed.
+        new_scale = serializer.validated_data.get("grade_scale")
+        if new_scale is not None and new_scale != serializer.instance.grade_scale:
+            require_recent_password(self.request)
+        super().perform_update(serializer)
 
 
 class TermViewSet(AuditedAdminViewSet):

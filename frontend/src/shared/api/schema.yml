@@ -2473,6 +2473,331 @@ paths:
               schema:
                 $ref: '#/components/schemas/Health'
           description: ''
+  /api/v1/journal/courses:
+    get:
+      operationId: journal_courses_list
+      description: 'Courses for the journal picker: all for administrators, own for
+        teachers.'
+      parameters:
+      - in: query
+        name: year
+        schema:
+          type: string
+      tags:
+      - journal
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseOption'
+          description: ''
+  /api/v1/journal/courses/{id}:
+    get:
+      operationId: journal_courses_retrieve
+      description: The journal grid of one course (SPEC §7.3). A fixed number of queries.
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: term
+        schema:
+          type: string
+      - in: query
+        name: to
+        schema:
+          type: string
+      tags:
+      - journal
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Grid'
+          description: ''
+  /api/v1/journal/courses/{id}/terms:
+    get:
+      operationId: journal_courses_terms_list
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - journal
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TermOption'
+          description: ''
+  /api/v1/journal/grades/{id}:
+    patch:
+      operationId: journal_grades_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - journal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGradeUpdateRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Grade'
+          description: ''
+  /api/v1/journal/grades/{id}/delete:
+    post:
+      operationId: journal_grades_delete_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - journal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionReasonRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Grade'
+          description: ''
+  /api/v1/journal/grades/{id}/restore:
+    post:
+      operationId: journal_grades_restore_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - journal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionReasonRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Grade'
+          description: ''
+  /api/v1/journal/lessons/{id}:
+    get:
+      operationId: journal_lessons_retrieve
+      description: 'The lesson page (SPEC §7.2): header, students on the date, attendance
+        and grades.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - journal
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonPage'
+          description: ''
+    patch:
+      operationId: journal_lessons_partial_update
+      description: 'The lesson page (SPEC §7.2): header, students on the date, attendance
+        and grades.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - journal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedLessonUpdateRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonPage'
+          description: ''
+  /api/v1/journal/lessons/{id}/attendance/{student_id}:
+    put:
+      operationId: journal_lessons_attendance_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: student_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - journal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendanceWriteRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendance'
+          description: ''
+  /api/v1/journal/lessons/{id}/attendance/all-present:
+    post:
+      operationId: journal_lessons_attendance_all_present_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - journal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonMixinRequest'
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attendance'
+          description: ''
+  /api/v1/journal/lessons/{id}/conduct:
+    post:
+      operationId: journal_lessons_conduct_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - journal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionReasonRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonPage'
+          description: ''
+  /api/v1/journal/lessons/{id}/grades:
+    post:
+      operationId: journal_lessons_grades_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - journal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GradeCreateRequest'
+        required: true
+      security:
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Grade'
+          description: ''
   /api/v1/me:
     get:
       operationId: me_retrieve
@@ -2622,6 +2947,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScheduleRequest'
+          description: ''
+  /api/v1/teacher/today:
+    get:
+      operationId: teacher_today_retrieve
+      description: 'SPEC §7.1: today''s lessons, unfilled past lessons, students needing
+        attention.'
+      tags:
+      - teacher
+      security:
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Today'
           description: ''
 components:
   schemas:
@@ -2858,6 +3199,121 @@ components:
       - first_name
       - last_name
       - roles
+    Attendance:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        lesson:
+          type: string
+          format: uuid
+          readOnly: true
+        student:
+          type: string
+          format: uuid
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/AttendanceStatusEnum'
+          readOnly: true
+        late_minutes:
+          type: integer
+          readOnly: true
+          nullable: true
+        comment:
+          type: string
+          readOnly: true
+        version:
+          type: integer
+          readOnly: true
+      required:
+      - comment
+      - id
+      - late_minutes
+      - lesson
+      - status
+      - student
+      - version
+    AttendanceStatusEnum:
+      enum:
+      - present
+      - late
+      - absent
+      - excused
+      type: string
+      description: |-
+        * `present` - был
+        * `late` - опоздал
+        * `absent` - отсутствовал
+        * `excused` - уважительная причина
+    AttendanceWriteRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          default: ''
+          maxLength: 300
+        status:
+          $ref: '#/components/schemas/AttendanceStatusEnum'
+        late_minutes:
+          type: integer
+          maximum: 300
+          minimum: 1
+          nullable: true
+        comment:
+          type: string
+          maxLength: 300
+        version:
+          type: integer
+          minimum: 1
+          nullable: true
+      required:
+      - status
+    Attention:
+      type: object
+      properties:
+        student:
+          type: string
+          format: uuid
+        student_name:
+          type: string
+        course:
+          type: string
+          format: uuid
+        group_name:
+          type: string
+        subject_name:
+          type: string
+        reason:
+          $ref: '#/components/schemas/AttentionReasonEnum'
+        attendance_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          nullable: true
+        grades:
+          type: array
+          items:
+            type: integer
+      required:
+      - attendance_percent
+      - course
+      - grades
+      - group_name
+      - reason
+      - student
+      - student_name
+      - subject_name
+    AttentionReasonEnum:
+      enum:
+      - attendance
+      - low_grades
+      type: string
+      description: |-
+        * `attendance` - attendance
+        * `low_grades` - low_grades
     AuditLog:
       type: object
       properties:
@@ -3023,6 +3479,50 @@ components:
       - subject_name
       - subject_short
       - teacher
+    CourseInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        group_name:
+          type: string
+        subject_name:
+          type: string
+        teacher_name:
+          type: string
+        year_name:
+          type: string
+        scale:
+          type: string
+      required:
+      - group_name
+      - id
+      - scale
+      - subject_name
+      - teacher_name
+      - year_name
+    CourseOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        group_name:
+          type: string
+        subject_name:
+          type: string
+        teacher_name:
+          type: string
+        year:
+          type: string
+          format: uuid
+      required:
+      - group_name
+      - id
+      - subject_name
+      - teacher_name
+      - year
     CourseRequest:
       type: object
       properties:
@@ -3090,6 +3590,82 @@ components:
       - date
       - end_time
       - start_time
+    Grade:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        lesson:
+          type: string
+          format: uuid
+          readOnly: true
+        student:
+          type: string
+          format: uuid
+          readOnly: true
+        value:
+          type: integer
+          readOnly: true
+        work_type:
+          type: string
+          format: uuid
+          readOnly: true
+        weight:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,2})?$
+          readOnly: true
+        comment:
+          type: string
+          readOnly: true
+        position:
+          type: integer
+          readOnly: true
+        mine:
+          type: boolean
+          readOnly: true
+        author_name:
+          type: string
+          readOnly: true
+        version:
+          type: integer
+          readOnly: true
+      required:
+      - author_name
+      - comment
+      - id
+      - lesson
+      - mine
+      - position
+      - student
+      - value
+      - version
+      - weight
+      - work_type
+    GradeCreateRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          default: ''
+          maxLength: 300
+        student:
+          type: string
+          format: uuid
+        value:
+          type: integer
+        work_type:
+          type: string
+          format: uuid
+          nullable: true
+        comment:
+          type: string
+          maxLength: 300
+      required:
+      - student
+      - value
     GradeScaleEnum:
       enum:
       - '100'
@@ -3100,6 +3676,104 @@ components:
         * `100` - 100-балльная (0–100)
         * `5` - 5-балльная (2–5)
         * `10` - 10-балльная (1–10)
+    Grid:
+      type: object
+      properties:
+        course:
+          $ref: '#/components/schemas/CourseInfo'
+        period_from:
+          type: string
+          format: date
+        period_to:
+          type: string
+          format: date
+        today:
+          type: string
+          format: date
+        rules:
+          $ref: '#/components/schemas/JournalRules'
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/GridLesson'
+        students:
+          type: array
+          items:
+            $ref: '#/components/schemas/RowStudent'
+        attendance:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attendance'
+        grades:
+          type: array
+          items:
+            $ref: '#/components/schemas/Grade'
+        work_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkTypeOption'
+      required:
+      - attendance
+      - course
+      - grades
+      - lessons
+      - period_from
+      - period_to
+      - rules
+      - students
+      - today
+      - work_types
+    GridLesson:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        start_time:
+          type: string
+          format: time
+        lesson_type:
+          type: string
+          format: uuid
+          nullable: true
+        lesson_type_short:
+          type: string
+          nullable: true
+        lesson_type_name:
+          type: string
+          nullable: true
+        topic:
+          type: string
+        homework:
+          type: string
+        status:
+          type: string
+        version:
+          type: integer
+        editable:
+          type: boolean
+        needs_reason:
+          type: boolean
+        locked:
+          type: string
+          nullable: true
+      required:
+      - date
+      - editable
+      - homework
+      - id
+      - lesson_type
+      - lesson_type_name
+      - lesson_type_short
+      - locked
+      - needs_reason
+      - start_time
+      - status
+      - topic
+      - version
     Group:
       type: object
       properties:
@@ -3192,6 +3866,24 @@ components:
       required:
       - date
       - name
+    JournalRules:
+      type: object
+      properties:
+        scale:
+          type: string
+        low_below:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+        max_grades:
+          type: integer
+        edit_window_days:
+          type: integer
+      required:
+      - edit_window_days
+      - low_below
+      - max_grades
+      - scale
     LeaveRequest:
       type: object
       properties:
@@ -3356,6 +4048,71 @@ components:
       required:
       - lesson
       - warnings
+    LessonPage:
+      type: object
+      properties:
+        course:
+          $ref: '#/components/schemas/CourseInfo'
+        today:
+          type: string
+          format: date
+        rules:
+          $ref: '#/components/schemas/JournalRules'
+        lesson:
+          $ref: '#/components/schemas/GridLesson'
+        comment:
+          type: string
+        end_time:
+          type: string
+          format: time
+        room_name:
+          type: string
+          nullable: true
+        teacher_name:
+          type: string
+        window_closes_on:
+          type: string
+          format: date
+        students:
+          type: array
+          items:
+            $ref: '#/components/schemas/RowStudent'
+        attendance:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attendance'
+        grades:
+          type: array
+          items:
+            $ref: '#/components/schemas/Grade'
+        work_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkTypeOption'
+        lesson_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/LessonTypeOption'
+        topic_suggestions:
+          type: array
+          items:
+            type: string
+      required:
+      - attendance
+      - comment
+      - course
+      - end_time
+      - grades
+      - lesson
+      - lesson_types
+      - room_name
+      - rules
+      - students
+      - teacher_name
+      - today
+      - topic_suggestions
+      - window_closes_on
+      - work_types
     LessonStatusEnum:
       enum:
       - planned
@@ -3392,6 +4149,33 @@ components:
         is_archived:
           type: boolean
       required:
+      - id
+      - name
+      - short
+    LessonTypeOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        short:
+          type: string
+          readOnly: true
+        default_work_type:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        counts_attendance:
+          type: boolean
+          readOnly: true
+      required:
+      - counts_attendance
+      - default_work_type
       - id
       - name
       - short
@@ -3451,7 +4235,7 @@ components:
           readOnly: true
         reason:
           allOf:
-          - $ref: '#/components/schemas/ReasonEnum'
+          - $ref: '#/components/schemas/LoginEventReasonEnum'
           readOnly: true
       required:
       - at
@@ -3462,6 +4246,26 @@ components:
       - success
       - user_agent
       - user_id
+    LoginEventReasonEnum:
+      enum:
+      - ok
+      - invalid_credentials
+      - locked
+      - ip_limit
+      - totp_required
+      - totp_invalid
+      - totp_limit
+      - backup_code
+      type: string
+      description: |-
+        * `ok` - Ok
+        * `invalid_credentials` - Invalid Credentials
+        * `locked` - Locked
+        * `ip_limit` - Ip Limit
+        * `totp_required` - Totp Required
+        * `totp_invalid` - Totp Invalid
+        * `totp_limit` - Totp Limit
+        * `backup_code` - Backup Code
     LoginRequest:
       type: object
       properties:
@@ -3825,6 +4629,24 @@ components:
           items:
             type: string
             format: uuid
+    PatchedGradeUpdateRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          default: ''
+          maxLength: 300
+        version:
+          type: integer
+          minimum: 1
+        value:
+          type: integer
+        work_type:
+          type: string
+          format: uuid
+        comment:
+          type: string
+          maxLength: 300
     PatchedGroupRequest:
       type: object
       properties:
@@ -3873,6 +4695,29 @@ components:
           minimum: 0
         is_archived:
           type: boolean
+    PatchedLessonUpdateRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          default: ''
+          maxLength: 300
+        version:
+          type: integer
+          minimum: 1
+        topic:
+          type: string
+          maxLength: 300
+        homework:
+          type: string
+          maxLength: 5000
+        comment:
+          type: string
+          maxLength: 2000
+        lesson_type:
+          type: string
+          format: uuid
+          nullable: true
     PatchedMembershipRequest:
       type: object
       properties:
@@ -3974,6 +4819,19 @@ components:
           pattern: ^-?\d{0,2}(?:\.\d{0,2})?$
         is_archived:
           type: boolean
+    Period:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - end
+      - start
     Person:
       type: object
       properties:
@@ -3991,26 +4849,13 @@ components:
       - full_name
       - id
       - short_name
-    ReasonEnum:
-      enum:
-      - ok
-      - invalid_credentials
-      - locked
-      - ip_limit
-      - totp_required
-      - totp_invalid
-      - totp_limit
-      - backup_code
-      type: string
-      description: |-
-        * `ok` - Ok
-        * `invalid_credentials` - Invalid Credentials
-        * `locked` - Locked
-        * `ip_limit` - Ip Limit
-        * `totp_required` - Totp Required
-        * `totp_invalid` - Totp Invalid
-        * `totp_limit` - Totp Limit
-        * `backup_code` - Backup Code
+    ReasonMixinRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          default: ''
+          maxLength: 300
     ResolveRequest:
       type: object
       properties:
@@ -4089,6 +4934,28 @@ components:
       required:
       - capacity
       - name
+    RowStudent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        short_name:
+          type: string
+        full_name:
+          type: string
+        periods:
+          type: array
+          items:
+            $ref: '#/components/schemas/Period'
+        stats:
+          $ref: '#/components/schemas/Stats'
+      required:
+      - full_name
+      - id
+      - periods
+      - short_name
+      - stats
     ScheduleRequest:
       type: object
       properties:
@@ -4396,6 +5263,52 @@ components:
       - start_time
       - valid_from
       - weekday
+    StateEnum:
+      enum:
+      - upcoming
+      - to_fill
+      - filled
+      - cancelled
+      type: string
+      description: |-
+        * `upcoming` - upcoming
+        * `to_fill` - to_fill
+        * `filled` - filled
+        * `cancelled` - cancelled
+    Stats:
+      type: object
+      properties:
+        average:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          nullable: true
+        grades:
+          type: integer
+        attendance_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+          nullable: true
+        present:
+          type: integer
+        late:
+          type: integer
+        absent:
+          type: integer
+        excused:
+          type: integer
+        eligible:
+          type: integer
+      required:
+      - absent
+      - attendance_percent
+      - average
+      - eligible
+      - excused
+      - grades
+      - late
+      - present
     StudentLesson:
       type: object
       description: 'What a student sees: no versions, no internal links, nothing about
@@ -4663,6 +5576,25 @@ components:
       - name
       - starts_on
       - year
+    TermOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        starts_on:
+          type: string
+          format: date
+        ends_on:
+          type: string
+          format: date
+      required:
+      - ends_on
+      - id
+      - name
+      - starts_on
     TermRequest:
       type: object
       properties:
@@ -4684,6 +5616,68 @@ components:
       - name
       - starts_on
       - year
+    Today:
+      type: object
+      properties:
+        today:
+          type: string
+          format: date
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/TodayLesson'
+        unfilled:
+          type: array
+          items:
+            $ref: '#/components/schemas/TodayLesson'
+        attention:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attention'
+      required:
+      - attention
+      - lessons
+      - today
+      - unfilled
+    TodayLesson:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        start_time:
+          type: string
+          format: time
+        end_time:
+          type: string
+          format: time
+        group_name:
+          type: string
+        subject_name:
+          type: string
+        room_name:
+          type: string
+          nullable: true
+        status:
+          type: string
+        state:
+          $ref: '#/components/schemas/StateEnum'
+        is_substituted:
+          type: boolean
+      required:
+      - date
+      - end_time
+      - group_name
+      - id
+      - is_substituted
+      - room_name
+      - start_time
+      - state
+      - status
+      - subject_name
     TotpCodeRequest:
       type: object
       properties:
@@ -4718,6 +5712,18 @@ components:
       required:
       - date
       - group
+    VersionReasonRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          default: ''
+          maxLength: 300
+        version:
+          type: integer
+          minimum: 1
+      required:
+      - version
     VersionRequest:
       type: object
       properties:
@@ -4760,6 +5766,25 @@ components:
           pattern: ^-?\d{0,2}(?:\.\d{0,2})?$
         is_archived:
           type: boolean
+      required:
+      - id
+      - name
+      - weight
+    WorkTypeOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        weight:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,2})?$
+          readOnly: true
       required:
       - id
       - name

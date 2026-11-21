@@ -6,6 +6,7 @@ from rest_framework import serializers
 
 from apps.accounts.models import Role, User
 from apps.core.serializers import DatabaseUniqueModelSerializer
+from apps.journal.models import Grade
 
 from .models import (
     AcademicYear,
@@ -42,6 +43,16 @@ class AcademicYearSerializer(DatabaseUniqueModelSerializer[AcademicYear]):
         ends = attrs.get("ends_on", getattr(self.instance, "ends_on", None))
         if starts and ends and ends <= starts:
             raise serializers.ValidationError({"ends_on": ["ends_before_start"]})
+        scale_changes = self.instance is not None and attrs.get("grade_scale") not in (
+            None,
+            self.instance.grade_scale,
+        )
+        if (
+            scale_changes
+            and Grade.objects.filter(lesson__course__group__academic_year=self.instance).exists()
+        ):
+            # SPEC §10.11: the scale is fixed once the year has grades.
+            raise serializers.ValidationError({"grade_scale": ["scale_locked"]})
         return attrs
 
     def save(self, **kwargs: Any) -> AcademicYear:

@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "apps.audit",
     "apps.academics",
     "apps.schedule",
+    "apps.journal",
 ]
 
 MIDDLEWARE = [
@@ -162,6 +163,7 @@ SPECTACULAR_SETTINGS = {
         "ScheduleRequestKindEnum": "apps.schedule.models.ScheduleRequest.Kind",
         "GradeScaleEnum": "apps.academics.models.GradeScale",
         "WeekdayEnum": "apps.schedule.models.Weekday",
+        "AttendanceStatusEnum": "apps.journal.models.AttendanceStatus",
     },
 }
 

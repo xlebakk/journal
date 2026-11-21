@@ -1359,6 +1359,186 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/journal/courses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Courses for the journal picker: all for administrators, own for teachers. */
+        get: operations["journal_courses_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/journal/courses/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The journal grid of one course (SPEC §7.3). A fixed number of queries. */
+        get: operations["journal_courses_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/journal/courses/{id}/terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["journal_courses_terms_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/journal/grades/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["journal_grades_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/journal/grades/{id}/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["journal_grades_delete_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/journal/grades/{id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["journal_grades_restore_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/journal/lessons/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The lesson page (SPEC §7.2): header, students on the date, attendance and grades. */
+        get: operations["journal_lessons_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description The lesson page (SPEC §7.2): header, students on the date, attendance and grades. */
+        patch: operations["journal_lessons_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/journal/lessons/{id}/attendance/{student_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["journal_lessons_attendance_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/journal/lessons/{id}/attendance/all-present": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["journal_lessons_attendance_all_present_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/journal/lessons/{id}/conduct": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["journal_lessons_conduct_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/journal/lessons/{id}/grades": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["journal_lessons_grades_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me": {
         parameters: {
             query?: never;
@@ -1478,6 +1658,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/teacher/today": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description SPEC §7.1: today's lessons, unfilled past lessons, students needing attention. */
+        get: operations["teacher_today_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1564,6 +1761,53 @@ export interface components {
             student_profile?: components["schemas"]["StudentProfileRequest"];
             teacher_profile?: components["schemas"]["TeacherProfileRequest"];
         };
+        Attendance: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            readonly lesson: string;
+            /** Format: uuid */
+            readonly student: string;
+            readonly status: components["schemas"]["AttendanceStatusEnum"];
+            readonly late_minutes: number | null;
+            readonly comment: string;
+            readonly version: number;
+        };
+        /**
+         * @description * `present` - был
+         *     * `late` - опоздал
+         *     * `absent` - отсутствовал
+         *     * `excused` - уважительная причина
+         * @enum {string}
+         */
+        AttendanceStatusEnum: "present" | "late" | "absent" | "excused";
+        AttendanceWriteRequest: {
+            /** @default  */
+            reason: string;
+            status: components["schemas"]["AttendanceStatusEnum"];
+            late_minutes?: number | null;
+            comment?: string;
+            version?: number | null;
+        };
+        Attention: {
+            /** Format: uuid */
+            student: string;
+            student_name: string;
+            /** Format: uuid */
+            course: string;
+            group_name: string;
+            subject_name: string;
+            reason: components["schemas"]["AttentionReasonEnum"];
+            /** Format: decimal */
+            attendance_percent: string | null;
+            grades: number[];
+        };
+        /**
+         * @description * `attendance` - attendance
+         *     * `low_grades` - low_grades
+         * @enum {string}
+         */
+        AttentionReasonEnum: "attendance" | "low_grades";
         AuditLog: {
             readonly id: number;
             /** Format: date-time */
@@ -1616,6 +1860,24 @@ export interface components {
             readonly subject_short: string;
             readonly teacher: components["schemas"]["Person"];
         };
+        CourseInfo: {
+            /** Format: uuid */
+            id: string;
+            group_name: string;
+            subject_name: string;
+            teacher_name: string;
+            year_name: string;
+            scale: string;
+        };
+        CourseOption: {
+            /** Format: uuid */
+            id: string;
+            group_name: string;
+            subject_name: string;
+            teacher_name: string;
+            /** Format: uuid */
+            year: string;
+        };
         CourseRequest: {
             /** Format: uuid */
             group: string;
@@ -1647,6 +1909,34 @@ export interface components {
             /** Format: uuid */
             teacher?: string | null;
         };
+        Grade: {
+            /** Format: uuid */
+            readonly id: string;
+            /** Format: uuid */
+            readonly lesson: string;
+            /** Format: uuid */
+            readonly student: string;
+            readonly value: number;
+            /** Format: uuid */
+            readonly work_type: string;
+            /** Format: decimal */
+            readonly weight: string;
+            readonly comment: string;
+            readonly position: number;
+            readonly mine: boolean;
+            readonly author_name: string;
+            readonly version: number;
+        };
+        GradeCreateRequest: {
+            /** @default  */
+            reason: string;
+            /** Format: uuid */
+            student: string;
+            value: number;
+            /** Format: uuid */
+            work_type?: string | null;
+            comment?: string;
+        };
         /**
          * @description * `100` - 100-балльная (0–100)
          *     * `5` - 5-балльная (2–5)
@@ -1654,6 +1944,40 @@ export interface components {
          * @enum {string}
          */
         GradeScaleEnum: "100" | "5" | "10";
+        Grid: {
+            course: components["schemas"]["CourseInfo"];
+            /** Format: date */
+            period_from: string;
+            /** Format: date */
+            period_to: string;
+            /** Format: date */
+            today: string;
+            rules: components["schemas"]["JournalRules"];
+            lessons: components["schemas"]["GridLesson"][];
+            students: components["schemas"]["RowStudent"][];
+            attendance: components["schemas"]["Attendance"][];
+            grades: components["schemas"]["Grade"][];
+            work_types: components["schemas"]["WorkTypeOption"][];
+        };
+        GridLesson: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date */
+            date: string;
+            /** Format: time */
+            start_time: string;
+            /** Format: uuid */
+            lesson_type: string | null;
+            lesson_type_short: string | null;
+            lesson_type_name: string | null;
+            topic: string;
+            homework: string;
+            status: string;
+            version: number;
+            editable: boolean;
+            needs_reason: boolean;
+            locked: string | null;
+        };
         Group: {
             /** Format: uuid */
             readonly id: string;
@@ -1688,6 +2012,13 @@ export interface components {
             /** Format: date */
             date: string;
             name: string;
+        };
+        JournalRules: {
+            scale: string;
+            /** Format: decimal */
+            low_below: string;
+            max_grades: number;
+            edit_window_days: number;
         };
         LeaveRequest: {
             /** Format: date */
@@ -1746,6 +2077,26 @@ export interface components {
                 [key: string]: unknown;
             }[];
         };
+        LessonPage: {
+            course: components["schemas"]["CourseInfo"];
+            /** Format: date */
+            today: string;
+            rules: components["schemas"]["JournalRules"];
+            lesson: components["schemas"]["GridLesson"];
+            comment: string;
+            /** Format: time */
+            end_time: string;
+            room_name: string | null;
+            teacher_name: string;
+            /** Format: date */
+            window_closes_on: string;
+            students: components["schemas"]["RowStudent"][];
+            attendance: components["schemas"]["Attendance"][];
+            grades: components["schemas"]["Grade"][];
+            work_types: components["schemas"]["WorkTypeOption"][];
+            lesson_types: components["schemas"]["LessonTypeOption"][];
+            topic_suggestions: string[];
+        };
         /**
          * @description * `planned` - запланировано
          *     * `conducted` - проведено
@@ -1763,6 +2114,15 @@ export interface components {
             counts_attendance?: boolean;
             sort_order?: number;
             is_archived?: boolean;
+        };
+        LessonTypeOption: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly name: string;
+            readonly short: string;
+            /** Format: uuid */
+            readonly default_work_type: string | null;
+            readonly counts_attendance: boolean;
         };
         LessonTypeRequest: {
             name: string;
@@ -1783,8 +2143,20 @@ export interface components {
             readonly ip: string | null;
             readonly user_agent: string;
             readonly success: boolean;
-            readonly reason: components["schemas"]["ReasonEnum"];
+            readonly reason: components["schemas"]["LoginEventReasonEnum"];
         };
+        /**
+         * @description * `ok` - Ok
+         *     * `invalid_credentials` - Invalid Credentials
+         *     * `locked` - Locked
+         *     * `ip_limit` - Ip Limit
+         *     * `totp_required` - Totp Required
+         *     * `totp_invalid` - Totp Invalid
+         *     * `totp_limit` - Totp Limit
+         *     * `backup_code` - Backup Code
+         * @enum {string}
+         */
+        LoginEventReasonEnum: "ok" | "invalid_credentials" | "locked" | "ip_limit" | "totp_required" | "totp_invalid" | "totp_limit" | "backup_code";
         LoginRequest: {
             login: string;
             password: string;
@@ -1951,6 +2323,15 @@ export interface components {
             teacher?: string;
             assistants?: string[];
         };
+        PatchedGradeUpdateRequest: {
+            /** @default  */
+            reason: string;
+            version?: number;
+            value?: number;
+            /** Format: uuid */
+            work_type?: string;
+            comment?: string;
+        };
         PatchedGroupRequest: {
             name?: string;
             /** Format: uuid */
@@ -1971,6 +2352,16 @@ export interface components {
             counts_attendance?: boolean;
             sort_order?: number;
             is_archived?: boolean;
+        };
+        PatchedLessonUpdateRequest: {
+            /** @default  */
+            reason: string;
+            version?: number;
+            topic?: string;
+            homework?: string;
+            comment?: string;
+            /** Format: uuid */
+            lesson_type?: string | null;
         };
         PatchedMembershipRequest: {
             /** Format: date */
@@ -2022,24 +2413,22 @@ export interface components {
             weight?: string;
             is_archived?: boolean;
         };
+        Period: {
+            /** Format: date */
+            start: string;
+            /** Format: date */
+            end: string | null;
+        };
         Person: {
             /** Format: uuid */
             readonly id: string;
             readonly full_name: string;
             readonly short_name: string;
         };
-        /**
-         * @description * `ok` - Ok
-         *     * `invalid_credentials` - Invalid Credentials
-         *     * `locked` - Locked
-         *     * `ip_limit` - Ip Limit
-         *     * `totp_required` - Totp Required
-         *     * `totp_invalid` - Totp Invalid
-         *     * `totp_limit` - Totp Limit
-         *     * `backup_code` - Backup Code
-         * @enum {string}
-         */
-        ReasonEnum: "ok" | "invalid_credentials" | "locked" | "ip_limit" | "totp_required" | "totp_invalid" | "totp_limit" | "backup_code";
+        ReasonMixinRequest: {
+            /** @default  */
+            reason: string;
+        };
         ResolveRequest: {
             comment?: string;
         };
@@ -2071,6 +2460,14 @@ export interface components {
             name: string;
             capacity: number;
             is_archived?: boolean;
+        };
+        RowStudent: {
+            /** Format: uuid */
+            id: string;
+            short_name: string;
+            full_name: string;
+            periods: components["schemas"]["Period"][];
+            stats: components["schemas"]["Stats"];
         };
         ScheduleRequest: {
             /** Format: uuid */
@@ -2201,6 +2598,26 @@ export interface components {
             /** @default false */
             confirm: boolean;
         };
+        /**
+         * @description * `upcoming` - upcoming
+         *     * `to_fill` - to_fill
+         *     * `filled` - filled
+         *     * `cancelled` - cancelled
+         * @enum {string}
+         */
+        StateEnum: "upcoming" | "to_fill" | "filled" | "cancelled";
+        Stats: {
+            /** Format: decimal */
+            average: string | null;
+            grades: number;
+            /** Format: decimal */
+            attendance_percent: string | null;
+            present: number;
+            late: number;
+            absent: number;
+            excused: number;
+            eligible: number;
+        };
         /** @description What a student sees: no versions, no internal links, nothing about other students. */
         StudentLesson: {
             /** Format: uuid */
@@ -2292,6 +2709,15 @@ export interface components {
             /** Format: date */
             ends_on: string;
         };
+        TermOption: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** Format: date */
+            starts_on: string;
+            /** Format: date */
+            ends_on: string;
+        };
         TermRequest: {
             /** Format: uuid */
             year: string;
@@ -2300,6 +2726,29 @@ export interface components {
             starts_on: string;
             /** Format: date */
             ends_on: string;
+        };
+        Today: {
+            /** Format: date */
+            today: string;
+            lessons: components["schemas"]["TodayLesson"][];
+            unfilled: components["schemas"]["TodayLesson"][];
+            attention: components["schemas"]["Attention"][];
+        };
+        TodayLesson: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date */
+            date: string;
+            /** Format: time */
+            start_time: string;
+            /** Format: time */
+            end_time: string;
+            group_name: string;
+            subject_name: string;
+            room_name: string | null;
+            status: string;
+            state: components["schemas"]["StateEnum"];
+            is_substituted: boolean;
         };
         TotpCodeRequest: {
             code: string;
@@ -2314,6 +2763,11 @@ export interface components {
             group: string;
             /** Format: date */
             date: string;
+        };
+        VersionReasonRequest: {
+            /** @default  */
+            reason: string;
+            version: number;
         };
         VersionRequest: {
             version: number;
@@ -2336,6 +2790,13 @@ export interface components {
             /** Format: decimal */
             weight: string;
             is_archived?: boolean;
+        };
+        WorkTypeOption: {
+            /** Format: uuid */
+            readonly id: string;
+            readonly name: string;
+            /** Format: decimal */
+            readonly weight: string;
         };
         WorkTypeRequest: {
             name: string;
@@ -4535,6 +4996,295 @@ export interface operations {
             };
         };
     };
+    journal_courses_list: {
+        parameters: {
+            query?: {
+                year?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseOption"][];
+                };
+            };
+        };
+    };
+    journal_courses_retrieve: {
+        parameters: {
+            query?: {
+                from?: string;
+                term?: string;
+                to?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Grid"];
+                };
+            };
+        };
+    };
+    journal_courses_terms_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TermOption"][];
+                };
+            };
+        };
+    };
+    journal_grades_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedGradeUpdateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Grade"];
+                };
+            };
+        };
+    };
+    journal_grades_delete_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VersionReasonRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Grade"];
+                };
+            };
+        };
+    };
+    journal_grades_restore_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VersionReasonRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Grade"];
+                };
+            };
+        };
+    };
+    journal_lessons_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonPage"];
+                };
+            };
+        };
+    };
+    journal_lessons_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedLessonUpdateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonPage"];
+                };
+            };
+        };
+    };
+    journal_lessons_attendance_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                student_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AttendanceWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Attendance"];
+                };
+            };
+        };
+    };
+    journal_lessons_attendance_all_present_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ReasonMixinRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Attendance"][];
+                };
+            };
+        };
+    };
+    journal_lessons_conduct_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VersionReasonRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonPage"];
+                };
+            };
+        };
+    };
+    journal_lessons_grades_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GradeCreateRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Grade"];
+                };
+            };
+        };
+    };
     me_retrieve: {
         parameters: {
             query?: never;
@@ -4678,6 +5428,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ScheduleRequest"];
+                };
+            };
+        };
+    };
+    teacher_today_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Today"];
                 };
             };
         };
