@@ -36,3 +36,25 @@ class AuditLog(models.Model):
 
     def __str__(self) -> str:
         return f"{self.at:%Y-%m-%d %H:%M} {self.action} {self.entity_type}:{self.entity_id}"
+
+
+class DeniedRequest(models.Model):
+    """An authenticated API request refused as forbidden or «not found» (stage 7).
+
+    Many in a short time mean someone is probing other people's ids (SPEC §11: «всплески
+    отказов в доступе» in the administrator's overview). Kept for 30 days.
+    """
+
+    at = models.DateTimeField(auto_now_add=True, db_index=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="+")
+    role = models.CharField(max_length=16, blank=True)
+    ip = models.GenericIPAddressField(null=True, blank=True)
+    method = models.CharField(max_length=8)
+    path = models.CharField(max_length=200)
+    status = models.PositiveSmallIntegerField()
+
+    class Meta:
+        ordering: ClassVar = ["-at"]
+
+    def __str__(self) -> str:
+        return f"{self.at:%Y-%m-%d %H:%M} {self.status} {self.path}"
