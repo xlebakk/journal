@@ -76,6 +76,34 @@ MATRIX: list[tuple[str, str, dict[str, int]]] = [
     ("get", "/api/v1/student/profile", {"admin": 403, "teacher": 403, "student": 200}),
     ("get", "/api/v1/student/grades", {"admin": 403, "teacher": 403, "student": 400}),
     ("get", "/api/v1/student/attendance", {"admin": 403, "teacher": 403, "student": 400}),
+    # Stage 5: exams, announcements, reports, import, overview, settings.
+    ("get", "/api/v1/exams", {"admin": 200, "teacher": 200, "student": 403}),
+    ("post", "/api/v1/exams", {"admin": 400, "teacher": 400, "student": 403}),
+    ("get", "/api/v1/exams/dynamics", {"admin": 200, "teacher": 200, "student": 403}),
+    ("get", "/api/v1/student/exams", {"admin": 403, "teacher": 403, "student": 200}),
+    ("get", "/api/v1/admin/users/{other}/targets", {"admin": 200, "teacher": 403, "student": 403}),
+    ("put", "/api/v1/admin/users/{other}/targets", {"admin": 400, "teacher": 403, "student": 403}),
+    ("get", "/api/v1/announcements", {"admin": 200, "teacher": 200, "student": 200}),
+    ("get", "/api/v1/admin/announcements", {"admin": 200, "teacher": 403, "student": 403}),
+    ("post", "/api/v1/admin/announcements", {"admin": 400, "teacher": 403, "student": 403}),
+    ("get", "/api/v1/admin/reports/performance", {"admin": 400, "teacher": 403, "student": 403}),
+    ("get", "/api/v1/admin/reports/fill-rate", {"admin": 400, "teacher": 403, "student": 403}),
+    (
+        "get",
+        "/api/v1/admin/reports/students/{other}",
+        {"admin": 400, "teacher": 403, "student": 403},
+    ),
+    ("get", "/api/v1/admin/overview", {"admin": 200, "teacher": 403, "student": 403}),
+    ("get", "/api/v1/admin/audit/export", {"admin": 200, "teacher": 403, "student": 403}),
+    (
+        "get",
+        "/api/v1/admin/import/students/template",
+        {"admin": 200, "teacher": 403, "student": 403},
+    ),
+    ("post", "/api/v1/admin/import/students", {"admin": 415, "teacher": 403, "student": 403}),
+    ("get", "/api/v1/admin/access-cards", {"admin": 200, "teacher": 403, "student": 403}),
+    ("get", "/api/v1/admin/settings", {"admin": 200, "teacher": 403, "student": 403}),
+    ("patch", "/api/v1/admin/settings", {"admin": 200, "teacher": 403, "student": 403}),
 ]
 
 
