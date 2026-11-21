@@ -67,6 +67,9 @@ MATRIX: list[tuple[str, str, dict[str, int]]] = [
     ("get", "/api/v1/teacher/schedule", {"admin": 403, "teacher": 200, "student": 403}),
     ("get", "/api/v1/teacher/schedule-requests", {"admin": 403, "teacher": 200, "student": 403}),
     ("get", "/api/v1/student/schedule", {"admin": 403, "teacher": 403, "student": 200}),
+    # Stage 3: journal.
+    ("get", "/api/v1/journal/courses", {"admin": 200, "teacher": 200, "student": 403}),
+    ("get", "/api/v1/teacher/today", {"admin": 403, "teacher": 200, "student": 403}),
 ]
 
 

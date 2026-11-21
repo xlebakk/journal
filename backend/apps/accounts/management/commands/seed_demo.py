@@ -2,13 +2,14 @@
 
 Stage 1: people. Stage 2: year and terms, subjects, rooms, 4 groups with courses, a week
 template without conflicts and 8 weeks of lessons (4 back, 4 ahead) with a few exceptions.
-Grades and attendance arrive in stage 3.
+Stage 3: past lessons are conducted with topics, homework, attendance and grades; a couple
+of recent lessons are left unfilled and two students need attention.
 """
 
 import os
 import random
 from datetime import date, time, timedelta
-from typing import Any
+from typing import Any, ClassVar
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
@@ -24,9 +25,11 @@ from apps.academics.models import (
     Room,
     Subject,
     Term,
+    WorkType,
 )
 from apps.accounts import credentials
 from apps.accounts.models import Role, StudentProfile, TeacherProfile, User
+from apps.journal.models import Attendance, AttendanceStatus, Grade
 from apps.schedule import services
 from apps.schedule.models import Lesson, LessonStatus, ScheduleRequest, ScheduleSlot
 
@@ -173,6 +176,8 @@ class Command(BaseCommand):
         for teacher, shorts in zip(teachers, TEACHER_SUBJECTS, strict=True):
             teacher.teacher_profile.subjects.set([subjects[s] for s in shorts])
 
+        lecture = LessonType.objects.get(short="Лк")
+        practice = LessonType.objects.get(short="Пр")
         groups: dict[str, Group] = {}
         start = date(2026, 9, 1)
         for name, (level, courses) in GROUPS.items():
@@ -182,7 +187,7 @@ class Command(BaseCommand):
                 course = Course.objects.create(
                     group=group, subject=subjects[short], teacher=teachers[teacher_index]
                 )
-                for weekday, begins, finishes, room in slots:
+                for index, (weekday, begins, finishes, room) in enumerate(slots):
                     ScheduleSlot.objects.create(
                         course=course,
                         weekday=weekday,
@@ -190,6 +195,7 @@ class Command(BaseCommand):
                         end_time=finishes,
                         room=rooms[room],
                         valid_from=start,
+                        lesson_type=lecture if index == 0 else practice,
                     )
         # An assistant: the physics teacher helps with weekend maths.
         weekend = groups["10-М выходного дня"]
@@ -208,6 +214,7 @@ class Command(BaseCommand):
             first=monday - timedelta(weeks=4), last=today + timedelta(days=27)
         )
         self._exceptions(monday, groups, subjects, rooms, teachers)
+        self._journal(today, groups, students)
 
     def _lesson(self, group: Group, subject: Subject, day: date) -> Lesson | None:
         return Lesson.objects.filter(course__group=group, course__subject=subject, date=day).first()
@@ -264,6 +271,104 @@ class Command(BaseCommand):
                 reason="Лабораторная в университете",
             )
 
+    # --- Journal (stage 3) -----------------------------------------------------------------
+
+    TOPICS: ClassVar[dict[str, list[str]]] = {
+        "Мат": ["Квадратные уравнения", "Теорема Виета", "Неравенства", "Модуль числа",
+                "Прогрессии", "Логарифмы", "Тригонометрия", "Производная"],
+        "Физ": ["Кинематика", "Законы Ньютона", "Импульс", "Работа и энергия",
+                "Колебания", "Электростатика"],
+        "Англ": ["Present Perfect", "Conditionals", "Reading: science", "Essay structure",
+                 "Passive voice", "Vocabulary: education"],
+        "Рус": ["Орфография: н и нн", "Пунктуация в сложном предложении", "Сочинение",
+                "Причастный оборот", "Тест: орфоэпия"],
+        "Хим": ["Строение атома", "Химическая связь", "Окислительно-восстановительные реакции",
+                "Органика: алканы", "Растворы"],
+        "Био": ["Клетка", "Генетика", "Эволюция", "Экосистемы", "Физиология человека"],
+    }  # fmt: skip
+
+    def _journal(self, today: date, groups: dict[str, Group], students: list[User]) -> None:
+        work = {w.name: w for w in WorkType.objects.all()}
+        test_type = LessonType.objects.get(short="КР")
+        weak_attendance = students[3]  # many absences → «Внимание»
+        weak_grades = students[20]  # two low grades in a row → «Внимание»
+        unfilled_group = groups["11-Г вечерняя"]
+        lessons = (
+            Lesson.objects.filter(date__lt=today)
+            .exclude(status=LessonStatus.CANCELLED)
+            .select_related("course__subject", "course__group", "lesson_type")
+            .order_by("course_id", "date", "start_time")
+        )
+        members: dict[Any, list[tuple[Any, date, date | None]]] = {}
+        for m in GroupMembership.objects.values_list(
+            "group_id", "student_id", "joined_on", "left_on"
+        ):
+            members.setdefault(m[0], []).append((m[1], m[2], m[3]))
+        attendance: list[Attendance] = []
+        grades: list[Grade] = []
+        seen: dict[Any, int] = {}
+        for lesson in lessons:
+            if lesson.course.group_id == unfilled_group.pk and lesson.date >= today - timedelta(
+                days=3
+            ):
+                continue  # left for «Не заполнено»
+            n = seen[lesson.course_id] = seen.get(lesson.course_id, 0) + 1
+            topics = self.TOPICS[lesson.course.subject.short_name]
+            lesson.topic = topics[(n - 1) % len(topics)]
+            lesson.homework = f"Повторить тему, задачи № {n * 3}–{n * 3 + 4}"
+            if n % 6 == 0:
+                lesson.lesson_type = test_type
+            lesson.status = LessonStatus.CONDUCTED
+            lesson.save()
+            is_test = lesson.lesson_type_id == test_type.pk
+            for sid, joined, left in members.get(lesson.course.group_id, []):
+                if not (joined <= lesson.date and (left is None or lesson.date <= left)):
+                    continue
+                roll = self.rng.random()
+                if sid == weak_attendance.pk:
+                    status = AttendanceStatus.ABSENT if roll < 0.45 else AttendanceStatus.PRESENT
+                elif roll < 0.82:
+                    status = AttendanceStatus.PRESENT
+                elif roll < 0.89:
+                    status = AttendanceStatus.LATE
+                elif roll < 0.96:
+                    status = AttendanceStatus.ABSENT
+                else:
+                    status = AttendanceStatus.EXCUSED
+                attendance.append(
+                    Attendance(
+                        lesson=lesson,
+                        student_id=sid,
+                        status=status,
+                        marked_by=lesson.teacher,
+                        late_minutes=self.rng.randint(3, 20)
+                        if status == AttendanceStatus.LATE
+                        else None,
+                    )
+                )
+                if status not in (AttendanceStatus.PRESENT, AttendanceStatus.LATE):
+                    continue
+                if not is_test and self.rng.random() > 0.35:
+                    continue
+                value = max(0, min(100, round(self.rng.gauss(74, 14))))
+                if sid == weak_grades.pk and lesson.course.subject.short_name == "Хим":
+                    value = self.rng.randint(25, 45)
+                kind = work["Контрольная работа"] if is_test else work["Ответ на занятии"]
+                grades.append(
+                    Grade(
+                        lesson=lesson,
+                        student_id=sid,
+                        value=value,
+                        scale="100",
+                        work_type=kind,
+                        weight=kind.weight,
+                        position=1,
+                        created_by=lesson.teacher,
+                    )
+                )
+        Attendance.objects.bulk_create(attendance)
+        Grade.objects.bulk_create(grades)
+
     def _print(self) -> None:
         width = max(len(r[1]) for r in self.rows)
         self.stdout.write(f"{'роль':<8}  {'ФИО':<{width}}  {'логин':<14}  пароль")
@@ -273,7 +378,8 @@ class Command(BaseCommand):
             self.style.SUCCESS(
                 f"\nСоздано: 1 администратор, 6 преподавателей, 60 учеников, "
                 f"{Group.objects.count()} группы, {Course.objects.count()} курсов, "
-                f"{Lesson.objects.count()} занятий (4 недели назад и 4 вперёд). "
+                f"{Lesson.objects.count()} занятий (4 недели назад и 4 вперёд), "
+                f"{Attendance.objects.count()} отметок, {Grade.objects.count()} оценок. "
                 "Администратор при первом входе настроит 2FA."
             )
         )

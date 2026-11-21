@@ -33,11 +33,23 @@ class CenterSettings(models.Model):
     # 2FA is always required for administrators; for teachers — by this switch.
     require_teacher_2fa = models.BooleanField(default=False)
 
+    # Journal (SPEC §2).
+    edit_window_days = models.PositiveSmallIntegerField(default=7)
+    max_grades_per_lesson = models.PositiveSmallIntegerField(default=3)
+    # «Low grade»: below this percentage of the scale maximum (50 % → below 50 of 100).
+    low_grade_percent = models.PositiveSmallIntegerField(default=50)
+    attendance_threshold_percent = models.PositiveSmallIntegerField(default=80)
+    attendance_window_days = models.PositiveSmallIntegerField(default=30)
+
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints: ClassVar = [
             models.CheckConstraint(condition=Q(id=1), name="core_settings_singleton"),
+            models.CheckConstraint(
+                condition=Q(max_grades_per_lesson__gte=1) & Q(max_grades_per_lesson__lte=9),
+                name="core_settings_max_grades",
+            ),
         ]
 
     def __str__(self) -> str:

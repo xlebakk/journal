@@ -33,7 +33,18 @@ def test_seed_demo_creates_people_and_prints_passwords() -> None:
                 assert a.teacher_id != b.teacher_id
                 assert a.room_id is None or a.room_id != b.room_id
                 assert a.course.group_id != b.course.group_id
-    text = out.getvalue()
+    # Stage 3: past lessons are conducted with full attendance, a few are left unfilled.
+    from apps.journal.models import Attendance, Grade
+    from apps.journal.services import members
+
+    conducted = list(Lesson.objects.filter(status="conducted"))
+    assert conducted
+    assert Grade.objects.exists()
+    for lesson in conducted[:20]:
+        marked = set(Attendance.objects.filter(lesson=lesson).values_list("student_id", flat=True))
+        assert {s.pk for s in members(lesson)} <= marked
+        assert lesson.topic
+        text = out.getvalue()
     admin = User.objects.with_role(Role.ADMIN).get()
     assert admin.login in text
     assert admin.totp_enabled is False  # set up on first login
