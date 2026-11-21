@@ -229,6 +229,7 @@ jobs:
           done
           ! echo "$headers" | grep -qi "^server:"
           curl -sk https://localhost/api/v1/health | grep -q ok
+          curl -skI https://localhost/api/v1/health | grep -qi "^cache-control: no-store"
           test "$(curl -sk -o /dev/null -w '%{http_code}' https://localhost/api/v1/me)" = 401
       - name: nothing but Caddy listens to the world
         run: |
