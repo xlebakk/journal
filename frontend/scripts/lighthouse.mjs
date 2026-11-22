@@ -27,6 +27,13 @@ async function loginAsStudent(page) {
     });
 }
 
+// Job logs need a login to read; in CI the summary also goes to public annotations.
+const report = [];
+function say(line) {
+  console.log(line);
+  report.push(line);
+}
+
 // Like Lighthouse CI: several runs, the median counts — the first run in a cold browser
 // (empty code caches) is an outlier, not the page.
 const RUNS = Number(process.env.LIGHTHOUSE_RUNS ?? 3);
@@ -56,7 +63,7 @@ async function audit(page, path, keepSession) {
     const pass = median >= min;
     ok &&= pass;
     const all = scores.map((x) => Math.round(x * 100)).join("/");
-    console.log(
+    say(
       `${pass ? "✓" : "✗"} ${path} ${category} ${Math.round(median * 100)} (runs ${all}, min ${min * 100})`,
     );
     if (!pass) {
@@ -64,7 +71,7 @@ async function audit(page, path, keepSession) {
       for (const ref of lhr.categories[category].auditRefs) {
         const item = lhr.audits[ref.id];
         if (ref.weight > 0 && item.score !== null && item.score < 0.9) {
-          console.log(`    ${item.id}: ${item.displayValue ?? ""} ${item.title}`);
+          say(`    ${item.id}: ${item.displayValue ?? ""} ${item.title}`);
         }
       }
     }
@@ -82,7 +89,14 @@ try {
   await loginAsStudent(page);
   results.push(await audit(page, "/student", true));
   if (results.includes(false)) process.exitCode = 1;
+} catch (error) {
+  say(`✗ ${error instanceof Error ? error.message : String(error)}`);
+  process.exitCode = 1;
 } finally {
+  if (process.env.GITHUB_ACTIONS) {
+    const kind = process.exitCode ? "error" : "notice";
+    console.log(`::${kind} title=Lighthouse::${report.join("%0A")}`);
+  }
   await browser.disconnect();
   await chrome.kill();
 }
