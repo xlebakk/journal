@@ -80,6 +80,8 @@ describe("GradesPage", () => {
               given_at: "2026-11-16T10:00:00Z", low: true,
             }],
           }],
+          reviews: [{ subject_name: "Математика", teacher_name: "Юсупов Тимур", term_name: "Модуль 2",
+            text: "Сильная алгебра, нужна геометрия.", updated_at: "2026-11-16T10:00:00Z" }],
         },
       },
     }); // prettier-ignore
@@ -93,6 +95,7 @@ describe("GradesPage", () => {
     expect(dialog).toHaveTextContent("×2");
     expect(dialog).toHaveTextContent("разобрать ошибки");
     expect(screen.queryByText(/место в группе/i)).not.toBeInTheDocument();
+    expect(screen.getByText("Сильная алгебра, нужна геометрия.")).toBeInTheDocument();
   });
 });
 
