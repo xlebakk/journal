@@ -15,7 +15,12 @@ test("admin prices the group and bills the month; the student sees the debt, the
   await page.getByRole("link", { name: "Оплаты" }).first().click();
   await page.getByRole("tab", { name: "Цены и начисления" }).click();
   await page.getByLabel("Цена в месяц для 11-М вечерняя").fill("500000");
+  // Billing reads the saved price: wait for the server to have it.
+  const saved = page.waitForResponse(
+    (r) => r.url().includes("/api/v1/admin/payments/groups/") && r.request().method() === "PUT",
+  );
   await page.getByRole("button", { name: "сохранить" }).first().click();
+  expect((await saved).status()).toBe(204);
   await page.getByRole("button", { name: /^начислить за/ }).click();
   await expect(page.getByRole("status")).toHaveText(/Начислено: 1/);
 
