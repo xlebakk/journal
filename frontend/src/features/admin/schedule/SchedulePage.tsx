@@ -23,7 +23,7 @@ import { ExtraLessonDialog } from "./ExtraLessonDialog";
 import { LessonDialog } from "./LessonDialog";
 import { SlotsPanel } from "./SlotsPanel";
 
-/** Schedule builder for administrators (SPEC §8.5, §9): the week and its template. */
+/** Schedule builder for administrators: the week and its template. */
 export function SchedulePage() {
   const [params, setParams] = useSearchParams();
   const [monday, setMonday, today] = useWeekParam();

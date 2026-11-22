@@ -133,7 +133,7 @@ class AdminSlotViewSet(
     viewsets.GenericViewSet,  # type: ignore[type-arg]
 ):
     """Week template. Changes apply only to future, untouched lessons, after the administrator
-    confirms the list of affected dates (SPEC §9)."""
+    confirms the list of affected dates."""
 
     permission_classes = (IsAdmin,)
     serializer_class = SlotSerializer
@@ -603,7 +603,7 @@ class AdminScheduleRequestViewSet(
 
 
 class TeacherLessonRequestView(APIView):
-    """A teacher asks to cancel or move a lesson of their own (SPEC §9)."""
+    """A teacher asks to cancel or move a lesson of their own."""
 
     permission_classes = (IsTeacher,)
 

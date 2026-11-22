@@ -1,4 +1,4 @@
-"""Teacher reviews once per term (SPEC §16.5, stage 9)."""
+"""Teacher reviews once per term (stage 9)."""
 
 from collections.abc import Callable
 from datetime import date, timedelta

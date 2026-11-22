@@ -10,7 +10,7 @@ import { EmptyState, lessonMarks, RuledSkeleton, Table } from "@/shared/ui";
 import { useStudentHome } from "./api";
 import styles from "./Student.module.css";
 
-/** «Главная» of a student (SPEC §6.1): announcements, today, new grades, homework. */
+/** «Главная» of a student: announcements, today, new grades, homework. */
 export function HomePage() {
   const home = useStudentHome();
   if (home.isPending) return <RuledSkeleton rows={8} />;

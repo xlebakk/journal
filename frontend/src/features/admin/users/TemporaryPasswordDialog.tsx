@@ -8,7 +8,7 @@ type Props = {
   onClose: () => void;
 };
 
-/** The temporary password is shown exactly once (SPEC §4); afterwards only a reset helps. */
+/** The temporary password is shown exactly once; afterwards only a reset helps. */
 export function TemporaryPasswordDialog({ credentials, onClose }: Props) {
   return (
     <Dialog

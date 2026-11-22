@@ -1,4 +1,4 @@
-// After `npm run build`: the PWA caches the shell only, never the API (SPEC §3, §11, §13).
+// After `npm run build`: the PWA caches the shell only, never the API.
 import { existsSync, readFileSync } from "node:fs";
 
 const fail = (message) => {

@@ -1,4 +1,4 @@
-"""Mock exams API for staff and students (SPEC §6.4, §7.6, §8.7)."""
+"""Mock exams API for staff and students."""
 
 from collections import defaultdict
 from decimal import ROUND_HALF_UP, Decimal
@@ -251,7 +251,7 @@ class ExamImportView(APIView):
 
 
 class ExamStatsView(APIView):
-    """Mean, median, distribution, groups compared, sections (SPEC §7.6, §8.7)."""
+    """Mean, median, distribution, groups compared, sections."""
 
     permission_classes = STAFF
 
@@ -310,7 +310,7 @@ def _mean_percent(mean: Decimal | None, maximum: int) -> Decimal | None:
 
 
 class ExamDynamicsView(APIView):
-    """Mean % per exam of a subject over time: the center's dynamics (SPEC §8.7)."""
+    """Mean % per exam of a subject over time: the center's dynamics."""
 
     permission_classes = STAFF
 
@@ -341,7 +341,7 @@ class ExamDynamicsView(APIView):
 
 
 class StudentExamsView(APIView):
-    """«Пробные тесты» of a student: per subject, own results only, target in % (SPEC §6.4)."""
+    """«Пробные тесты» of a student: per subject, own results only, target in %."""
 
     permission_classes = STUDENT_PAGES
 

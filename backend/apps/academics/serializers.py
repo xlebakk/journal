@@ -51,7 +51,7 @@ class AcademicYearSerializer(DatabaseUniqueModelSerializer[AcademicYear]):
             scale_changes
             and Grade.objects.filter(lesson__course__group__academic_year=self.instance).exists()
         ):
-            # SPEC §10.11: the scale is fixed once the year has grades.
+            # The scale is fixed once the year has grades.
             raise serializers.ValidationError({"grade_scale": ["scale_locked"]})
         return attrs
 

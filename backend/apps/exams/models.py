@@ -1,4 +1,4 @@
-"""Mock exams (SPEC §5, §6.4, §7.6, §8.7).
+"""Mock exams.
 
 A test has a maximum and optional sections; when it has sections, the total is the sum of
 the section scores. Students' goals are per subject, in % of the maximum (decision of

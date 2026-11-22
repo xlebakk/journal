@@ -1,4 +1,4 @@
-"""The parent role (SPEC §16.1, stage 14): the children's student pages, read-only."""
+"""The parent role (stage 14): the children's student pages, read-only."""
 
 from collections.abc import Callable
 from datetime import date, time, timedelta

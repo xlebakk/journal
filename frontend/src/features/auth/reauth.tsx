@@ -10,7 +10,7 @@ import { ReauthContext, type WithReauth } from "./reauthContext";
 
 /**
  * Dangerous actions answer 403 reauth_required when the password was last entered more than
- * five minutes ago (SPEC §8). This asks for it once and repeats the action.
+ * five minutes ago. This asks for it once and repeats the action.
  */
 export function ReauthProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);

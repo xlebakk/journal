@@ -433,7 +433,7 @@ function StatsTab({ id }: { id: string }) {
   );
 }
 
-/** One test: results table, import from Excel, statistics (SPEC §7.6, §8.7). */
+/** One test: results table, import from Excel, statistics. */
 export function ExamPage() {
   const { id = "" } = useParams();
   const me = useMe();

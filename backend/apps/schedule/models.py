@@ -1,4 +1,4 @@
-"""Week template, concrete lessons and exceptions (SPEC §9).
+"""Week template, concrete lessons and exceptions.
 
 Dates and times of lessons are civil dates and wall-clock times in the center's time zone,
 not instants: a lesson «at 14:00» stays at 14:00 whatever the UTC offset.
@@ -15,7 +15,7 @@ from apps.academics.models import Course, GroupMembership, LessonType, Room
 
 
 class Weekday(models.IntegerChoices):
-    """ISO weekday; the week starts on Monday (SPEC §2)."""
+    """ISO weekday; the week starts on Monday."""
 
     MONDAY = 1, "понедельник"
     TUESDAY = 2, "вторник"
@@ -130,7 +130,7 @@ class Lesson(models.Model):
     planned_room = models.ForeignKey(
         Room, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
     )
-    # Optimistic locking (SPEC §10.12): every change increments it.
+    # Optimistic locking: every change increments it.
     version = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -188,7 +188,7 @@ class Lesson(models.Model):
 
 
 class ScheduleRequest(models.Model):
-    """A teacher asks the administrator to cancel or move a lesson (SPEC §9)."""
+    """A teacher asks the administrator to cancel or move a lesson."""
 
     class Kind(models.TextChoices):
         CANCEL = "cancel", "отмена"
@@ -254,7 +254,7 @@ class CalendarFeedRole(models.TextChoices):
 
 
 class CalendarFeed(models.Model):
-    """A personal iCal subscription (SPEC §16.7): `/api/v1/calendar/<id>.ics?token=…`.
+    """A personal iCal subscription: `/api/v1/calendar/<id>.ics?token=…`.
 
     The token is an HMAC of the id under SECRET_KEY, so the database holds no secret and the
     owner can see the link again. Reissuing replaces the row: the old link becomes 404.

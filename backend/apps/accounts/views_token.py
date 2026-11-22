@@ -105,7 +105,7 @@ class TokenTotpView(APIView):
 
 
 class TokenRefreshView(APIView):
-    """Rotation: every refresh token works once; a second use ends the session (SPEC §11)."""
+    """Rotation: every refresh token works once; a second use ends the session."""
 
     permission_classes = (AllowAny,)
     authentication_classes = ()

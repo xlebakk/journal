@@ -1,4 +1,4 @@
-"""Role × endpoint × whose object (SPEC §11, docs/security.md).
+"""Role × endpoint × whose object (docs/security.md).
 
 Every row is one expected status. Anonymous access is covered by the URL walker.
 """

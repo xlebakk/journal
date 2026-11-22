@@ -1,5 +1,5 @@
 /**
- * Tokens of the Android app (SPEC §11): the access token only in memory, the refresh token
+ * Tokens of the Android app: the access token only in memory, the refresh token
  * only in the Android Keystore (secure storage plugin). Never in localStorage. In a browser
  * none of this is used: the site works with the session cookie.
  */

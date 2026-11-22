@@ -16,7 +16,7 @@ function subjectsOf(exams: Exam[]): { value: string; label: string }[] {
   return [...map].map(([value, label]) => ({ value, label }));
 }
 
-/** The center's dynamics for a subject: mean % per test over time (SPEC §8.7). */
+/** The center's dynamics for a subject: mean % per test over time. */
 function Dynamics({ subjects }: { subjects: { value: string; label: string }[] }) {
   const [picked, setPicked] = useState("");
   const subject = picked || subjects[0]?.value;

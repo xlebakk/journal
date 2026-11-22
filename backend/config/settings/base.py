@@ -93,7 +93,7 @@ TOTP_ISSUER = env_str("TOTP_ISSUER", "Journal")
 # Number of reverse proxies in front of Django whose X-Forwarded-For can be trusted.
 TRUSTED_PROXY_COUNT = env_int("TRUSTED_PROXY_COUNT", 0)
 
-# Login limits per IP (SPEC §11): attempts per window.
+# Login limits per IP: attempts per window.
 LOGIN_IP_LIMIT = 20
 LOGIN_IP_WINDOW_SECONDS = 600
 TOTP_MAX_ATTEMPTS = 5
@@ -124,11 +124,11 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-# Uploaded files live outside the web root and are served only through the API (SPEC §11).
+# Uploaded files live outside the web root and are served only through the API.
 MEDIA_ROOT = Path(env_str("MEDIA_ROOT", str(BASE_DIR / "media")))
 LOGO_MAX_BYTES = 1024 * 1024
 
-# Android app (SPEC §11, stage 6): access token in memory, refresh token in the Keystore.
+# Android app (stage 6): access token in memory, refresh token in the Keystore.
 APP_ACCESS_SECONDS = 600
 APP_REFRESH_DAYS = 30
 # Origins of the Capacitor WebView (androidScheme https; iOS later uses capacitor://).
@@ -167,7 +167,7 @@ REST_FRAMEWORK = {
         # Applies only to views with `throttle_scope` (exports, imports).
         "rest_framework.throttling.ScopedRateThrottle",
     ],
-    # Exports and imports are stricter than the general limit (SPEC §11).
+    # Exports and imports are stricter than the general limit.
     "DEFAULT_THROTTLE_RATES": {
         "user": "300/min",
         "anon": "60/min",

@@ -1,6 +1,6 @@
-"""Announcements (SPEC §5, §8.9): for everyone, a role or groups; pinned; shown until a date.
+"""Announcements: for everyone, a role or groups; pinned; shown until a date.
 
-The body is plain text; the frontend turns https:// links into links (SPEC §11).
+The body is plain text; the frontend turns https:// links into links.
 """
 
 import uuid

@@ -159,7 +159,7 @@ const SIMPLE: Record<string, CatalogConfig> = {
   },
 };
 
-/** «Справочники» (SPEC §8.4). The tab lives in the URL. */
+/** «Справочники». The tab lives in the URL. */
 export function CatalogsPage() {
   const [params, setParams] = useSearchParams();
   const tab = TABS.some((x) => x.key === params.get("tab")) ? params.get("tab")! : "years";

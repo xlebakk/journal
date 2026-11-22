@@ -31,7 +31,7 @@ export function BackupCodes({ codes, onDone }: { codes: string[]; onDone: () => 
   );
 }
 
-/** QR → code → backup codes. Mandatory for administrators (SPEC §4). */
+/** QR → code → backup codes. Mandatory for administrators. */
 export function TotpSetupPage() {
   const me = useMe();
   const navigate = useNavigate();

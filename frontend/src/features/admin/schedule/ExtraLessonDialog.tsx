@@ -12,7 +12,7 @@ import type { ScheduleWarning } from "@/shared/ui/ScheduleIssues";
 
 import { issuesOf, useLessonTypes, warningsOf } from "./api";
 
-/** A one-off lesson: consultation, mock test (SPEC §9). */
+/** A one-off lesson: consultation, mock test. */
 export function ExtraLessonDialog({
   open,
   today,

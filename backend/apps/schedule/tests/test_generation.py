@@ -1,4 +1,4 @@
-"""Generation of lessons from the week template (SPEC §9, §15: idempotency)."""
+"""Generation of lessons from the week template: idempotency."""
 
 from datetime import date, time, timedelta
 from io import StringIO

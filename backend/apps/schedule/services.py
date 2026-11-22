@@ -21,11 +21,11 @@ from apps.core.exceptions import Conflict
 
 from .models import Lesson, LessonStatus, ScheduleSlot
 
-HORIZON_DAYS = 28  # lessons are generated four weeks ahead (SPEC §9)
+HORIZON_DAYS = 28  # lessons are generated four weeks ahead
 
 
 def today() -> date:
-    """«Today» in the center's time zone (SPEC §2)."""
+    """«Today» in the center's time zone."""
     return timezone.localdate()
 
 
@@ -54,7 +54,7 @@ class ScheduleConflict(Conflict):
 
 
 class VersionConflict(Conflict):
-    """SPEC §10.12: «Запись изменена другим пользователем, обновите страницу»."""
+    """«Запись изменена другим пользователем, обновите страницу»."""
 
     default_detail = "version_conflict"
     default_code = "version_conflict"
@@ -311,7 +311,7 @@ def check_slot_template(spec: SlotSpec, exclude_slot_id: Any = None) -> list[dic
 
 @dataclass
 class SlotPlan:
-    """What a template change does to existing lessons (SPEC §9: confirm with dates)."""
+    """What a template change does to existing lessons (confirm with dates)."""
 
     update: list[Lesson] = field(default_factory=list)
     remove: list[Lesson] = field(default_factory=list)

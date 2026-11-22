@@ -1,6 +1,6 @@
 #!/bin/sh
 # Creates the application role and database. The app never connects as a superuser,
-# so it cannot disable the audit-log trigger (SPEC §11).
+# so it cannot disable the audit-log trigger.
 set -eu
 
 psql -v ON_ERROR_STOP=1 --username postgres --dbname postgres \

@@ -82,7 +82,7 @@ function ReviewRow({
   );
 }
 
-/** «Отзывы» (SPEC §16.5): two or three sentences per student, once per term. */
+/** «Отзывы»: two or three sentences per student, once per term. */
 export function ReviewsTab({ course, term }: { course: string; term: string | undefined }) {
   const termId = term && UUID.test(term) ? term : undefined;
   const [reason, setReason] = useState("");

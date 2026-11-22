@@ -1,5 +1,5 @@
 #!/bin/sh
-# Production database roles (SPEC §11, stage 7), created once on an empty data volume:
+# Production database roles (stage 7), created once on an empty data volume:
 #   DB_OWNER_USER — owns the database and the tables; only the `migrate` job connects as it;
 #   DB_USER       — the application: rows only (privileges from `manage.py db_grants`),
 #                   so it cannot disable the audit trigger or rewrite the audit log.

@@ -12,7 +12,7 @@ SECURE_HSTS_SECONDS = 31_536_000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
-# Structured logs on stdout (SPEC §11); Docker keeps and rotates them.
+# Structured logs on stdout; Docker keeps and rotates them.
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,

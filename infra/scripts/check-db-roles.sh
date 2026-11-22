@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Proves the production split of database roles (SPEC §11, stage 7):
+# Proves the production split of database roles (stage 7):
 # the owner runs migrations; the app role writes rows but cannot touch the audit log,
 # alter or drop tables, or disable the append-only trigger.
 #

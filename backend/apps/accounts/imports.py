@@ -1,4 +1,4 @@
-"""Students from a CSV/XLSX (SPEC §8.2): preview with errors per line, then one transaction.
+"""Students from a CSV/XLSX: preview with errors per line, then one transaction.
 
 Logins and temporary passwords are generated; the passwords are returned once, for the
 access cards, and only their hashes are stored.

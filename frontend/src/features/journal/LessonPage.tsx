@@ -133,7 +133,7 @@ function LessonFields({ data, reason, blocked, busy, perform, onDraft }: FieldsP
   );
 }
 
-/** The lesson page — the teacher's main screen (SPEC §7.2). */
+/** The lesson page — the teacher's main screen. */
 export function LessonPage() {
   const { id = "" } = useParams();
   const me = useMe();
@@ -157,7 +157,7 @@ export function LessonPage() {
   const conduct = () =>
     void perform({
       run: async () => {
-        // Unmarked students are «был» by default: save that first (SPEC §7.2).
+        // Unmarked students are «был» by default: save that first.
         await journalApi.allPresent(lesson.id, { reason });
         const fields = draft ?? {
           topic: lesson.topic,

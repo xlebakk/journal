@@ -19,7 +19,7 @@ import { TextField } from "@/shared/ui/TextField";
 import { homePath, useBranding, useLogin, useMe, useTotpLogin } from "./api";
 import styles from "./AuthPage.module.css";
 
-// No zod here: the login page is the first screen and must stay light (SPEC §15).
+// No zod here: the login page is the first screen and must stay light.
 type LoginForm = { login: string; password: string; remember: boolean };
 type TotpForm = { code: string };
 const required = (value: string) => value.trim() !== "" || t("common.required");

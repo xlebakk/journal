@@ -1,4 +1,4 @@
-"""The student's cabinet (SPEC §6): own data only, the same numbers as the journal."""
+"""The student's cabinet: own data only, the same numbers as the journal."""
 
 from collections.abc import Callable
 from datetime import date, time, timedelta
@@ -159,7 +159,7 @@ class TestGrades:
     def test_someone_elses_grade_is_404(
         self, journal: dict[str, Lesson], student: User, classmate: User, client_for: ClientFor
     ) -> None:
-        """SPEC §15: student A asks for student B's grade by id → 404."""
+        """Student A asks for student B's grade by id → 404."""
         mine = Grade.objects.get(student=student, value=90)
         theirs = Grade.objects.get(student=classmate)
         client = client_for(student)

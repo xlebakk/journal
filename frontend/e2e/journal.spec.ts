@@ -39,7 +39,7 @@ test("teacher fills a lesson; the journal shows it and the student sees the grad
 
   await logout(page);
 
-  // SPEC §15: «преподаватель заполняет занятие → ученик видит оценку».
+  // Acceptance: «преподаватель заполняет занятие → ученик видит оценку».
   await login(page, "e2e.student");
   await expect(page).toHaveURL(/\/student$/);
   const newGrades = page.getByRole("region", { name: "Новые оценки за 7 дней" });

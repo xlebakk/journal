@@ -6,7 +6,7 @@ import { VitePWA } from "vite-plugin-pwa";
 import { defineConfig } from "vitest/config";
 
 const apiTarget = process.env.VITE_API_PROXY ?? "http://localhost:8000";
-// --paper: the browser bar and the splash match the page (SPEC §13).
+// --paper: the browser bar and the splash match the page.
 const PAPER = "#ffffff";
 
 /**
@@ -62,7 +62,7 @@ export default defineConfig(({ mode, isPreview }) => {
         },
         workbox: {
           // Only the shell: scripts, styles, fonts, icons. API answers are never cached
-          // (SPEC §3, §11): there is no runtimeCaching, and /api/ never falls back to the shell.
+          //: there is no runtimeCaching, and /api/ never falls back to the shell.
           globPatterns: ["**/*.{js,css,html,woff2,png,svg,webmanifest}"],
           navigateFallback: "/index.html",
           navigateFallbackDenylist: [/^\/api\//],

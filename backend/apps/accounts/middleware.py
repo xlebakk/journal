@@ -27,7 +27,7 @@ class SessionPolicyMiddleware:
 
 
 class AppTokenMiddleware:
-    """`Authorization: Bearer <access>` from the Android app (SPEC §11).
+    """`Authorization: Bearer <access>` from the Android app.
 
     A Bearer request is authenticated by the token alone: cookies are ignored, and an invalid
     or expired token leaves the request anonymous (401; the app then refreshes).
@@ -63,7 +63,7 @@ TOTP_SETUP_ALLOWED = PASSWORD_CHANGE_ALLOWED | {"auth-totp-setup"}
 
 
 class ForcedActionMiddleware:
-    """403 password_change_required / totp_setup_required for any other API call (SPEC §4)."""
+    """403 password_change_required / totp_setup_required for any other API call."""
 
     def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]) -> None:
         self.get_response = get_response

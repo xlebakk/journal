@@ -1,4 +1,4 @@
-"""Parents (SPEC §16.1, stage 14). The administrator adds a parent from the student's card:
+"""Parents (stage 14). The administrator adds a parent from the student's card:
 a new account with a temporary password, or an existing parent (brothers and sisters).
 A parent sees their children's student pages, read-only (`permissions.subject_student`)."""
 

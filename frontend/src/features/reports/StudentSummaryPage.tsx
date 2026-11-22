@@ -12,7 +12,7 @@ import { Button, RuledSkeleton, Table, TextField } from "@/shared/ui";
 import { num, useStudentSummary } from "./api";
 import local from "./Reports.module.css";
 
-/** «Сводная ведомость ученика» for parents: one printed sheet (SPEC §8.8). */
+/** «Сводная ведомость ученика» for parents: one printed sheet. */
 export function StudentSummaryPage() {
   const { id = "" } = useParams();
   const [from, setFrom] = useState("");

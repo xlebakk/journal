@@ -3,7 +3,7 @@ import { t, type MessageKey } from "@/shared/i18n";
 import styles from "./StrengthMeter.module.css";
 import { passwordStrength } from "./strength";
 
-/** Simple 4-step strength scale (SPEC §4). The server's validators have the final word. */
+/** Simple 4-step strength scale. The server's validators have the final word. */
 export function StrengthMeter({ password, personal }: { password: string; personal: string[] }) {
   const score = passwordStrength(password, personal);
   const label = t(`password.strength${score}` as MessageKey);

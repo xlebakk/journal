@@ -13,7 +13,7 @@ import { createQueryClient } from "./queryClient";
 const queryClient = createQueryClient();
 
 /**
- * Screens load on first visit (SPEC §15: the login page must stay light — performance ≥ 90 on
+ * Screens load on first visit (the login page must stay light — performance ≥ 90 on
  * a phone). React Router fetches the module before rendering the route.
  */
 function page<M extends Record<string, unknown>>(load: () => Promise<M>, name: keyof M & string) {

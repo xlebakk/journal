@@ -16,7 +16,7 @@ import { actionText } from "./audit/labels";
 
 type Overview = Schemas["Overview"];
 
-/** «Обзор» (SPEC §8.1): every block leads to an action, not just a number. */
+/** «Обзор»: every block leads to an action, not just a number. */
 export function OverviewPage() {
   const overview = useQuery({
     queryKey: ["admin", "overview"],

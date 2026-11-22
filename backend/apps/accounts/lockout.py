@@ -1,4 +1,4 @@
-"""Login attempt limits (SPEC §2, §11), kept in the cache (Redis in production).
+"""Login attempt limits, kept in the cache (Redis in production).
 
 * per login: N failures → lock for base minutes; every next lock doubles, up to max hours.
   Counters are keyed by the login string, so non-existent logins lock exactly the same way;

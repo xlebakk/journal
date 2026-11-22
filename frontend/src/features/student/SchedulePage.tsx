@@ -5,7 +5,7 @@ import { DaySchedule, PeriodBar, RuledSkeleton } from "@/shared/ui";
 
 import styles from "@/features/schedule/SchedulePage.module.css";
 
-/** «Расписание» of a student: own groups only; changes are marked (SPEC §6.6). */
+/** «Расписание» of a student: own groups only; changes are marked. */
 export function SchedulePage() {
   const [monday, setMonday, today] = useWeekParam();
   const schedule = useStudentSchedule(monday);

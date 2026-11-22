@@ -30,7 +30,7 @@ const STATUS: Record<string, MessageKey> = {
   cancelled: "schedule.statusCancelled",
 };
 
-/** One lesson and its exceptions (SPEC §9). Every change sends `version` (SPEC §10.12). */
+/** One lesson and its exceptions. Every change sends `version`. */
 export function LessonDialog({ lesson, onClose }: { lesson: Lesson | null; onClose: () => void }) {
   return (
     <Dialog

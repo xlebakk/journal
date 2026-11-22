@@ -46,7 +46,7 @@ function LessonRows({ rows, withDate }: { rows: Row[]; withDate?: boolean }) {
   );
 }
 
-/** «Сегодня» — the teacher's home (SPEC §7.1). */
+/** «Сегодня» — the teacher's home. */
 export function TodayPage() {
   const today = useTeacherToday();
   if (today.isPending) return <RuledSkeleton rows={6} />;

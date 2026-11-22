@@ -196,7 +196,7 @@ function AnnouncementForm({ item, onClose }: { item?: Announcement; onClose: () 
   );
 }
 
-/** «Объявления» of the administrator (SPEC §8.9). */
+/** «Объявления» of the administrator. */
 export function AnnouncementsPage() {
   const list = useAdminAnnouncements();
   const queryClient = useQueryClient();

@@ -96,7 +96,7 @@ function DayPage({ day, lessons, today }: { day: string; lessons: DiaryLesson[];
   );
 }
 
-/** «Дневник»: the week as a paper diary spread; arrows or a swipe turn the page (SPEC §6.2). */
+/** «Дневник»: the week as a paper diary spread; arrows or a swipe turn the page. */
 export function DiaryPage() {
   const [monday, setMonday, today] = useWeekParam();
   const diary = useDiary(monday);

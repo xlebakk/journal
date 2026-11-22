@@ -1,4 +1,4 @@
-"""Which backups to delete: keep 14 daily, 8 weekly and 12 monthly copies (SPEC §11).
+"""Which backups to delete: keep 14 daily, 8 weekly and 12 monthly copies.
 
 Reads backup file names (journal-YYYYMMDDTHHMMSSZ.dump.age) on stdin, prints the names to
 delete. Kept: the newest backup of each of the last 14 days, of each of the last 8 ISO weeks

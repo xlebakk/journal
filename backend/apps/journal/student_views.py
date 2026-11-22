@@ -1,4 +1,4 @@
-"""The student's own cabinet (SPEC §6). Everything is scoped to the requesting student:
+"""The student's own cabinet. Everything is scoped to the requesting student:
 there are no ids of other people in any parameter, and the one detail endpoint (a grade)
 answers 404 for anything that is not theirs."""
 
@@ -44,7 +44,7 @@ def current_year() -> AcademicYear | None:
 
 def courses_of(student: User, first: date, last: date) -> list[Course]:
     """Courses of the groups the student belonged to at some point of the period —
-    after a transfer the old course stays in the history (SPEC §10.9)."""
+    after a transfer the old course stays in the history."""
     groups = GroupMembership.objects.filter(student=student, joined_on__lte=last).filter(
         Q(left_on__isnull=True) | Q(left_on__gte=first)
     )
@@ -116,7 +116,7 @@ def _no_year() -> Response:
 
 
 class StudentHomeView(APIView):
-    """«Главная» (SPEC §6.1)."""
+    """«Главная»."""
 
     permission_classes = STUDENT_PAGES
 
@@ -203,7 +203,7 @@ class StudentHomeView(APIView):
 
 
 class StudentDiaryView(APIView):
-    """«Дневник»: a week of lessons with topics, homework, own marks and grades (SPEC §6.2)."""
+    """«Дневник»: a week of lessons with topics, homework, own marks and grades."""
 
     permission_classes = STUDENT_PAGES
 
@@ -246,7 +246,7 @@ class StudentDiaryView(APIView):
 
 
 class StudentGradesView(APIView):
-    """«Оценки»: subjects × dates for a term or the year, weighted averages (SPEC §6.3)."""
+    """«Оценки»: subjects × dates for a term or the year, weighted averages."""
 
     permission_classes = STUDENT_PAGES
 
@@ -310,7 +310,7 @@ class StudentGradesView(APIView):
 
 
 class StudentGradeDetailView(APIView):
-    """One grade with its lesson — the student's own only; anyone else's id is 404 (SPEC §15)."""
+    """One grade with its lesson — the student's own only; anyone else's id is 404."""
 
     permission_classes = STUDENT_PAGES
 
@@ -321,7 +321,7 @@ class StudentGradeDetailView(APIView):
 
 
 class StudentAttendanceView(APIView):
-    """«Посещаемость»: per subject and overall for the year so far, a month calendar (SPEC §6.5)."""
+    """«Посещаемость»: per subject and overall for the year so far, a month calendar."""
 
     permission_classes = STUDENT_PAGES
 
@@ -414,7 +414,7 @@ class StudentAttendanceView(APIView):
 
 
 class StudentProfileView(APIView):
-    """«Профиль»: name, groups, target (filled in by the administrator) (SPEC §6.7)."""
+    """«Профиль»: name, groups, target (filled in by the administrator)."""
 
     permission_classes = STUDENT_PAGES
 

@@ -1,4 +1,4 @@
-"""Template changes, conflicts, exceptions, teacher requests (SPEC §9, §10.12)."""
+"""Template changes, conflicts, exceptions, teacher requests."""
 
 from collections.abc import Callable
 from datetime import date, time, timedelta

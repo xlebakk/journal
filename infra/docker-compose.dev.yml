@@ -51,7 +51,7 @@ services:
       redis:
         condition: service_healthy
 
-  # Background jobs (SPEC §3): lessons four weeks ahead, nightly. Idempotent, so running it
+  # Background jobs: lessons four weeks ahead, nightly. Idempotent, so running it
   # at start and every 24 h is safe. Production gets a real schedule in stage 7.
   cron:
     build:

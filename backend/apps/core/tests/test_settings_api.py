@@ -1,4 +1,4 @@
-"""Center settings and the logo (SPEC §2, §8.11, §11)."""
+"""Center settings and the logo."""
 
 import io
 import time

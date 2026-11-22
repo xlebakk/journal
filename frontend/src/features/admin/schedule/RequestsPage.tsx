@@ -14,7 +14,7 @@ import { issuesOf } from "./api";
 
 type Page = Schemas["PaginatedScheduleRequestList"];
 
-/** Teachers' requests to cancel or move lessons; approving applies the change (SPEC §9). */
+/** Teachers' requests to cancel or move lessons; approving applies the change. */
 export function RequestsPage() {
   const requests = useQuery({
     queryKey: ["admin", "schedule-requests", "pending"],

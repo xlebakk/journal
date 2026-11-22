@@ -13,7 +13,7 @@ import {
 
 export type Action = {
   run: () => Promise<unknown>;
-  /** Built from the result of `run`; offered for 10 seconds (SPEC §7.2). */
+  /** Built from the result of `run`; offered for 10 seconds. */
   undo?: (result: unknown) => (() => Promise<unknown>) | undefined;
   /** Stage 13: how the change waits without network; without it the change needs the network. */
   offline?: Omit<Queued, "id" | "run">;

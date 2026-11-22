@@ -1,4 +1,4 @@
-"""Reading uploaded tables and writing exports safely (SPEC §11).
+"""Reading uploaded tables and writing exports safely.
 
 * Uploads: size limit, the real type is checked by content (XLSX is a ZIP), XLSX is read
   in read-only mode with cached values only (no formulas are evaluated) — openpyxl uses

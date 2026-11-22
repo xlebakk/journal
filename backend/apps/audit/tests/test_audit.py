@@ -17,7 +17,7 @@ def entry(db: None) -> AuditLog:
 
 @pytest.mark.django_db
 class TestAppendOnly:
-    """SPEC §15: UPDATE/DELETE on the audit table fail at the database level."""
+    """UPDATE/DELETE on the audit table fail at the database level."""
 
     def test_raw_update_fails(self, entry: AuditLog) -> None:
         with pytest.raises(DatabaseError), transaction.atomic(), connection.cursor() as cursor:

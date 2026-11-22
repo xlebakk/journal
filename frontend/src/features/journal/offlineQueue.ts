@@ -1,5 +1,5 @@
 /**
- * The teacher's offline queue (SPEC §16.6, stage 13). It lives only in this tab's memory: the
+ * The teacher's offline queue (stage 13). It lives only in this tab's memory: the
  * user chose that nothing about the children stays on the device. Closing the tab with
  * unsent changes loses them, so the page warns before unload.
  *

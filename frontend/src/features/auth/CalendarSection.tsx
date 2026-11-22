@@ -24,7 +24,7 @@ function when(iso: string): string {
   });
 }
 
-/** «Расписание в календаре» (SPEC §16.7): a personal iCal link, reissue and revoke. */
+/** «Расписание в календаре»: a personal iCal link, reissue and revoke. */
 export function CalendarSection({ activeRole: role }: { activeRole: "teacher" | "student" }) {
   const queryClient = useQueryClient();
   const key = ["me", "calendar", role];

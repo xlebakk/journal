@@ -1,4 +1,4 @@
-"""Administrator: years, terms, catalogs, groups and their composition, courses (SPEC §8)."""
+"""Administrator: years, terms, catalogs, groups and their composition, courses."""
 
 from datetime import timedelta
 from typing import Any, ClassVar
@@ -57,7 +57,7 @@ class AcademicYearViewSet(AuditedAdminViewSet):
     constraint_codes: ClassVar = {"name": "name_taken", "one_current": "current_year_exists"}
 
     def perform_update(self, serializer: Any) -> None:
-        # Changing the grade scale is a dangerous action (SPEC §8): fresh password needed.
+        # Changing the grade scale is a dangerous action: fresh password needed.
         new_scale = serializer.validated_data.get("grade_scale")
         if new_scale is not None and new_scale != serializer.instance.grade_scale:
             require_recent_password(self.request)
@@ -253,7 +253,7 @@ class MembershipLeaveView(APIView):
 
 
 class MembershipTransferView(APIView):
-    """Transfer (SPEC §10.9): the old membership ends the day before `date`, a new one starts
+    """Transfer: the old membership ends the day before `date`, a new one starts
     on `date`. Old grades stay in the old course."""
 
     permission_classes = (IsAdmin,)

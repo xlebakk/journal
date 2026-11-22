@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 // `JOURNAL_DEV_SERVER=1` only for a debug APK against a local http:// server (scripts/build.mjs);
-// a release build is synced without it: no mixed content, no WebView debugging (SPEC §13).
+// a release build is synced without it: no mixed content, no WebView debugging.
 const dev = process.env.JOURNAL_DEV_SERVER === "1";
 
 const config: CapacitorConfig = {

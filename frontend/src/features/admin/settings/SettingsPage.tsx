@@ -204,7 +204,7 @@ function LogoBlock({ logo }: { logo: string | null }) {
   );
 }
 
-/** «Настройки» (SPEC §2, §8.11). */
+/** «Настройки». */
 export function SettingsPage() {
   const settings = useQuery({ queryKey: KEY, queryFn: () => api<Settings>("/admin/settings") });
   if (settings.isPending) return <RuledSkeleton rows={8} />;

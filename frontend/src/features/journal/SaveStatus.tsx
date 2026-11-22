@@ -6,7 +6,7 @@ import { Button } from "@/shared/ui";
 import styles from "./Journal.module.css";
 import type { SaveState } from "./useSave";
 
-/** «Сохранено · 14:32» or «Не сохранено — повторить», plus «отменить» for 10 s (SPEC §7.2). */
+/** «Сохранено · 14:32» or «Не сохранено — повторить», plus «отменить» for 10 s. */
 export function SaveStatus({
   state,
   retry,

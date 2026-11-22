@@ -10,7 +10,7 @@ type PasswordFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type"> & 
   error?: string;
 };
 
-/** Password with a «показать» toggle (SPEC §4). */
+/** Password with a «показать» toggle. */
 export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
   function PasswordField({ label, hint, error, id, className, ...rest }, ref) {
     const autoId = useId();

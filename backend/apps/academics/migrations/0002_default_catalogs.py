@@ -1,4 +1,4 @@
-"""Default catalogs from SPEC §5: work types with weights and lesson types."""
+"""Default catalogs: work types with weights and lesson types."""
 
 from decimal import Decimal
 from typing import Any

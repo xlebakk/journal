@@ -77,7 +77,7 @@ type WeekScheduleProps = Options & {
 /**
  * Desktop: a ruled timetable — rows are start times, columns are days, like a paper
  * schedule. Lessons of different groups at the same time share a cell. Phone: a list by
- * day (SPEC §6.6).
+ * day.
  */
 export function WeekSchedule({ monday, today, lessons, onSelect, ...options }: WeekScheduleProps) {
   const phone = useMediaQuery("(max-width: 599px)");

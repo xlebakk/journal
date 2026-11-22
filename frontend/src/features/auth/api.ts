@@ -40,7 +40,7 @@ type AppStep = ({ step: "done" } & TokenPair) | { step: "totp"; ticket: string }
 // The app's 2FA ticket lives only in memory between the two login steps.
 let ticket = "";
 
-/** The site gets a session cookie; the app — tokens (SPEC §11). Same two steps for both. */
+/** The site gets a session cookie; the app — tokens. Same two steps for both. */
 async function loginStep(body: {
   login: string;
   password: string;
@@ -88,7 +88,7 @@ export function useTotpLogin() {
   });
 }
 
-/** Ends the server session and forgets everything cached on this device (SPEC §4). */
+/** Ends the server session and forgets everything cached on this device. */
 export async function logout(): Promise<void> {
   try {
     await api("/auth/logout", { method: "POST" });
@@ -169,7 +169,7 @@ export function useConfirmTotp() {
   });
 }
 
-/** Where each role lands after login (SPEC §4). */
+/** Where each role lands after login. */
 export function homePath(role: Role | null | undefined): string {
   switch (role) {
     case "admin":

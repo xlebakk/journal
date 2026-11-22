@@ -136,7 +136,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
         )
     )
     def get_groups(self, user: User) -> list[dict[str, str]]:
-        """Current groups — shown to students in the initials menu (SPEC §4)."""
+        """Current groups — shown to students in the initials menu."""
         if active_role(self.context["request"]) != Role.STUDENT:
             return []
         return current_groups_of(user)

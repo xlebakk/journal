@@ -1,4 +1,4 @@
-// "Today" is always computed in the center's time zone (SPEC §2). Stage 1 reads it from settings.
+// "Today" is always computed in the center's time zone. Stage 1 reads it from settings.
 import { language, names } from "@/shared/i18n";
 
 export const CENTER_TIME_ZONE = "Asia/Tashkent";

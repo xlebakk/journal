@@ -618,7 +618,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * @description Transfer (SPEC §10.9): the old membership ends the day before `date`, a new one starts
+         * @description Transfer: the old membership ends the day before `date`, a new one starts
          *     on `date`. Old grades stay in the old course.
          */
         post: operations["admin_memberships_transfer_create"];
@@ -819,7 +819,7 @@ export interface paths {
         };
         /**
          * @description Courses of the current year by group / subject / period; with a group — the student ×
-         *     subject table as well (SPEC §8.8).
+         *     subject table as well.
          */
         get: operations["admin_reports_performance_retrieve"];
         put?: never;
@@ -839,7 +839,7 @@ export interface paths {
         };
         /**
          * @description One printed sheet for parents: per subject — average, attendance, absences; the last
-         *     mock exams against the goal (SPEC §8.8). JSON only: the browser prints it.
+         *     mock exams against the goal. JSON only: the browser prints it.
          */
         get: operations["admin_reports_students_retrieve"];
         put?: never;
@@ -1030,13 +1030,13 @@ export interface paths {
         };
         /**
          * @description Week template. Changes apply only to future, untouched lessons, after the administrator
-         *     confirms the list of affected dates (SPEC §9).
+         *     confirms the list of affected dates.
          */
         get: operations["admin_slots_list"];
         put?: never;
         /**
          * @description Week template. Changes apply only to future, untouched lessons, after the administrator
-         *     confirms the list of affected dates (SPEC §9).
+         *     confirms the list of affected dates.
          */
         post: operations["admin_slots_create"];
         delete?: never;
@@ -1054,7 +1054,7 @@ export interface paths {
         };
         /**
          * @description Week template. Changes apply only to future, untouched lessons, after the administrator
-         *     confirms the list of affected dates (SPEC §9).
+         *     confirms the list of affected dates.
          */
         get: operations["admin_slots_retrieve"];
         put?: never;
@@ -1065,7 +1065,7 @@ export interface paths {
         head?: never;
         /**
          * @description Week template. Changes apply only to future, untouched lessons, after the administrator
-         *     confirms the list of affected dates (SPEC §9).
+         *     confirms the list of affected dates.
          */
         patch: operations["admin_slots_partial_update"];
         trace?: never;
@@ -1279,7 +1279,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Login off, sessions ended, data kept. Users are never deleted (SPEC §10.10). */
+        /** @description Login off, sessions ended, data kept. Users are never deleted. */
         post: operations["admin_users_archive_create"];
         delete?: never;
         options?: never;
@@ -1379,7 +1379,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description The administrator sets a new password; all the user's sessions end (SPEC §4). */
+        /** @description The administrator sets a new password; all the user's sessions end. */
         post: operations["admin_users_reset_password_create"];
         delete?: never;
         options?: never;
@@ -1697,7 +1697,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Re-enter the password before a dangerous action (SPEC §8). */
+        /** @description Re-enter the password before a dangerous action. */
         post: operations["auth_reauth_create"];
         delete?: never;
         options?: never;
@@ -1794,7 +1794,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Rotation: every refresh token works once; a second use ends the session (SPEC §11). */
+        /** @description Rotation: every refresh token works once; a second use ends the session. */
         post: operations["auth_token_refresh_create"];
         delete?: never;
         options?: never;
@@ -2011,7 +2011,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Mean, median, distribution, groups compared, sections (SPEC §7.6, §8.7). */
+        /** @description Mean, median, distribution, groups compared, sections. */
         get: operations["exams_stats_retrieve"];
         put?: never;
         post?: never;
@@ -2028,7 +2028,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Mean % per exam of a subject over time: the center's dynamics (SPEC §8.7). */
+        /** @description Mean % per exam of a subject over time: the center's dynamics. */
         get: operations["exams_dynamics_list"];
         put?: never;
         post?: never;
@@ -2079,7 +2079,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description The journal grid of one course (SPEC §7.3). A fixed number of queries. */
+        /** @description The journal grid of one course. A fixed number of queries. */
         get: operations["journal_courses_retrieve"];
         put?: never;
         post?: never;
@@ -2097,7 +2097,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * @description «Отзывы»: one short review per student and term (SPEC §16.5). The course team reads,
+         * @description «Отзывы»: one short review per student and term. The course team reads,
          *     the course teacher (or the administrator) writes.
          */
         get: operations["journal_courses_reviews_retrieve"];
@@ -2196,14 +2196,14 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description The lesson page (SPEC §7.2): header, students on the date, attendance and grades. */
+        /** @description The lesson page: header, students on the date, attendance and grades. */
         get: operations["journal_lessons_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        /** @description The lesson page (SPEC §7.2): header, students on the date, attendance and grades. */
+        /** @description The lesson page: header, students on the date, attendance and grades. */
         patch: operations["journal_lessons_partial_update"];
         trace?: never;
     };
@@ -2381,7 +2381,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description «Посещаемость»: per subject and overall for the year so far, a month calendar (SPEC §6.5). */
+        /** @description «Посещаемость»: per subject and overall for the year so far, a month calendar. */
         get: operations["student_attendance_retrieve"];
         put?: never;
         post?: never;
@@ -2398,7 +2398,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description «Дневник»: a week of lessons with topics, homework, own marks and grades (SPEC §6.2). */
+        /** @description «Дневник»: a week of lessons with topics, homework, own marks and grades. */
         get: operations["student_diary_retrieve"];
         put?: never;
         post?: never;
@@ -2415,7 +2415,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description «Пробные тесты» of a student: per subject, own results only, target in % (SPEC §6.4). */
+        /** @description «Пробные тесты» of a student: per subject, own results only, target in %. */
         get: operations["student_exams_list"];
         put?: never;
         post?: never;
@@ -2432,7 +2432,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description «Оценки»: subjects × dates for a term or the year, weighted averages (SPEC §6.3). */
+        /** @description «Оценки»: subjects × dates for a term or the year, weighted averages. */
         get: operations["student_grades_retrieve"];
         put?: never;
         post?: never;
@@ -2449,7 +2449,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description One grade with its lesson — the student's own only; anyone else's id is 404 (SPEC §15). */
+        /** @description One grade with its lesson — the student's own only; anyone else's id is 404. */
         get: operations["student_grade_detail"];
         put?: never;
         post?: never;
@@ -2466,7 +2466,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description «Главная» (SPEC §6.1). */
+        /** @description «Главная». */
         get: operations["student_home_retrieve"];
         put?: never;
         post?: never;
@@ -2500,7 +2500,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description «Профиль»: name, groups, target (filled in by the administrator) (SPEC §6.7). */
+        /** @description «Профиль»: name, groups, target (filled in by the administrator). */
         get: operations["student_profile_retrieve"];
         put?: never;
         post?: never;
@@ -2539,7 +2539,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description A teacher asks to cancel or move a lesson of their own (SPEC §9). */
+        /** @description A teacher asks to cancel or move a lesson of their own. */
         post: operations["teacher_lessons_requests_create"];
         delete?: never;
         options?: never;
@@ -2603,7 +2603,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description SPEC §7.1: today's lessons, unfilled past lessons, students needing attention. */
+        /** @description Today's lessons, unfilled past lessons, students needing attention. */
         get: operations["teacher_today_retrieve"];
         put?: never;
         post?: never;

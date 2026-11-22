@@ -12,7 +12,7 @@ import styles from "./InitialsMenu.module.css";
 
 const THEMES: ThemePreference[] = ["light", "dark", "system"];
 
-/** The stamp in the header corner and its keyboard-operable menu (SPEC §4). */
+/** The stamp in the header corner and its keyboard-operable menu. */
 export function InitialsMenu({ me }: { me: Me }) {
   const navigate = useNavigate();
   const [theme, setTheme] = useTheme();

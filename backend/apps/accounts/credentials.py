@@ -1,4 +1,4 @@
-"""Generated logins and temporary passwords (SPEC §4)."""
+"""Generated logins and temporary passwords."""
 
 import re
 import secrets

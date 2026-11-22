@@ -1,4 +1,4 @@
-// SPEC §15: Lighthouse Accessibility ≥ 95 and Performance ≥ 90 on the login page and the
+// Lighthouse Accessibility ≥ 95 and Performance ≥ 90 on the login page and the
 // student's home page. The production build, through whatever serves it (vite preview or Caddy):
 //   BASE_URL=https://localhost STUDENT_LOGIN=… STUDENT_PASSWORD=… node scripts/lighthouse.mjs
 // CHROME_PATH picks the browser; self-signed certificates (Caddy's internal CA) are accepted.

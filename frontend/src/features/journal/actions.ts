@@ -32,7 +32,7 @@ export const STATUS_NAME: Record<AttendanceStatus, MessageKey> = {
   absent: "attendance.absent",
   excused: "attendance.excused",
 };
-// Б / О / Н / У on a Russian layout, the same physical keys on a Latin one (SPEC §7.2);
+// Б / О / Н / У on a Russian layout, the same physical keys on a Latin one;
 // K / S for the Uzbek «kechikdi» and «sababli» («y» for «yoʻq» is the key of «н»).
 const KEYS: Record<string, AttendanceStatus> = {
   б: "present",

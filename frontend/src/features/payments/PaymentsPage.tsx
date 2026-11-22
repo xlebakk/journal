@@ -232,7 +232,7 @@ function StudentsTab() {
   );
 }
 
-/** «Оплаты» (SPEC §16.3): debts, payments and monthly prices of groups. */
+/** «Оплаты»: debts, payments and monthly prices of groups. */
 export function PaymentsPage() {
   const [tab, setTab] = useState<Tab>("students");
   const tabs: [Tab, string][] = [

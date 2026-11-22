@@ -61,7 +61,7 @@ export function useInvalidateJournal() {
 
 type Reason = { reason?: string };
 
-/** Every write of the journal. `version` comes from the last response (SPEC §10.12). */
+/** Every write of the journal. `version` comes from the last response. */
 export const journalApi = {
   lessonPage: (id: string) => api<LessonPageData>(`/journal/lessons/${id}`),
   updateLesson: (id: string, body: { version: number } & Reason & Record<string, unknown>) =>

@@ -4,7 +4,7 @@ import { EmptyState } from "@/shared/ui/EmptyState";
 
 import styles from "./NotFoundPage.module.css";
 
-/** «Нет соединения» (SPEC §13): data is never cached, so offline there is only this. */
+/** «Нет соединения»: data is never cached, so offline there is only this. */
 export function OfflinePage({ onRetry }: { onRetry: () => void }) {
   return (
     <main className={styles.column}>

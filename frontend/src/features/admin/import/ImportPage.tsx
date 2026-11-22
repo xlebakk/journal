@@ -20,7 +20,7 @@ function issueText(issue: string): string {
   return `${t(`importStudents.fields.${field}` as MessageKey)}: ${text}`;
 }
 
-/** «Импорт учеников» (SPEC §8.2): template → preview with errors per line → one transaction. */
+/** «Импорт учеников»: template → preview with errors per line → one transaction. */
 export function ImportPage() {
   const queryClient = useQueryClient();
   const [file, setFile] = useState<File | null>(null);

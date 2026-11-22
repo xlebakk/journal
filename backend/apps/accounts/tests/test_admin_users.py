@@ -1,4 +1,4 @@
-"""Administrator: users CRUD and account actions (SPEC §8.2)."""
+"""Administrator: users CRUD and account actions."""
 
 import time
 from collections.abc import Callable

@@ -1,4 +1,4 @@
-"""Privileges of the application's database role (SPEC §11, stage 7).
+"""Privileges of the application's database role (stage 7).
 
 Production uses two roles: the owner runs migrations; the app connects as a role that may
 only read and write rows. It does not own any table, so it cannot drop or alter them or

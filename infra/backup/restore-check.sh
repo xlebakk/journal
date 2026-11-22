@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Monthly restore check (SPEC §11): the newest off-site backup is downloaded, decrypted and
+# Monthly restore check: the newest off-site backup is downloaded, decrypted and
 # restored into a throwaway database, then sanity-checked and dropped. Production data is not
 # touched. Run by journal-restore-check.timer; the result shows in «Настройки».
 #

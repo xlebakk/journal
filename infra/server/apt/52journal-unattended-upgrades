@@ -1,4 +1,4 @@
-// /etc/apt/apt.conf.d/52journal-unattended-upgrades — security updates every night (SPEC §11).
+// /etc/apt/apt.conf.d/52journal-unattended-upgrades — security updates every night.
 Unattended-Upgrade::Allowed-Origins {
         "${distro_id}:${distro_codename}-security";
         "${distro_id}ESMApps:${distro_codename}-apps-security";

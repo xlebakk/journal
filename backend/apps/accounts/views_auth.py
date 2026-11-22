@@ -1,4 +1,4 @@
-"""Login, 2FA, password, role switch, own sessions (SPEC §4, §11)."""
+"""Login, 2FA, password, role switch, own sessions."""
 
 import time
 from typing import Any
@@ -268,7 +268,7 @@ class RoleSwitchView(APIView):
 
 
 class ReauthView(APIView):
-    """Re-enter the password before a dangerous action (SPEC §8)."""
+    """Re-enter the password before a dangerous action."""
 
     permission_classes = (IsAuthenticated,)
 

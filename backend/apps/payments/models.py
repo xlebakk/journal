@@ -1,4 +1,4 @@
-"""Payments (SPEC §16.3, stage 12): a monthly price per group, a discount per student.
+"""Payments (stage 12): a monthly price per group, a discount per student.
 
 Amounts are whole soʻm. A charge is made for every month the student spent at least one day in
 a priced group; it keeps the price and the discount of the moment, so later changes do not

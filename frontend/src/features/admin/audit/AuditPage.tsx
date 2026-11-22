@@ -237,7 +237,7 @@ function LoginsTab() {
   );
 }
 
-/** «Аудит» (SPEC §8.10): events with «было → стало», export, the login journal. */
+/** «Аудит»: events with «было → стало», export, the login journal. */
 export function AuditPage() {
   const [params, setParams] = useSearchParams();
   const tab = params.get("tab") === "logins" ? "logins" : "events";

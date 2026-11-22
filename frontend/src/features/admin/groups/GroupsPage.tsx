@@ -79,7 +79,7 @@ function CreateGroupDialog({ open, onClose }: { open: boolean; onClose: () => vo
   );
 }
 
-/** «Группы» (SPEC §8.3). */
+/** «Группы». */
 export function GroupsPage() {
   const [archived, setArchived] = useState(false);
   const groups = useGroups(archived);

@@ -11,7 +11,7 @@ import { EmptyState, RuledSkeleton, SelectField, Table, TextField } from "@/shar
 import { num, useStatement, type Query } from "./api";
 import { ExportButtons } from "./ExportButtons";
 
-/** «Ведомость» of a course for a period (SPEC §7.7): screen, print, XLSX / CSV. */
+/** «Ведомость» of a course for a period: screen, print, XLSX / CSV. */
 export function StatementPanel() {
   const courses = useExamCourses();
   const [picked, setPicked] = useState("");

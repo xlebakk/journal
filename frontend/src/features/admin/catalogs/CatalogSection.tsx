@@ -73,7 +73,7 @@ function display(field: FieldDef, row: Row): string {
   return value == null || value === "" ? "—" : String(value);
 }
 
-/** A catalog: ruled table, add/edit in a dialog, delete refused with «in use» (SPEC §8.4). */
+/** A catalog: ruled table, add/edit in a dialog, delete refused with «in use». */
 export function CatalogSection({ config }: { config: CatalogConfig }) {
   const queryClient = useQueryClient();
   const key = ["admin", "catalog", config.endpoint, config.query ?? {}];

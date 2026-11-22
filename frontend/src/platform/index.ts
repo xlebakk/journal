@@ -1,6 +1,6 @@
 /**
  * The only place that knows whether the code runs in a browser or in the Android app
- * (SPEC §13). Everything platform-specific goes through here, so the web and a future iOS
+ *. Everything platform-specific goes through here, so the web and a future iOS
  * build are not affected by Android calls.
  */
 import { Capacitor } from "@capacitor/core";

@@ -1,4 +1,4 @@
-"""Journal API for staff: grid, lesson page, writes, teacher's «Сегодня» (SPEC §7, §8.6)."""
+"""Journal API for staff: grid, lesson page, writes, teacher's «Сегодня»."""
 
 from datetime import date, datetime, timedelta
 from typing import Any
@@ -154,7 +154,7 @@ class JournalTermsView(APIView):
 
 
 class JournalGridView(APIView):
-    """The journal grid of one course (SPEC §7.3). A fixed number of queries."""
+    """The journal grid of one course. A fixed number of queries."""
 
     permission_classes = STAFF
 
@@ -242,7 +242,7 @@ def _page_response(request: Request, lesson_id: Any) -> Response:
 
 
 class LessonPageView(APIView):
-    """The lesson page (SPEC §7.2): header, students on the date, attendance and grades."""
+    """The lesson page: header, students on the date, attendance and grades."""
 
     permission_classes = STAFF
 
@@ -390,7 +390,7 @@ def _state(lesson: Lesson, now: datetime) -> str:
 
 
 class TeacherTodayView(APIView):
-    """SPEC §7.1: today's lessons, unfilled past lessons, students needing attention."""
+    """Today's lessons, unfilled past lessons, students needing attention."""
 
     permission_classes = (IsTeacher,)
 
@@ -506,7 +506,7 @@ def _review_rows(course: Course, term: Term) -> list[dict[str, Any]]:
 
 
 class ReviewsView(APIView):
-    """«Отзывы»: one short review per student and term (SPEC §16.5). The course team reads,
+    """«Отзывы»: one short review per student and term. The course team reads,
     the course teacher (or the administrator) writes."""
 
     permission_classes = STAFF

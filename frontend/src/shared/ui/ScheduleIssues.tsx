@@ -38,7 +38,7 @@ function when(conflict: ScheduleConflict): string {
   return `${label} ${conflict.start_time}–${conflict.end_time}`;
 }
 
-/** Hard conflicts (not saved) and warnings (saved), in words (SPEC §9). */
+/** Hard conflicts (not saved) and warnings (saved), in words. */
 export function ScheduleIssues({
   conflicts = [],
   warnings = [],

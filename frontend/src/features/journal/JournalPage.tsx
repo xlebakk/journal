@@ -285,7 +285,7 @@ function GroupStrip({
   );
 }
 
-/** «Журнал»: students × lessons, after the eDonish journal (SPEC §7.3; stage 18). */
+/** «Журнал»: students × lessons, after the eDonish journal (stage 18). */
 export function JournalPage() {
   const me = useMe();
   const isAdmin = me.data?.active_role === "admin";

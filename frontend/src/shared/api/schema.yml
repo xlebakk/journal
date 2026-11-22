@@ -1237,7 +1237,7 @@ paths:
     post:
       operationId: admin_memberships_transfer_create
       description: |-
-        Transfer (SPEC §10.9): the old membership ends the day before `date`, a new one starts
+        Transfer: the old membership ends the day before `date`, a new one starts
         on `date`. Old grades stay in the old course.
       parameters:
       - in: path
@@ -1535,7 +1535,7 @@ paths:
       operationId: admin_reports_performance_retrieve
       description: |-
         Courses of the current year by group / subject / period; with a group — the student ×
-        subject table as well (SPEC §8.8).
+        subject table as well.
       parameters:
       - in: query
         name: export
@@ -1581,7 +1581,7 @@ paths:
       operationId: admin_reports_students_retrieve
       description: |-
         One printed sheet for parents: per subject — average, attendance, absences; the last
-        mock exams against the goal (SPEC §8.8). JSON only: the browser prints it.
+        mock exams against the goal. JSON only: the browser prints it.
       parameters:
       - in: query
         name: from
@@ -1932,7 +1932,7 @@ paths:
       operationId: admin_slots_list
       description: |-
         Week template. Changes apply only to future, untouched lessons, after the administrator
-        confirms the list of affected dates (SPEC §9).
+        confirms the list of affected dates.
       parameters:
       - in: query
         name: active_on
@@ -1972,7 +1972,7 @@ paths:
       operationId: admin_slots_create
       description: |-
         Week template. Changes apply only to future, untouched lessons, after the administrator
-        confirms the list of affected dates (SPEC §9).
+        confirms the list of affected dates.
       tags:
       - admin
       requestBody:
@@ -1996,7 +1996,7 @@ paths:
       operationId: admin_slots_retrieve
       description: |-
         Week template. Changes apply only to future, untouched lessons, after the administrator
-        confirms the list of affected dates (SPEC §9).
+        confirms the list of affected dates.
       parameters:
       - in: path
         name: id
@@ -2020,7 +2020,7 @@ paths:
       operationId: admin_slots_partial_update
       description: |-
         Week template. Changes apply only to future, untouched lessons, after the administrator
-        confirms the list of affected dates (SPEC §9).
+        confirms the list of affected dates.
       parameters:
       - in: path
         name: id
@@ -2505,8 +2505,7 @@ paths:
   /api/v1/admin/users/{id}/archive:
     post:
       operationId: admin_users_archive_create
-      description: Login off, sessions ended, data kept. Users are never deleted (SPEC
-        §10.10).
+      description: Login off, sessions ended, data kept. Users are never deleted.
       parameters:
       - in: path
         name: id
@@ -2678,7 +2677,7 @@ paths:
     post:
       operationId: admin_users_reset_password_create
       description: The administrator sets a new password; all the user's sessions
-        end (SPEC §4).
+        end.
       parameters:
       - in: path
         name: id
@@ -3250,7 +3249,7 @@ paths:
   /api/v1/auth/reauth:
     post:
       operationId: auth_reauth_create
-      description: Re-enter the password before a dangerous action (SPEC §8).
+      description: Re-enter the password before a dangerous action.
       tags:
       - auth
       requestBody:
@@ -3360,7 +3359,7 @@ paths:
     post:
       operationId: auth_token_refresh_create
       description: 'Rotation: every refresh token works once; a second use ends the
-        session (SPEC §11).'
+        session.'
       tags:
       - auth
       requestBody:
@@ -3758,8 +3757,7 @@ paths:
   /api/v1/exams/{id}/stats:
     get:
       operationId: exams_stats_retrieve
-      description: Mean, median, distribution, groups compared, sections (SPEC §7.6,
-        §8.7).
+      description: Mean, median, distribution, groups compared, sections.
       parameters:
       - in: path
         name: id
@@ -3782,8 +3780,7 @@ paths:
   /api/v1/exams/dynamics:
     get:
       operationId: exams_dynamics_list
-      description: 'Mean % per exam of a subject over time: the center''s dynamics
-        (SPEC §8.7).'
+      description: 'Mean % per exam of a subject over time: the center''s dynamics.'
       parameters:
       - in: query
         name: subject
@@ -3845,7 +3842,7 @@ paths:
   /api/v1/journal/courses/{id}:
     get:
       operationId: journal_courses_retrieve
-      description: The journal grid of one course (SPEC §7.3). A fixed number of queries.
+      description: The journal grid of one course. A fixed number of queries.
       parameters:
       - in: query
         name: from
@@ -3881,7 +3878,7 @@ paths:
     get:
       operationId: journal_courses_reviews_retrieve
       description: |-
-        «Отзывы»: one short review per student and term (SPEC §16.5). The course team reads,
+        «Отзывы»: one short review per student and term. The course team reads,
         the course teacher (or the administrator) writes.
       parameters:
       - in: path
@@ -4050,8 +4047,8 @@ paths:
   /api/v1/journal/lessons/{id}:
     get:
       operationId: journal_lessons_retrieve
-      description: 'The lesson page (SPEC §7.2): header, students on the date, attendance
-        and grades.'
+      description: 'The lesson page: header, students on the date, attendance and
+        grades.'
       parameters:
       - in: path
         name: id
@@ -4073,8 +4070,8 @@ paths:
           description: ''
     patch:
       operationId: journal_lessons_partial_update
-      description: 'The lesson page (SPEC §7.2): header, students on the date, attendance
-        and grades.'
+      description: 'The lesson page: header, students on the date, attendance and
+        grades.'
       parameters:
       - in: path
         name: id
@@ -4393,7 +4390,7 @@ paths:
     get:
       operationId: student_attendance_retrieve
       description: '«Посещаемость»: per subject and overall for the year so far, a
-        month calendar (SPEC §6.5).'
+        month calendar.'
       parameters:
       - in: query
         name: month
@@ -4415,7 +4412,7 @@ paths:
     get:
       operationId: student_diary_retrieve
       description: '«Дневник»: a week of lessons with topics, homework, own marks
-        and grades (SPEC §6.2).'
+        and grades.'
       parameters:
       - in: query
         name: week
@@ -4437,7 +4434,7 @@ paths:
     get:
       operationId: student_exams_list
       description: '«Пробные тесты» of a student: per subject, own results only, target
-        in % (SPEC §6.4).'
+        in %.'
       tags:
       - student
       security:
@@ -4455,8 +4452,7 @@ paths:
   /api/v1/student/grades:
     get:
       operationId: student_grades_retrieve
-      description: '«Оценки»: subjects × dates for a term or the year, weighted averages
-        (SPEC §6.3).'
+      description: '«Оценки»: subjects × dates for a term or the year, weighted averages.'
       parameters:
       - in: query
         name: term
@@ -4478,7 +4474,7 @@ paths:
     get:
       operationId: student_grade_detail
       description: One grade with its lesson — the student's own only; anyone else's
-        id is 404 (SPEC §15).
+        id is 404.
       parameters:
       - in: path
         name: id
@@ -4501,7 +4497,7 @@ paths:
   /api/v1/student/home:
     get:
       operationId: student_home_retrieve
-      description: «Главная» (SPEC §6.1).
+      description: «Главная».
       tags:
       - student
       security:
@@ -4534,8 +4530,7 @@ paths:
   /api/v1/student/profile:
     get:
       operationId: student_profile_retrieve
-      description: '«Профиль»: name, groups, target (filled in by the administrator)
-        (SPEC §6.7).'
+      description: '«Профиль»: name, groups, target (filled in by the administrator).'
       tags:
       - student
       security:
@@ -4580,7 +4575,7 @@ paths:
   /api/v1/teacher/lessons/{id}/requests:
     post:
       operationId: teacher_lessons_requests_create
-      description: A teacher asks to cancel or move a lesson of their own (SPEC §9).
+      description: A teacher asks to cancel or move a lesson of their own.
       parameters:
       - in: path
         name: id
@@ -4675,8 +4670,7 @@ paths:
   /api/v1/teacher/today:
     get:
       operationId: teacher_today_retrieve
-      description: 'SPEC §7.1: today''s lessons, unfilled past lessons, students needing
-        attention.'
+      description: Today's lessons, unfilled past lessons, students needing attention.
       tags:
       - teacher
       security:

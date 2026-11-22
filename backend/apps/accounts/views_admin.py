@@ -1,4 +1,4 @@
-"""Administrator: users CRUD and account actions (SPEC §8.2)."""
+"""Administrator: users CRUD and account actions."""
 
 from typing import Any
 
@@ -288,7 +288,7 @@ class AdminUserViewSet(
     @extend_schema(request=AdminPasswordSerializer, responses=AdminUserDetailSerializer)
     @action(detail=True, methods=["post"], url_path="reset-password")
     def reset_password(self, request: Request, pk: str) -> Response:
-        """The administrator sets a new password; all the user's sessions end (SPEC §4)."""
+        """The administrator sets a new password; all the user's sessions end."""
         user = self.get_object()
         _require_superadmin_for(request, user)
         form = AdminPasswordSerializer(data=request.data)
@@ -325,7 +325,7 @@ class AdminUserViewSet(
     @extend_schema(request=None, responses=AdminUserDetailSerializer)
     @action(detail=True, methods=["post"])
     def archive(self, request: Request, pk: str) -> Response:
-        """Login off, sessions ended, data kept. Users are never deleted (SPEC §10.10)."""
+        """Login off, sessions ended, data kept. Users are never deleted."""
         user = self.get_object()
         if user.is_archived:
             return Response(self._detail(user))

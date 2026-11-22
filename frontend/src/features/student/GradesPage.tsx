@@ -10,7 +10,7 @@ import { Button, Dialog, DialogActions, EmptyState, RuledSkeleton, SelectField }
 import { useStudentGrades, type StudentGrade, type StudentGrades } from "./api";
 import styles from "./Student.module.css";
 
-/** Teachers' term reviews (SPEC §16.5): plain text, newest term last. */
+/** Teachers' term reviews: plain text, newest term last. */
 function Reviews({ reviews }: { reviews: StudentGrades["reviews"] }) {
   return (
     <section className={styles.section} aria-labelledby="reviews-title">
@@ -158,7 +158,7 @@ function GradesList({ data, onOpen }: { data: StudentGrades; onOpen: (g: Student
   );
 }
 
-/** «Оценки» (SPEC §6.3). No ranks and nothing about other students. */
+/** «Оценки». No ranks and nothing about other students. */
 export function GradesPage() {
   const [params, setParams] = useSearchParams();
   const term = params.get("term") || undefined;

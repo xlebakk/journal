@@ -1,4 +1,4 @@
-"""Structure of the center through the administrator API (SPEC §5, §8)."""
+"""Structure of the center through the administrator API."""
 
 from datetime import date, timedelta
 

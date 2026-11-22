@@ -60,7 +60,7 @@ function body(values: Values, create: boolean) {
   };
 }
 
-/** The list of dates a template change touches, to confirm (SPEC §9). */
+/** The list of dates a template change touches, to confirm. */
 function PlanSummary({ plan }: { plan: Plan }) {
   const rows: [string, string[]][] = [
     [t("schedule.planUpdated"), plan.updated],
@@ -290,7 +290,7 @@ function DeleteSlot({ slot, onDone }: { slot: Slot; onDone: () => void }) {
   );
 }
 
-/** «Шаблон недели»: slots by weekday (SPEC §9). */
+/** «Шаблон недели»: slots by weekday. */
 export function SlotsPanel({
   filters,
   today,

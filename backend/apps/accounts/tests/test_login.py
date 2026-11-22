@@ -1,4 +1,4 @@
-"""Login, lockout and session cookie (SPEC §4, §11, §15)."""
+"""Login, lockout and session cookie."""
 
 from typing import Any
 

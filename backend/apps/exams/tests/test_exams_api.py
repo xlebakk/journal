@@ -1,4 +1,4 @@
-"""Mock exams through the API (SPEC §6.4, §7.6, §8.7; decisions of stage 5)."""
+"""Mock exams through the API (decisions of stage 5)."""
 
 import io
 from collections.abc import Callable

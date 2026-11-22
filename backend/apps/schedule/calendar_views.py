@@ -1,4 +1,4 @@
-"""Personal iCal link (SPEC §16.7): issue, reissue, revoke; the feed itself is public."""
+"""Personal iCal link: issue, reissue, revoke; the feed itself is public."""
 
 from datetime import timedelta
 from typing import Any

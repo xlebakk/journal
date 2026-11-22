@@ -86,7 +86,7 @@ function Calendar({ data, today }: { data: StudentAttendance; today: string }) {
   );
 }
 
-/** «Посещаемость»: per subject and overall; a month calendar of absences and lates (SPEC §6.5). */
+/** «Посещаемость»: per subject and overall; a month calendar of absences and lates. */
 export function AttendancePage() {
   const [params, setParams] = useSearchParams();
   const month = params.get("month") || undefined;

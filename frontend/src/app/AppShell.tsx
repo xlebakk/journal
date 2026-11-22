@@ -124,7 +124,7 @@ export function AppShell({ me }: { me: Me }) {
   const isAdmin = role === "admin";
   const isParent = role === "parent";
   const studentLike = role === "student" || isParent;
-  // Phones: a bottom bar of five items with icons instead of header tabs (SPEC §6, §12).
+  // Phones: a bottom bar of five items with icons instead of header tabs.
   const bottomBar = studentLike || role === "teacher";
   const hasChildren = useHasChildren(isParent);
   return (
@@ -162,7 +162,7 @@ export function AppShell({ me }: { me: Me }) {
         </main>
       </div>
       {bottomBar && (
-        // Phones: a bottom bar of five items with thin icons and labels (SPEC §6, §12).
+        // Phones: a bottom bar of five items with thin icons and labels.
         <nav className={styles.bottomNav} aria-label={t("nav.sections")}>
           {items.map((item) => {
             const Icon = item.icon;

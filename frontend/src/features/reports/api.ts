@@ -41,7 +41,7 @@ export function useStudentSummary(id: string, query: Query) {
   });
 }
 
-/** XLSX/CSV export: personal data, so the password may be asked again (SPEC §8). */
+/** XLSX/CSV export: personal data, so the password may be asked again. */
 export function useExport() {
   const withReauth = useReauth();
   return (path: string, query: Query, kind: "xlsx" | "csv") =>

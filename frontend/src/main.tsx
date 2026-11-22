@@ -10,7 +10,7 @@ import { applyTheme, readThemePreference } from "@/shared/lib/theme";
 
 applyTheme(readThemePreference());
 
-// PWA on the site only: the app ships its files inside the APK (SPEC §13).
+// PWA on the site only: the app ships its files inside the APK.
 if (import.meta.env.PROD && !isNativeApp && "serviceWorker" in navigator) {
   void import("virtual:pwa-register").then(({ registerSW }) => registerSW({ immediate: true }));
 }

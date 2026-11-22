@@ -1,6 +1,6 @@
-"""Attendance and grades (SPEC §5, §10).
+"""Attendance and grades.
 
-Every record carries `version` for optimistic locking (SPEC §10.12). Grades are deleted
+Every record carries `version` for optimistic locking. Grades are deleted
 softly: they leave the journal and the averages but stay in the database and the audit.
 """
 
@@ -60,7 +60,7 @@ class Attendance(models.Model):
 
 
 def _scale_range() -> Q:
-    """CHECK on the range of the scale the grade was given in (SPEC §5)."""
+    """CHECK on the range of the scale the grade was given in."""
     return (
         (Q(scale=GradeScale.HUNDRED) & Q(value__gte=0) & Q(value__lte=100))
         | (Q(scale=GradeScale.FIVE) & Q(value__gte=2) & Q(value__lte=5))
@@ -83,7 +83,7 @@ class Grade(models.Model):
     # Copied from the academic year when the grade is given; the year's scale is then frozen.
     scale = models.CharField(max_length=3, choices=GradeScale.choices)
     work_type = models.ForeignKey(WorkType, on_delete=models.PROTECT, related_name="+")
-    # Copied from the work type when the grade is given (SPEC §5).
+    # Copied from the work type when the grade is given.
     weight = models.DecimalField(max_digits=4, decimal_places=2)
     comment = models.CharField(max_length=300, blank=True)
     # 1..n: a slot among the student's grades for this lesson; with the partial unique index
@@ -126,7 +126,7 @@ class Grade(models.Model):
 
 
 class TeacherReview(models.Model):
-    """«Отзыв преподавателя раз в модуль» (SPEC §16.5): two or three sentences about a student's
+    """«Отзыв преподавателя раз в модуль»: two or three sentences about a student's
     strengths and weaknesses in the course's subject. One per course, student and term; the
     student sees it, and it goes into the summary sheet for parents."""
 

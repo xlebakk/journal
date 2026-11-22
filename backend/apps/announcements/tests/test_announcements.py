@@ -1,4 +1,4 @@
-"""Announcements: who sees what (SPEC §8.9)."""
+"""Announcements: who sees what."""
 
 from collections.abc import Callable
 from datetime import timedelta

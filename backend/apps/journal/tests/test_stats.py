@@ -1,4 +1,4 @@
-"""The formulas on edge cases (SPEC §15: no grades, only excused, transfer between groups)."""
+"""The formulas on edge cases (no grades, only excused, transfer between groups)."""
 
 from datetime import date, time, timedelta
 from decimal import Decimal

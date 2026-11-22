@@ -1,4 +1,4 @@
-"""Journal rules through the API (SPEC §10, §15)."""
+"""Journal rules through the API."""
 
 import time as clock
 from collections.abc import Callable
@@ -409,7 +409,7 @@ class TestGrid:
         self, course: Course, teacher: User, make_user: MakeUser, client_for: ClientFor,
         frozen_today: date,
     ) -> None:  # fmt: skip
-        """SPEC §15: 35 students × 60 lessons under 500 ms, queries do not grow with rows."""
+        """35 students × 60 lessons under 500 ms, queries do not grow with rows."""
         client = client_for(teacher)
         url = f"{J}/courses/{course.pk}"
         params = {"from": "2026-09-01", "to": "2026-12-31"}

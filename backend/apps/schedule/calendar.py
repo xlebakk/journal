@@ -1,4 +1,4 @@
-"""Schedule as an iCalendar feed (RFC 5545) for a personal subscription link (SPEC §16.7).
+"""Schedule as an iCalendar feed (RFC 5545) for a personal subscription link.
 
 Events are the lessons the owner sees in the feed's role (`Lesson.objects.for_user`), from a
 month back to four months ahead. Times are converted from the center's civil time to UTC.

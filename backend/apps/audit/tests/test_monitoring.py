@@ -1,4 +1,4 @@
-"""Monitoring for the administrator (SPEC §11, stage 7) and the server-side commands."""
+"""Monitoring for the administrator (stage 7) and the server-side commands."""
 
 import io
 import json

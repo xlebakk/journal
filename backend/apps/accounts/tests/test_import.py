@@ -1,4 +1,4 @@
-"""Student import and access cards (SPEC §8.2, §15: «импорт учеников администратором»)."""
+"""Student import and access cards: «импорт учеников администратором»."""
 
 import io
 from collections.abc import Callable

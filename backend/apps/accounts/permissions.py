@@ -151,6 +151,6 @@ class ReauthRequired(PermissionDenied):
 
 
 def require_recent_password(request: Request) -> None:
-    """Dangerous actions need the password entered within the last 5 minutes (SPEC §8)."""
+    """Dangerous actions need the password entered within the last 5 minutes."""
     if not sessions.recently_reauthenticated(request, settings.REAUTH_VALID_SECONDS):
         raise ReauthRequired()

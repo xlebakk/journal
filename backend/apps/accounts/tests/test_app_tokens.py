@@ -1,4 +1,4 @@
-"""Tokens of the Android app (SPEC §11, stage 6)."""
+"""Tokens of the Android app (stage 6)."""
 
 import time
 from collections.abc import Callable

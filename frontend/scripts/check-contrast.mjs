@@ -1,4 +1,4 @@
-// Checks WCAG AA contrast of the design tokens in both themes (SPEC §12).
+// Checks WCAG AA contrast of the design tokens in both themes.
 // Run: npm run contrast. Exits with code 1 on any failure.
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";

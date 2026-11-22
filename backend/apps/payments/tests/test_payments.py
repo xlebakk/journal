@@ -1,4 +1,4 @@
-"""Payments (SPEC §16.3, stage 12): monthly price per group, a discount per student."""
+"""Payments (stage 12): monthly price per group, a discount per student."""
 
 from collections.abc import Callable
 from datetime import date

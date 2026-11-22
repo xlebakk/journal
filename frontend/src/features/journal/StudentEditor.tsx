@@ -56,7 +56,7 @@ export function GradeInput({
   const [min, max] = SCALE_RANGE[rules.scale] ?? [0, 100];
   const [text, setText] = useState("");
   if (rules.scale !== "100") {
-    // Small scales: big buttons with the values (SPEC §7.2).
+    // Small scales: big buttons with the values.
     return (
       <div className={styles.valueButtons} role="group" aria-label={label}>
         {Array.from({ length: max - min + 1 }, (_, i) => min + i).map((value) => (
@@ -197,7 +197,7 @@ function GradeDialog({
   );
 }
 
-/** One student of a lesson: attendance, grades, comment (SPEC §7.2). */
+/** One student of a lesson: attendance, grades, comment. */
 export function StudentEditor(props: EditorProps) {
   const { lesson, rules, workTypes, student, attendance, grades, reason, isAdmin, busy, perform } =
     props;

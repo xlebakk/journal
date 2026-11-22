@@ -1,4 +1,4 @@
-"""Journal rules (SPEC §10). Every write goes through here, inside one transaction with its
+"""Journal rules. Every write goes through here, inside one transaction with its
 audit entry; the lesson row is locked so concurrent writes to one lesson are serialised.
 
 Decisions of stage 3: a staff member edits and deletes only the grades they gave (the
@@ -64,7 +64,7 @@ def actor(request: Request) -> Actor:
 
 
 def lessons_for(who: Actor) -> QuerySet[Lesson]:
-    """Lessons the actor may open; anything else is 404 (SPEC §11)."""
+    """Lessons the actor may open; anything else is 404."""
     return Lesson.objects.for_user(who.user, who.role)
 
 
@@ -95,7 +95,7 @@ def editability(lesson: Lesson, who: Actor) -> Editability:
 
 
 def require_writable(lesson: Lesson, who: Actor, reason: str) -> None:
-    """SPEC §10.2, §10.4: no future or cancelled lessons; after the window only the
+    """No future or cancelled lessons; after the window only the
     administrator, and only with a reason (400 without one)."""
     state = editability(lesson, who)
     if state.locked == "cancelled":
@@ -119,7 +119,7 @@ def lock(who: Actor, lesson_id: Any) -> Lesson:
 
 
 def members(lesson: Lesson) -> QuerySet[User]:
-    """Students who were in the group on the lesson's date (SPEC §10.3)."""
+    """Students who were in the group on the lesson's date."""
     ids = GroupMembership.objects.filter(members_on(lesson.date), group_id=lesson.course.group_id)
     return User.objects.filter(pk__in=ids.values("student_id")).order_by("last_name", "first_name")
 
@@ -161,7 +161,7 @@ def update_lesson(
 
 
 def conduct(request: Request, lesson_id: Any, version: int, reason: str) -> Lesson:
-    """SPEC §10.5: topic, lesson type and attendance of every student are required."""
+    """Topic, lesson type and attendance of every student are required."""
     who = actor(request)
     with transaction.atomic():
         lesson = lock(who, lesson_id)
@@ -229,7 +229,7 @@ def set_attendance(
 def clear_attendance(
     request: Request, lesson_id: Any, student_id: Any, version: int, reason: str
 ) -> None:
-    """Undo of a first mark. A conducted lesson keeps full attendance (SPEC §10.5)."""
+    """Undo of a first mark. A conducted lesson keeps full attendance."""
     who = actor(request)
     with transaction.atomic():
         lesson = lock(who, lesson_id)
@@ -292,7 +292,7 @@ def _work_type(work_type_id: Any, lesson: Lesson) -> WorkType:
 
 
 def add_grade(request: Request, lesson_id: Any, data: dict[str, Any], reason: str) -> Grade:
-    """SPEC §10.3, §10.6: a member of the group on that date, not absent, at most N grades."""
+    """A member of the group on that date, not absent, at most N grades."""
     who = actor(request)
     key = data.get("client_key")
     with transaction.atomic():
@@ -368,7 +368,7 @@ def update_grade(
 
 
 def delete_grade(request: Request, grade_id: Any, version: int, reason: str) -> Grade:
-    """Soft delete (SPEC §10.7): gone from the journal and averages, kept in the audit."""
+    """Soft delete: gone from the journal and averages, kept in the audit."""
     who = actor(request)
     with transaction.atomic():
         grade, _ = _lock_grade(who, grade_id, version, reason)

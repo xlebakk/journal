@@ -1,4 +1,4 @@
-"""Append-only audit log (SPEC §5, §10.8).
+"""Append-only audit log.
 
 UPDATE and DELETE are rejected by a PostgreSQL trigger (migration 0002), so even a bug
 in the application cannot rewrite history.
@@ -41,7 +41,7 @@ class AuditLog(models.Model):
 class DeniedRequest(models.Model):
     """An authenticated API request refused as forbidden or «not found» (stage 7).
 
-    Many in a short time mean someone is probing other people's ids (SPEC §11: «всплески
+    Many in a short time mean someone is probing other people's ids («всплески
     отказов в доступе» in the administrator's overview). Kept for 30 days.
     """
 

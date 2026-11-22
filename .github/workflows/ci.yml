@@ -49,7 +49,7 @@ jobs:
         env:
           TOTP_ENCRYPTION_KEYS: dGVzdC1vbmx5LWtleS10ZXN0LW9ubHkta2V5LTAwMDA=
         run: uv run pytest --cov --cov-report=term-missing
-      - name: coverage of accounts and journal ≥ 85% (SPEC §15)
+      - name: coverage of accounts and journal ≥ 85%
         run: |
           uv run coverage report --include="apps/accounts/*" --fail-under=85
           uv run coverage report --include="apps/journal/*" --fail-under=85
@@ -273,7 +273,7 @@ jobs:
         run: |
           docker compose -f infra/docker-compose.prod.yml --env-file .env.prod exec -T api python manage.py shell -c "
           from apps.core.models import CenterSettings as C; s = C.load(); assert s.last_backup_ok and s.last_restore_check_ok, (s.last_backup_ok, s.last_restore_check_ok)"
-      # SPEC §15 numbers, measured against the real stack (Caddy, compression, HTTPS).
+      # The acceptance numbers, measured against the real stack (Caddy, compression, HTTPS).
       - uses: actions/setup-node@v5
         if: ${{ !cancelled() }}
         with:
@@ -284,7 +284,7 @@ jobs:
         if: ${{ !cancelled() }}
         working-directory: frontend
         run: npm ci
-      - name: Mozilla HTTP Observatory — grade A+ (SPEC §15)
+      - name: Mozilla HTTP Observatory — grade A+
         if: ${{ !cancelled() }}
         run: |
           docker compose -f infra/docker-compose.prod.yml --env-file .env.prod cp             web:/data/caddy/pki/authorities/local/root.crt /tmp/caddy-root.crt
@@ -332,7 +332,7 @@ jobs:
           logs="$(docker compose -f infra/docker-compose.prod.yml --env-file .env.prod logs --no-color web api)"
           ! echo "$logs" | grep -q "$token"
           echo "$logs" | grep -q "token=REDACTED"
-      - name: Lighthouse — accessibility ≥ 95, performance ≥ 90 (SPEC §15)
+      - name: Lighthouse — accessibility ≥ 95, performance ≥ 90
         if: ${{ !cancelled() }}
         working-directory: frontend
         env:
@@ -343,7 +343,7 @@ jobs:
           set -o pipefail
           node scripts/lighthouse.mjs 2>&1 | tee /tmp/lighthouse.out
           echo "::notice title=Lighthouse::$(grep -E '^[✓✗]' /tmp/lighthouse.out | awk 'BEGIN { ORS = "%0A" } { print }')"
-      - name: OWASP ZAP baseline (SPEC §11)
+      - name: OWASP ZAP baseline
         if: ${{ !cancelled() }}
         run: |
           set -o pipefail

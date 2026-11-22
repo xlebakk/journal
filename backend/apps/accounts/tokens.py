@@ -1,4 +1,4 @@
-"""Tokens of the Android app (SPEC §11).
+"""Tokens of the Android app.
 
 * Access token — 10 minutes, kept only in the app's memory: a signed reference to the app
   session (`django.core.signing`), checked against the database on every request, so ending

@@ -1,4 +1,4 @@
-"""Structured logs for production (SPEC §11): one JSON object per line on stdout.
+"""Structured logs for production: one JSON object per line on stdout.
 
 Only the message and safe context go out: no request bodies, headers or cookies are logged
 anywhere in the app, so passwords, tokens and phones never reach the log.

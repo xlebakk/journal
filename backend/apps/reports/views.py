@@ -1,4 +1,4 @@
-"""Reports (SPEC §7.7, §8.8). Every number comes from `apps.journal.stats`.
+"""Reports. Every number comes from `apps.journal.stats`.
 
 JSON is for the screen and the print view; `?export=xlsx|csv` returns a file and, being
 an export of personal data, needs the password entered within the last 5 minutes.
@@ -153,7 +153,7 @@ def _decimal(value: Any) -> Any:
 
 class PerformanceReportView(APIView):
     """Courses of the current year by group / subject / period; with a group — the student ×
-    subject table as well (SPEC §8.8)."""
+    subject table as well."""
 
     permission_classes = (IsAdmin,)
     throttle_scope = "export"
@@ -352,7 +352,7 @@ class FillRateReportView(APIView):
 
 class StudentSummaryView(APIView):
     """One printed sheet for parents: per subject — average, attendance, absences; the last
-    mock exams against the goal (SPEC §8.8). JSON only: the browser prints it."""
+    mock exams against the goal. JSON only: the browser prints it."""
 
     permission_classes = (IsAdmin,)
 
@@ -407,7 +407,7 @@ class StudentSummaryView(APIView):
             )
         exam_rows = [row for items in exams.values() for row in items[-3:]]
         exam_rows.sort(key=lambda r: (r["subject_name"], r["date"]))
-        # Teacher reviews of the terms that overlap the period (SPEC §16.5).
+        # Teacher reviews of the terms that overlap the period.
         reviews = [
             {
                 "subject_name": r.course.subject.name,

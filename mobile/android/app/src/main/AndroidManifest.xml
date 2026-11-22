@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- SPEC §13: no backups of app data (the refresh token stays on the phone), no cleartext. -->
+    <!-- No backups of app data (the refresh token stays on the phone), no cleartext. -->
     <application
         android:allowBackup="false"
         android:fullBackupContent="false"

@@ -15,7 +15,7 @@ export type Notice = {
 
 const LINK = /(https:\/\/[^\s<>"«»]+[^\s<>"«».,;:!?)])/g;
 
-/** Plain text with https:// addresses turned into links (SPEC §11): no HTML is parsed. */
+/** Plain text with https:// addresses turned into links: no HTML is parsed. */
 export function LinkifiedText({ text }: { text: string }) {
   const parts = text.split(LINK);
   return (

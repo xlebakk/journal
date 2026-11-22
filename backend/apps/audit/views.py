@@ -1,4 +1,4 @@
-"""Read-only audit and login history for administrators (SPEC §8.10)."""
+"""Read-only audit and login history for administrators."""
 
 import json
 from datetime import date

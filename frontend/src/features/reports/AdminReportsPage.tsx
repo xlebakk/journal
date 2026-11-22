@@ -238,7 +238,7 @@ function FillRateTab() {
   );
 }
 
-/** «Отчёты» of the administrator (SPEC §8.8). */
+/** «Отчёты» of the administrator. */
 export function AdminReportsPage() {
   const [tab, setTab] = useState<Tab>("performance");
   const tabs: [Tab, string][] = [

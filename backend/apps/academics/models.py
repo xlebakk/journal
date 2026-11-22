@@ -1,4 +1,4 @@
-"""Structure of the center: years, terms, subjects, rooms, groups, courses, catalogs (SPEC §5).
+"""Structure of the center: years, terms, subjects, rooms, groups, courses, catalogs.
 
 Main idea: course = group + subject + teacher. Schedule, lessons, grades and attendance
 hang on the course. A student may belong to several groups.
@@ -42,7 +42,7 @@ class AcademicYear(models.Model):
     starts_on = models.DateField()
     ends_on = models.DateField()
     is_current = models.BooleanField(default=False)
-    # Fixed for a year once it has grades (SPEC §10.11, enforced in stage 3).
+    # Fixed for a year once it has grades (enforced in stage 3).
     grade_scale = models.CharField(
         max_length=3, choices=GradeScale.choices, default=GradeScale.HUNDRED
     )
@@ -212,7 +212,7 @@ def members_on(day: date) -> Q:
 
 
 class WorkType(models.Model):
-    """Kind of graded work and its weight in the weighted average (SPEC §5)."""
+    """Kind of graded work and its weight in the weighted average."""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=60)
@@ -285,7 +285,7 @@ class Course(models.Model):
 
 
 class Holiday(models.Model):
-    """Non-working day: no lessons are generated (SPEC §5)."""
+    """Non-working day: no lessons are generated."""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     date = models.DateField(unique=True)

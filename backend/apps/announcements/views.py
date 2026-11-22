@@ -1,4 +1,4 @@
-"""Announcements (SPEC §8.9): the administrator writes, everyone reads their own feed."""
+"""Announcements: the administrator writes, everyone reads their own feed."""
 
 from typing import Any
 

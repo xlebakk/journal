@@ -1,4 +1,4 @@
-"""Session lifecycle and per-role timeouts (SPEC §2, §11).
+"""Session lifecycle and per-role timeouts.
 
 Timeouts follow the *strictest* role of the account, not the active one: an
 administrator switching to the teacher role keeps the administrator's limits.

@@ -90,7 +90,7 @@ function SubjectBlock({ subject }: { subject: SubjectExams }) {
   );
 }
 
-/** «Пробные тесты» (SPEC §6.4): per subject, results in % with the goal line. */
+/** «Пробные тесты»: per subject, results in % with the goal line. */
 export function TestsPage() {
   const exams = useQuery({
     queryKey: ["student", "exams"],

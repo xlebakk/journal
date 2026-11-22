@@ -1,4 +1,4 @@
-"""Audit log is append-only at the database level (SPEC §5, §11)."""
+"""Audit log is append-only at the database level."""
 
 from django.db import migrations
 

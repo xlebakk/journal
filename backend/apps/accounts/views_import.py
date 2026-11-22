@@ -1,4 +1,4 @@
-"""Student import and access cards (SPEC §8.2)."""
+"""Student import and access cards."""
 
 from typing import Any
 

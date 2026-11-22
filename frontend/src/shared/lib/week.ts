@@ -1,6 +1,6 @@
 /**
  * Civil dates as ISO strings ("2026-11-16") — lessons are wall-clock events in the center's
- * time zone, so dates are never converted through the browser's zone (SPEC §2, §9).
+ * time zone, so dates are never converted through the browser's zone.
  */
 import { language, names } from "@/shared/i18n";
 
@@ -37,7 +37,7 @@ export function isoWeekday(iso: string): number {
   return ((toUtc(iso).getUTCDay() + 6) % 7) + 1;
 }
 
-/** Monday of the week containing the date (the week starts on Monday, SPEC §2). */
+/** Monday of the week containing the date (the week starts on Monday). */
 export function startOfWeek(iso: string): string {
   return addDays(iso, 1 - isoWeekday(iso));
 }

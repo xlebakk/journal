@@ -1,4 +1,4 @@
-"""Records refused API requests of logged-in users for the overview (SPEC §11, stage 7)."""
+"""Records refused API requests of logged-in users for the overview (stage 7)."""
 
 import logging
 from collections.abc import Callable

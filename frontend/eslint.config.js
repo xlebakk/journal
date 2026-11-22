@@ -21,11 +21,11 @@ export default tseslint.config(
         "error",
         {
           selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']",
-          message: "dangerouslySetInnerHTML is forbidden (SPEC §11).",
+          message: "dangerouslySetInnerHTML is forbidden.",
         },
         {
           selector: "MemberExpression[property.name='innerHTML']",
-          message: "innerHTML is forbidden (SPEC §11).",
+          message: "innerHTML is forbidden.",
         },
         {
           selector: "JSXAttribute[name.name='style']",

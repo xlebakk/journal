@@ -29,7 +29,7 @@ function useScrollLock(active: boolean) {
   }, [active]);
 }
 
-/** Modal with the hard ink shadow — one of the two places it is allowed (SPEC §12). */
+/** Modal with the hard ink shadow — one of the two places it is allowed. */
 export function Dialog({ open, onOpenChange, title, description, children }: DialogProps) {
   useScrollLock(open);
   return (

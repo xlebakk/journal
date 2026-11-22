@@ -1,4 +1,4 @@
-"""Center settings: a single row, changed by administrators without code (SPEC §2).
+"""Center settings: a single row, changed by administrators without code.
 
 Fields are added stage by stage; changes are written to the audit log.
 """
@@ -21,7 +21,7 @@ class CenterSettings(models.Model):
     lockout_base_minutes = models.PositiveSmallIntegerField(default=15)
     lockout_max_hours = models.PositiveSmallIntegerField(default=24)
 
-    # Sessions (SPEC §2).
+    # Sessions.
     admin_idle_minutes = models.PositiveSmallIntegerField(default=30)
     admin_absolute_hours = models.PositiveSmallIntegerField(default=8)
     teacher_idle_minutes = models.PositiveSmallIntegerField(default=120)
@@ -34,7 +34,7 @@ class CenterSettings(models.Model):
     require_admin_2fa = models.BooleanField(default=False)
     require_teacher_2fa = models.BooleanField(default=False)
 
-    # Journal (SPEC §2).
+    # Journal.
     edit_window_days = models.PositiveSmallIntegerField(default=7)
     max_grades_per_lesson = models.PositiveSmallIntegerField(default=3)
     # «Low grade»: below this percentage of the scale maximum (50 % → below 50 of 100).
@@ -47,7 +47,7 @@ class CenterSettings(models.Model):
     default_grade_scale = models.CharField(max_length=3, default="100")
     last_backup_at = models.DateTimeField(null=True, blank=True)
     last_backup_ok = models.BooleanField(null=True, blank=True)
-    # Monthly restore check of the latest backup (stage 7, SPEC §11).
+    # Monthly restore check of the latest backup (stage 7).
     last_restore_check_at = models.DateTimeField(null=True, blank=True)
     last_restore_check_ok = models.BooleanField(null=True, blank=True)
 

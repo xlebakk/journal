@@ -1,4 +1,4 @@
-"""What a student sees about themselves (SPEC §6). Nothing about other students, no internal
+"""What a student sees about themselves. Nothing about other students, no internal
 versions or authors' ids; the attendance comment is a staff note and is not shown."""
 
 from typing import Any

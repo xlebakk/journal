@@ -1,4 +1,4 @@
-"""Who sees which lessons (SPEC §6, §7, §11: own data only, others → 404 / absent)."""
+"""Who sees which lessons: own data only, others → 404 / absent."""
 
 from collections.abc import Callable
 from datetime import date, time, timedelta

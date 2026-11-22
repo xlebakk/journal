@@ -1,4 +1,4 @@
-/* Dev-only reference of every UI building block (SPEC §12). Screens use only these. */
+/* Dev-only reference of every UI building block. Screens use only these. */
 import { AlertTriangle, ChevronLeft, ChevronRight, Lock } from "lucide-react";
 import { useState } from "react";
 

@@ -1,4 +1,4 @@
-"""The administrator's «Обзор» (SPEC §8.1): every block leads to an action."""
+"""The administrator's «Обзор»: every block leads to an action."""
 
 from datetime import datetime, timedelta
 from typing import Any

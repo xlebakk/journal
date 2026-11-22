@@ -11,7 +11,7 @@ export type AccessCard = {
 type Labels = { login: string; password: string; site: string; note: string };
 
 /**
- * A4 sheets with 8 cards each (SPEC §8.2): name, login, temporary password, the site and its
+ * A4 sheets with 8 cards each: name, login, temporary password, the site and its
  * QR. The passwords live only in memory of this page; after closing it — only a reset.
  */
 export function AccessCards({

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Nightly backup (SPEC §11): pg_dump → age encryption → off-site copy (rclone) → retention
+# Nightly backup: pg_dump → age encryption → off-site copy (rclone) → retention
 # 14 daily / 8 weekly / 12 monthly. Run by journal-backup.timer as root on the server.
 # The result appears in «Настройки» → «Резервные копии».
 #

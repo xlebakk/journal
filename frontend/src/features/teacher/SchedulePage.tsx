@@ -55,7 +55,7 @@ function LessonFacts({ lesson }: { lesson: Lesson }) {
   );
 }
 
-/** Ask the administrator to cancel or move one of the teacher's lessons (SPEC §9). */
+/** Ask the administrator to cancel or move one of the teacher's lessons. */
 function RequestForm({ lesson, onDone }: { lesson: Lesson; onDone: () => void }) {
   const rooms = useRooms();
   const invalidate = useInvalidateSchedule();
@@ -228,7 +228,7 @@ function MyRequests() {
   );
 }
 
-/** «Расписание» of a teacher: own courses, assisted courses, substitutions (SPEC §7.5). */
+/** «Расписание» of a teacher: own courses, assisted courses, substitutions. */
 export function SchedulePage() {
   const [monday, setMonday, today] = useWeekParam();
   const schedule = useTeacherSchedule(monday);

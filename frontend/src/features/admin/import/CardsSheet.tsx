@@ -14,7 +14,7 @@ function useCardInfo() {
   });
 }
 
-/** Cards for passwords that exist only in this page's memory (SPEC §8.2). */
+/** Cards for passwords that exist only in this page's memory. */
 export function CardsSheet({ cards }: { cards: AccessCard[] }) {
   const info = useCardInfo();
   if (!info.data) return null;

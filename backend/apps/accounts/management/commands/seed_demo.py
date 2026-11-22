@@ -1,4 +1,4 @@
-"""Demo data (SPEC §14).
+"""Demo data.
 
 Stage 1: people. Stage 2: year and terms, subjects, rooms, 4 groups with courses, a week
 template without conflicts and 8 weeks of lessons (4 back, 4 ahead) with a few exceptions.

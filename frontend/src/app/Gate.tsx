@@ -9,7 +9,7 @@ import { OfflinePage } from "./OfflinePage";
 
 import { NotFoundPage } from "./NotFoundPage";
 
-// The shell and its menus/dialogs are not needed on the login page (SPEC §15).
+// The shell and its menus/dialogs are not needed on the login page.
 const Shell = lazy(() => import("./Shell").then((m) => ({ default: m.Shell })));
 const ReauthOutlet = lazy(() => import("./Shell").then((m) => ({ default: m.ReauthOutlet })));
 
@@ -21,7 +21,7 @@ type GateProps = {
 };
 
 /**
- * Client-side routing only. Every rule here is also enforced by the server (SPEC §11);
+ * Client-side routing only. Every rule here is also enforced by the server;
  * this just shows the right screen.
  */
 export function Gate({ section, mode }: GateProps) {

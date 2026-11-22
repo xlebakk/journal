@@ -1,4 +1,4 @@
-"""The one place where averages and attendance are computed (SPEC §5, §10.13).
+"""The one place where averages and attendance are computed.
 
 Every screen and report calls `course_stats`, so the numbers match everywhere.
 
@@ -33,7 +33,7 @@ def rounded(value: Decimal) -> Decimal:
 
 
 def low_threshold(scale: str, percent: int) -> Decimal:
-    """Grades strictly below this are «low» (SPEC §2: below 50 % of the maximum)."""
+    """Grades strictly below this are «low» (below 50 % of the maximum)."""
     return Decimal(SCALE_MAX[GradeScale(scale)]) * Decimal(percent) / Decimal(100)
 
 

@@ -1,4 +1,4 @@
-"""Teacher reviews once per term (SPEC §16.5; stage 9).
+"""Teacher reviews once per term (stage 9).
 
 * Written by the course's teacher (not assistants — like setting up mock exams) or the
   administrator; everyone on the course team reads them.

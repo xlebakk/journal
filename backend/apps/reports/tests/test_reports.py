@@ -1,4 +1,4 @@
-"""Reports, exports and the administrator's overview (SPEC §7.7, §8.1, §8.8)."""
+"""Reports, exports and the administrator's overview."""
 
 import io
 import time as clock

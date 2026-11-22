@@ -25,7 +25,7 @@ export type ScheduleItem = {
 
 type Tone = "red" | "pencil" | "ink";
 
-/** Text marks: colour is never the only signal (SPEC §12). */
+/** Text marks: colour is never the only signal. */
 export function lessonMarks(item: ScheduleItem): { text: string; tone: Tone }[] {
   const marks: { text: string; tone: Tone }[] = [];
   if (item.status === "cancelled") marks.push({ text: t("schedule.cancelled"), tone: "red" });

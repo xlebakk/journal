@@ -1,4 +1,4 @@
-"""Personal iCal subscription (SPEC §16.7, stage 10)."""
+"""Personal iCal subscription (stage 10)."""
 
 from collections.abc import Callable
 from urllib.parse import urlsplit

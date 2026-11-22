@@ -19,7 +19,7 @@ export function describeUserAgent(ua: string): string {
   return [browser, os].filter(Boolean).join(" · ") || ua.slice(0, 40);
 }
 
-/** iPhone/iPad Safari, not yet installed on the home screen: show how to install (SPEC §13). */
+/** iPhone/iPad Safari, not yet installed on the home screen: show how to install. */
 export function shouldShowIosInstallHint(
   nav: Navigator & { standalone?: boolean } = navigator,
   standalone = window.matchMedia?.("(display-mode: standalone)").matches ?? false,

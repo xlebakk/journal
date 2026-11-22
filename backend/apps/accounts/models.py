@@ -14,11 +14,11 @@ class Role(models.TextChoices):
     ADMIN = "admin", "администратор"
     TEACHER = "teacher", "преподаватель"
     STUDENT = "student", "ученик"
-    # Reserved for later (SPEC §16): linked to children through ParentLink, no UI yet.
+    # Reserved for later: linked to children through ParentLink, no UI yet.
     PARENT = "parent", "родитель"
 
 
-# Seniority: the senior role opens after login (SPEC §4) and defines session strictness.
+# Seniority: the senior role opens after login and defines session strictness.
 ROLE_SENIORITY: tuple[str, ...] = (Role.ADMIN, Role.TEACHER, Role.PARENT, Role.STUDENT)
 
 
@@ -80,7 +80,7 @@ class UserManager(BaseUserManager["User"]):
 
 
 def normalize_login(value: str) -> str:
-    """Logins are case-insensitive and trimmed (SPEC §4)."""
+    """Logins are case-insensitive and trimmed."""
     return value.strip().lower()
 
 
@@ -129,7 +129,7 @@ class User(AbstractBaseUser):
                 condition=Q(admin_sections__contained_by=[s.value for s in AdminSection]),
                 name="accounts_user_known_admin_sections",
             ),
-            # A student account never combines with another role (SPEC §4).
+            # A student account never combines with another role.
             models.CheckConstraint(
                 condition=~Q(roles__contains=[Role.STUDENT], roles__len__gt=1),
                 name="accounts_user_student_exclusive",
@@ -192,7 +192,7 @@ class StudentProfile(models.Model):
     school_grade = models.PositiveSmallIntegerField(choices=SchoolGrade.choices, null=True)
     target = models.CharField(max_length=200, blank=True)
     target_score = models.PositiveSmallIntegerField(null=True, blank=True)
-    # Visible to administrators only (SPEC §5).
+    # Visible to administrators only.
     parent_name = models.CharField(max_length=200, blank=True)
     parent_phone = models.CharField(max_length=32, blank=True)
     admin_note = models.TextField(blank=True)
@@ -221,7 +221,7 @@ class TeacherProfile(models.Model):
 
 
 class ParentLink(models.Model):
-    """Parent ↔ child. Reserved for the future parent role (SPEC §16)."""
+    """Parent ↔ child. Reserved for the future parent role."""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     parent = models.ForeignKey(User, on_delete=models.PROTECT, related_name="children_links")
@@ -315,7 +315,7 @@ class UserSession(models.Model):
 
 
 class RefreshToken(models.Model):
-    """One link of an app session's chain (SPEC §11). Only the hash is stored.
+    """One link of an app session's chain. Only the hash is stored.
 
     Each refresh marks the token used and issues the next one; presenting a used token again
     means it was copied, so the whole session ends (`token_reuse`).

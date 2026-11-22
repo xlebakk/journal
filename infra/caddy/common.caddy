@@ -1,5 +1,5 @@
 # Shared by the production site and the local/CI test stand (Caddyfile.e2e).
-# SPEC §11: HTTPS only, HSTS for a year, strict CSP, no inline scripts or external CDNs.
+# HTTPS only, HSTS for a year, strict CSP, no inline scripts or external CDNs.
 
 (security_headers) {
 	header {
