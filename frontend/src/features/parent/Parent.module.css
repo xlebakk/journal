@@ -1,9 +1,30 @@
-/* Stage 14: whose pages the parent is looking at. */
+/* Stage 14: whose pages the parent is looking at. It shrinks before the stamp does. */
 .single {
+  min-width: 0;
+  overflow: hidden;
   font-weight: 600;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .switcher {
-  min-width: 200px;
+  flex: 0 1 220px;
+  min-width: 0;
+}
+
+.switcher select {
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 599px) {
+  /* The label stays for screen readers; on a phone the header has no room for it. */
+  .switcher > label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
