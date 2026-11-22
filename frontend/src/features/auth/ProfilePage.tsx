@@ -6,7 +6,7 @@ import { api } from "@/shared/api/client";
 import { errorMessage } from "@/shared/api/errors";
 import { t } from "@/shared/i18n";
 import { useTheme } from "@/shared/lib/theme";
-import { Button, ThemeSwitch } from "@/shared/ui";
+import { Button, LanguageSwitch, ThemeSwitch } from "@/shared/ui";
 
 import { useStudentProfile } from "@/features/student/api";
 
@@ -98,6 +98,7 @@ export function ProfilePage() {
       )}
 
       <ThemeSwitch value={theme} onChange={setTheme} />
+      <LanguageSwitch />
     </section>
   );
 }

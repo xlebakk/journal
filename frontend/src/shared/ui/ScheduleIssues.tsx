@@ -1,7 +1,7 @@
 import { AlertTriangle } from "lucide-react";
 
 import { t, type MessageKey } from "@/shared/i18n";
-import { formatDayLong, WEEKDAY_NAMES } from "@/shared/lib/week";
+import { formatDayLong, weekdayNames } from "@/shared/lib/week";
 
 import styles from "./ScheduleIssues.module.css";
 
@@ -33,7 +33,7 @@ function when(conflict: ScheduleConflict): string {
   const label = day
     ? formatDayLong(day)
     : conflict.weekday
-      ? (WEEKDAY_NAMES[conflict.weekday - 1] ?? "")
+      ? (weekdayNames()[conflict.weekday - 1] ?? "")
       : "";
   return `${label} ${conflict.start_time}–${conflict.end_time}`;
 }

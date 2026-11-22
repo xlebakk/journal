@@ -7,7 +7,7 @@ import styles from "@/features/schedule/SchedulePage.module.css";
 import { api, ApiError } from "@/shared/api/client";
 import { errorMessage, fieldError } from "@/shared/api/errors";
 import { t } from "@/shared/i18n";
-import { formatDate, hhmm, WEEKDAY_NAMES } from "@/shared/lib/week";
+import { formatDate, hhmm, weekdayNames } from "@/shared/lib/week";
 import {
   Button,
   Dialog,
@@ -163,7 +163,7 @@ function SlotForm({
               label={t("schedule.weekday")}
               value={values.weekday}
               onChange={set("weekday")}
-              options={WEEKDAY_NAMES.map((name, i) => ({ value: String(i + 1), label: name }))}
+              options={weekdayNames().map((name, i) => ({ value: String(i + 1), label: name }))}
             />
             <TextField
               label={t("schedule.start")}
@@ -266,7 +266,7 @@ function DeleteSlot({ slot, onDone }: { slot: Slot; onDone: () => void }) {
   return (
     <div className={styles.form}>
       <p className={styles.note}>
-        {slot.group_name} · {slot.subject_name}, {WEEKDAY_NAMES[slot.weekday - 1]}{" "}
+        {slot.group_name} · {slot.subject_name}, {weekdayNames()[slot.weekday - 1]}{" "}
         {hhmm(slot.start_time)}
       </p>
       {plan && (
@@ -337,7 +337,7 @@ export function SlotsPanel({
           <tbody>
             {slots.data.map((slot) => (
               <tr key={slot.id}>
-                <td>{WEEKDAY_NAMES[slot.weekday - 1]}</td>
+                <td>{weekdayNames()[slot.weekday - 1]}</td>
                 <td className="mono">
                   {hhmm(slot.start_time)}–{hhmm(slot.end_time)}
                 </td>

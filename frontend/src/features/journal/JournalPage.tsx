@@ -30,7 +30,7 @@ import {
 } from "./api";
 import styles from "./Journal.module.css";
 import { journalBase } from "./paths";
-import { addGradeAction, deleteGradeAction, MARK, statusFromKey } from "./actions";
+import { addGradeAction, deleteGradeAction, mark, statusFromKey } from "./actions";
 import { StudentEditor } from "./StudentEditor";
 import { SaveStatus } from "./SaveStatus";
 import { useSave } from "./useSave";
@@ -122,7 +122,7 @@ const GridRow = memo(function GridRow({
               <span className={styles.cellContent}>
                 {cell?.attendance && cell.attendance.status !== "present" && (
                   <span className={styles[`mark_${cell.attendance.status}`]}>
-                    {MARK[cell.attendance.status]}
+                    {mark(cell.attendance.status)}
                   </span>
                 )}
                 {cell?.grades.map((g) => (

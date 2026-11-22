@@ -11,11 +11,11 @@ type JournalCellProps = {
   lowBelow: number;
 };
 
-const SHORT: Record<Exclude<AttendanceMark, "present">, string> = {
-  absent: t("attendance.absentShort"),
-  late: t("attendance.lateShort"),
-  excused: t("attendance.excusedShort"),
-};
+const SHORT = {
+  absent: "attendance.absentShort",
+  late: "attendance.lateShort",
+  excused: "attendance.excusedShort",
+} as const;
 
 /** Contents of one grid cell. Colour is never the only signal: marks are letters. */
 export function JournalCell({ grades = [], attendance = "present", lowBelow }: JournalCellProps) {
@@ -23,7 +23,7 @@ export function JournalCell({ grades = [], attendance = "present", lowBelow }: J
     <span className={styles.cell}>
       {attendance !== "present" && (
         <span className={styles[attendance]}>
-          <span aria-hidden="true">{SHORT[attendance]}</span>
+          <span aria-hidden="true">{t(SHORT[attendance])}</span>
           <span className="visually-hidden">{t(`attendance.${attendance}`)}</span>
         </span>
       )}

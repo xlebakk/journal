@@ -2,22 +2,22 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useSearchParams } from "react-router";
 
 import { errorMessage } from "@/shared/api/errors";
-import { t } from "@/shared/i18n";
-import { centerToday, isoWeekday, WEEKDAY_NAMES } from "@/shared/lib/week";
+import { t, type MessageKey } from "@/shared/i18n";
+import { centerToday, formatMonth, isoWeekday, weekdayNames } from "@/shared/lib/week";
 import { Button, RuledSkeleton, Table } from "@/shared/ui";
 
 import { useStudentAttendance, type StudentAttendance } from "./api";
 import styles from "./Student.module.css";
 
-const MARK: Record<string, string> = { late: "оп", absent: "н", excused: "у" };
+const MARK: Record<string, MessageKey> = {
+  late: "attendance.lateShort",
+  absent: "attendance.absentShort",
+  excused: "attendance.excusedShort",
+};
 
-function monthName(month: string): string {
-  const [y, m] = month.split("-").map(Number);
-  return new Intl.DateTimeFormat("ru-RU", {
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(new Date(Date.UTC(y ?? 2026, (m ?? 1) - 1, 1)));
+function markOf(status: string): string {
+  const key = MARK[status];
+  return key ? t(key) : "";
 }
 
 function shiftMonth(month: string, delta: number): string {
@@ -34,15 +34,15 @@ function Calendar({ data, today }: { data: StudentAttendance; today: string }) {
   const first = data.days[0]?.date;
   const blanks = first ? isoWeekday(first) - 1 : 0;
   return (
-    <div className={styles.calendar} role="grid" aria-label={monthName(data.month)}>
+    <div className={styles.calendar} role="grid" aria-label={formatMonth(data.month)}>
       <div role="row" className="visually-hidden">
-        {WEEKDAY_NAMES.map((name) => (
+        {weekdayNames().map((name) => (
           <span key={name} role="columnheader">
             {name}
           </span>
         ))}
       </div>
-      {WEEKDAY_NAMES.map((name) => (
+      {weekdayNames().map((name) => (
         <span key={name} className={styles.weekday} aria-hidden="true">
           {name.slice(0, 2)}
         </span>
@@ -75,7 +75,7 @@ function Calendar({ data, today }: { data: StudentAttendance; today: string }) {
                   className={mark.status === "absent" ? styles.red : styles.pencil}
                   title={mark.subject_name}
                 >
-                  {MARK[mark.status] ?? ""} {mark.subject_short}
+                  {markOf(mark.status)} {mark.subject_short}
                 </li>
               ))}
             </ul>
@@ -158,7 +158,7 @@ export function AttendancePage() {
           >
             <ChevronLeft size={18} strokeWidth={1.5} aria-hidden="true" />
           </Button>
-          <span className={styles.monthName}>{monthName(data.month)}</span>
+          <span className={styles.monthName}>{formatMonth(data.month)}</span>
           <Button
             aria-label={t("student.nextMonth")}
             onClick={() => setParams({ month: shiftMonth(data.month, 1) }, { replace: true })}

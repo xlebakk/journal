@@ -2,14 +2,23 @@ import { useRef } from "react";
 
 import { useWeekParam } from "@/features/schedule/api";
 import { errorMessage } from "@/shared/api/errors";
-import { t } from "@/shared/i18n";
+import { t, type MessageKey } from "@/shared/i18n";
 import { formatDayLong, hhmm, startOfWeek, weekDays } from "@/shared/lib/week";
 import { lessonMarks, RuledSkeleton, WeekNav } from "@/shared/ui";
 
 import { useDiary, type DiaryLesson } from "./api";
 import styles from "./Student.module.css";
 
-const MARK: Record<string, string> = { late: "оп", absent: "н", excused: "у" };
+const MARK: Record<string, MessageKey> = {
+  late: "attendance.lateShort",
+  absent: "attendance.absentShort",
+  excused: "attendance.excusedShort",
+};
+
+function markOf(status: string): string {
+  const key = MARK[status];
+  return key ? t(key) : "";
+}
 const MIN_ROWS = 3;
 
 function DayPage({ day, lessons, today }: { day: string; lessons: DiaryLesson[]; today: string }) {
@@ -56,9 +65,9 @@ function DayPage({ day, lessons, today }: { day: string; lessons: DiaryLesson[];
                   )}
                 </td>
                 <td className={styles.colMark}>
-                  {lesson.attendance && MARK[lesson.attendance] && (
+                  {lesson.attendance && markOf(lesson.attendance) && (
                     <span className={lesson.attendance === "absent" ? styles.red : styles.pencil}>
-                      {MARK[lesson.attendance]}{" "}
+                      {markOf(lesson.attendance)}{" "}
                     </span>
                   )}
                   {lesson.grades.map((grade) => (

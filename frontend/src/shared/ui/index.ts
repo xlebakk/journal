@@ -13,6 +13,7 @@ export { passwordStrength } from "./strength";
 export { Table } from "./Table";
 export { TextField } from "./TextField";
 export { ThemeSwitch } from "./ThemeSwitch";
+export { LanguageSwitch } from "./LanguageSwitch";
 export { lessonMarks, type ScheduleItem } from "./scheduleMarks";
 export { ScheduleIssues } from "./ScheduleIssues";
 export { WeekNav, WeekSchedule } from "./WeekSchedule";

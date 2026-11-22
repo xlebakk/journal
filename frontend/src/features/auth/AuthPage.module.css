@@ -96,3 +96,7 @@
   font-family: var(--font-mono);
   font-size: var(--text-16);
 }
+
+.language {
+  margin-top: var(--space-3);
+}

@@ -2,9 +2,9 @@
  * Civil dates as ISO strings ("2026-11-16") — lessons are wall-clock events in the center's
  * time zone, so dates are never converted through the browser's zone (SPEC §2, §9).
  */
-import { CENTER_TIME_ZONE } from "./time";
+import { language, names } from "@/shared/i18n";
 
-const LOCALE = "ru-RU";
+import { CENTER_TIME_ZONE } from "./time";
 
 /** Today's date in the center's time zone. */
 export function centerToday(now: Date = new Date()): string {
@@ -46,8 +46,32 @@ export function weekDays(monday: string): string[] {
   return Array.from({ length: 7 }, (_, i) => addDays(monday, i));
 }
 
-function format(iso: string, options: Intl.DateTimeFormatOptions): string {
-  return new Intl.DateTimeFormat(LOCALE, { timeZone: "UTC", ...options }).format(toUtc(iso));
+type DateParts = Pick<Intl.DateTimeFormatOptions, "weekday" | "day" | "month" | "year">;
+
+/**
+ * Russian through Intl. Uzbek is assembled from the dictionary: not every engine ships Uzbek
+ * locale data (without it Intl prints «M11 22, Sun»). Uzbek order: «du, 16-noyabr 2026».
+ */
+function format(iso: string, options: DateParts): string {
+  if (language() !== "uz") {
+    return new Intl.DateTimeFormat("ru-RU", { timeZone: "UTC", ...options }).format(toUtc(iso));
+  }
+  const [y, m, d] = iso.split("-").map(Number);
+  const weekday = options.weekday
+    ? names(options.weekday === "long" ? "dates.weekdays" : "dates.weekdaysShort")[
+        isoWeekday(iso) - 1
+      ]
+    : "";
+  const month = options.month ? names("dates.months")[(m ?? 1) - 1] : "";
+  const day = options.day ? String(d) : "";
+  const dayMonth = day && month ? `${day}-${month}` : day || month;
+  const rest = [dayMonth, options.year ? String(y) : ""].filter(Boolean).join(" ");
+  return weekday && rest ? `${weekday}, ${rest}` : weekday || rest;
+}
+
+/** «ноябрь 2026 г.» / «noyabr 2026» for "2026-11". */
+export function formatMonth(month: string): string {
+  return format(`${month}-01`, { month: "long", year: "numeric" });
 }
 
 /** «пн, 16 ноября» */
@@ -89,12 +113,7 @@ export function minutes(time: string): number {
   return (h ?? 0) * 60 + (m ?? 0);
 }
 
-export const WEEKDAY_NAMES = [
-  "понедельник",
-  "вторник",
-  "среда",
-  "четверг",
-  "пятница",
-  "суббота",
-  "воскресенье",
-] as const;
+/** «понедельник» … «воскресенье» (or «dushanba» … «yakshanba»), Monday first. */
+export function weekdayNames(): string[] {
+  return weekDays("2026-11-16").map((day) => format(day, { weekday: "long" }));
+}

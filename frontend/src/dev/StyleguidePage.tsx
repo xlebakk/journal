@@ -24,6 +24,7 @@ import {
   Table,
   TextField,
   ThemeSwitch,
+  LanguageSwitch,
   type AttendanceMark,
   ScheduleIssues,
   WeekSchedule,
@@ -239,6 +240,7 @@ export default function StyleguidePage() {
         <span className={styles.brand}>Учебный центр</span>
         <span className={styles.tag}>/dev/styleguide</span>
         <ThemeSwitch value={theme} onChange={setTheme} />
+        <LanguageSwitch />
       </header>
 
       <main className={styles.main}>

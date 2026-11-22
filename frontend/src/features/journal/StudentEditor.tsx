@@ -22,7 +22,7 @@ import {
   addGradeAction,
   attendanceAction,
   deleteGradeAction,
-  MARK,
+  mark,
   statusFromKey,
   STATUS_NAME,
   type LessonRef,
@@ -223,7 +223,7 @@ export function StudentEditor(props: EditorProps) {
         onClick={cycle}
         onKeyDown={onKey}
       >
-        {MARK[status]}
+        {mark(status)}
       </button>
       {status === "late" && (
         <input

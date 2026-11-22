@@ -11,6 +11,7 @@ import { shouldShowIosInstallHint } from "@/shared/lib/userAgent";
 // Direct imports, not the @/shared/ui barrel: the first screen must not pull every component.
 import { Button } from "@/shared/ui/Button";
 import { Checkbox } from "@/shared/ui/Checkbox";
+import { LanguageSwitch } from "@/shared/ui/LanguageSwitch";
 import { PasswordField } from "@/shared/ui/PasswordField";
 import { TextField } from "@/shared/ui/TextField";
 
@@ -30,6 +31,7 @@ export function AuthColumn({ children }: { children: React.ReactNode }) {
       <h1 className={styles.center}>{branding.data?.center_name || t("app.centerName")}</h1>
       <p className={styles.subtitle}>{t("login.subtitle")}</p>
       {children}
+      <LanguageSwitch className={styles.language} />
     </main>
   );
 }

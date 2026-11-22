@@ -1,28 +1,36 @@
-import type { MessageKey } from "@/shared/i18n";
+import { t, type MessageKey } from "@/shared/i18n";
 
 import { journalApi, type Attendance, type AttendanceStatus, type Grade } from "./api";
 import type { Action } from "./useSave";
 
 export type LessonRef = { id: string; editable: boolean; needs_reason: boolean };
 
-export const MARK: Record<AttendanceStatus, string> = {
-  present: "был",
-  late: "оп",
-  absent: "н",
-  excused: "у",
+const MARK_KEY: Record<AttendanceStatus, MessageKey> = {
+  present: "attendance.present",
+  late: "attendance.lateShort",
+  absent: "attendance.absentShort",
+  excused: "attendance.excusedShort",
 };
+
+/** «был», «оп», «н», «у» — in the interface language. */
+export function mark(status: AttendanceStatus): string {
+  return t(MARK_KEY[status]);
+}
 export const STATUS_NAME: Record<AttendanceStatus, MessageKey> = {
   present: "attendance.present",
   late: "attendance.late",
   absent: "attendance.absent",
   excused: "attendance.excused",
 };
-// Б / О / Н / У on a Russian layout, the same physical keys on a Latin one (SPEC §7.2).
+// Б / О / Н / У on a Russian layout, the same physical keys on a Latin one (SPEC §7.2);
+// K / S for the Uzbek «kechikdi» and «sababli» («y» for «yoʻq» is the key of «н»).
 const KEYS: Record<string, AttendanceStatus> = {
   б: "present",
   о: "late",
   н: "absent",
   у: "excused",
+  k: "late",
+  s: "excused",
 };
 const CODES: Record<string, AttendanceStatus> = {
   Comma: "present",
