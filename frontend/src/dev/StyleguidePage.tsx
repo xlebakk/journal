@@ -264,7 +264,7 @@ export default function StyleguidePage() {
 
         <section className={styles.section} aria-labelledby="sg-type">
           <h2 id="sg-type">Шрифты</h2>
-          <p className={styles.display}>Literata 600 — Алиев Фарход Рустамович</p>
+          <p className={styles.display}>Golos Text 700 — Алиев Фарход Рустамович</p>
           <p>Golos Text 400 — весь интерфейс, текст из нескольких строк с интервалом 1.45.</p>
           <p className={styles.medium}>Golos Text 500 — подписи вкладок и кнопок</p>
           <p className={styles.semibold}>Golos Text 600 — подзаголовки</p>

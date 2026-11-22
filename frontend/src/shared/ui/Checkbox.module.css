@@ -10,7 +10,7 @@
   width: 18px;
   height: 18px;
   margin: 0;
-  accent-color: var(--ink);
+  accent-color: var(--accent);
   cursor: pointer;
 }
 

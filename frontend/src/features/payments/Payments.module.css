@@ -47,9 +47,11 @@
 
 .notice {
   margin: 0;
-  padding: var(--space-1) 0;
-  border-top: var(--line) solid var(--red-pen);
-  border-bottom: var(--line) solid var(--red-pen);
+  padding: 12px var(--space-2);
+  border: var(--line) solid color-mix(in srgb, var(--red-pen) 30%, var(--rule));
+  border-left: 4px solid var(--red-pen);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--red-pen) 7%, var(--sheet));
 }
 
 .noticeLink {

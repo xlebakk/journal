@@ -127,16 +127,17 @@
 }
 
 .textarea {
-  padding: 4px 0;
-  border: 0;
-  border-bottom: var(--line-strong) solid var(--ink);
-  background: transparent;
+  padding: 10px 12px;
+  border: var(--line) solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--sheet);
   resize: vertical;
 }
 
-.textarea:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
+.textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  outline: none;
 }
 
 .logo {

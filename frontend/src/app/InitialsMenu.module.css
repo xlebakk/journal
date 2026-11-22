@@ -1,10 +1,11 @@
 .content {
   z-index: 40;
-  min-width: 240px;
-  padding: 4px 0;
-  border: var(--line) solid var(--ink);
-  border-radius: var(--radius);
+  min-width: 260px;
+  padding: 6px;
+  border: var(--line) solid var(--rule);
+  border-radius: var(--radius-lg);
   background: var(--sheet);
+  box-shadow: var(--shadow-pop);
   animation: appear var(--duration) var(--easing);
 }
 
@@ -32,15 +33,16 @@
   position: relative;
   display: flex;
   align-items: center;
-  min-height: 36px;
+  min-height: 38px;
   padding: 0 var(--space-2) 0 var(--space-4);
+  border-radius: var(--radius);
   outline: none;
   cursor: pointer;
   user-select: none;
 }
 
 .item[data-highlighted] {
-  background: var(--paper);
+  background: var(--accent-soft);
   color: var(--accent);
 }
 

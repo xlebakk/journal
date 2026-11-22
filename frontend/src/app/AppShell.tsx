@@ -1,9 +1,23 @@
 import {
+  BookMarked,
   BookOpen,
   CalendarDays,
+  ChartColumn,
   ClipboardList,
   FileCheck,
+  GraduationCap,
   House,
+  Inbox,
+  LayoutDashboard,
+  Megaphone,
+  NotebookPen,
+  Settings,
+  ShieldCheck,
+  Sun,
+  Upload,
+  Users,
+  UsersRound,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import { NavLink, Outlet } from "react-router";
@@ -31,48 +45,60 @@ const STUDENT_NAV: NavItem[] = [
 
 const NAV: Record<Role, NavItem[]> = {
   admin: [
-    { to: "/admin", label: "nav.overview", end: true },
-    { to: "/admin/users", label: "nav.users" },
-    { to: "/admin/import", label: "nav.import" },
-    { to: "/admin/groups", label: "nav.groups" },
-    { to: "/admin/catalogs", label: "nav.catalogs" },
-    { to: "/admin/schedule", label: "nav.schedule" },
-    { to: "/admin/requests", label: "nav.requests" },
-    { to: "/admin/journal", label: "nav.journal" },
-    { to: "/admin/exams", label: "nav.exams" },
-    { to: "/admin/reports", label: "nav.reports" },
-    { to: "/admin/payments", label: "nav.payments" },
-    { to: "/admin/announcements", label: "nav.announcements" },
-    { to: "/admin/audit", label: "nav.audit" },
-    { to: "/admin/settings", label: "nav.settings" },
+    { to: "/admin", label: "nav.overview", end: true, icon: LayoutDashboard },
+    { to: "/admin/users", label: "nav.users", icon: Users },
+    { to: "/admin/import", label: "nav.import", icon: Upload },
+    { to: "/admin/groups", label: "nav.groups", icon: UsersRound },
+    { to: "/admin/catalogs", label: "nav.catalogs", icon: BookMarked },
+    { to: "/admin/schedule", label: "nav.schedule", icon: CalendarDays },
+    { to: "/admin/requests", label: "nav.requests", icon: Inbox },
+    { to: "/admin/journal", label: "nav.journal", icon: NotebookPen },
+    { to: "/admin/exams", label: "nav.exams", icon: FileCheck },
+    { to: "/admin/reports", label: "nav.reports", icon: ChartColumn },
+    { to: "/admin/payments", label: "nav.payments", icon: Wallet },
+    { to: "/admin/announcements", label: "nav.announcements", icon: Megaphone },
+    { to: "/admin/audit", label: "nav.audit", icon: ShieldCheck },
+    { to: "/admin/settings", label: "nav.settings", icon: Settings },
   ],
   teacher: [
-    { to: "/teacher", label: "nav.today", end: true },
-    { to: "/teacher/journal", label: "nav.journal" },
-    { to: "/teacher/schedule", label: "nav.schedule" },
-    { to: "/teacher/exams", label: "nav.exams" },
-    { to: "/teacher/reports", label: "nav.reports" },
+    { to: "/teacher", label: "nav.today", end: true, icon: Sun },
+    { to: "/teacher/journal", label: "nav.journal", icon: NotebookPen },
+    { to: "/teacher/schedule", label: "nav.schedule", icon: CalendarDays },
+    { to: "/teacher/exams", label: "nav.exams", icon: FileCheck },
+    { to: "/teacher/reports", label: "nav.reports", icon: ChartColumn },
   ],
   student: STUDENT_NAV,
   // A parent reads the child's student pages (stage 14).
   parent: STUDENT_NAV,
 };
 
-function Links({ items, className }: { items: NavItem[]; className: string | undefined }) {
+function Links({
+  items,
+  className,
+  icons = false,
+}: {
+  items: NavItem[];
+  className: string | undefined;
+  icons?: boolean;
+}) {
   return (
     <>
-      {items.map((item) => (
-        <NavLink
-          key={item.to}
-          to={item.to}
-          end={item.end}
-          className={({ isActive }) =>
-            [className, isActive && styles.active].filter(Boolean).join(" ")
-          }
-        >
-          {t(item.label)}
-        </NavLink>
-      ))}
+      {items.map((item) => {
+        const Icon = icons ? item.icon : undefined;
+        return (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.end}
+            className={({ isActive }) =>
+              [className, isActive && styles.active].filter(Boolean).join(" ")
+            }
+          >
+            {Icon && <Icon size={18} strokeWidth={1.75} aria-hidden="true" />}
+            {t(item.label)}
+          </NavLink>
+        );
+      })}
     </>
   );
 }
@@ -85,14 +111,21 @@ export function AppShell({ me }: { me: Me }) {
   const isAdmin = role === "admin";
   const isParent = role === "parent";
   const studentLike = role === "student" || isParent;
+  // Phones: a bottom bar of five items with icons instead of header tabs (SPEC §6, §12).
+  const bottomBar = studentLike || role === "teacher";
   const hasChildren = useHasChildren(isParent);
   return (
-    <div className={studentLike ? `${styles.shell} ${styles.withBottomNav}` : styles.shell}>
+    <div className={bottomBar ? `${styles.shell} ${styles.withBottomNav}` : styles.shell}>
       <header className={styles.header}>
-        <span className={styles.brand}>{branding.data?.center_name || t("app.centerName")}</span>
+        <span className={styles.brand}>
+          <span className={styles.brandMark} aria-hidden="true">
+            <GraduationCap size={20} strokeWidth={2} />
+          </span>
+          {branding.data?.center_name || t("app.centerName")}
+        </span>
         {!isAdmin && (
           <nav
-            className={studentLike ? `${styles.tabs} ${styles.studentTabs}` : styles.tabs}
+            className={bottomBar ? `${styles.tabs} ${styles.studentTabs}` : styles.tabs}
             aria-label={t("nav.sections")}
           >
             <Links items={items} className={styles.tab} />
@@ -105,7 +138,7 @@ export function AppShell({ me }: { me: Me }) {
       <div className={isAdmin ? styles.withSidebar : styles.body}>
         {isAdmin && (
           <nav className={styles.sidebar} aria-label={t("nav.sections")}>
-            <Links items={items} className={styles.sideLink} />
+            <Links items={items} className={styles.sideLink} icons />
           </nav>
         )}
         <main className={styles.main}>
@@ -117,7 +150,7 @@ export function AppShell({ me }: { me: Me }) {
           )}
         </main>
       </div>
-      {studentLike && (
+      {bottomBar && (
         // Phones: a bottom bar of five items with thin icons and labels (SPEC §6, §12).
         <nav className={styles.bottomNav} aria-label={t("nav.sections")}>
           {items.map((item) => {

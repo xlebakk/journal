@@ -76,7 +76,12 @@
     "totpHint": "Autentifikator ilovasidagi 6 ta raqamni yoki zaxira kodni kiriting.",
     "totpCode": "Kod",
     "totpSubmit": "tasdiqlash",
-    "totpBack": "boshqa foydalanuvchi"
+    "totpBack": "boshqa foydalanuvchi",
+    "signIn": "Jurnalga kirish",
+    "heroText": "Baholar, davomat, dars jadvali va uy vazifalari — oʻquvchilar, ota-onalar va oʻqituvchilar uchun bir joyda.",
+    "feature1": "Baholar va davomat real vaqtda",
+    "feature2": "Dars jadvali, koʻchirishlar va oʻrinbosarlar",
+    "feature3": "Oʻquvchi, ota-ona va oʻqituvchi kabinetlari"
   },
   "password": {
     "title": "Parolni almashtirish",

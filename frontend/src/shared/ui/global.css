@@ -1,7 +1,7 @@
-@import "@fontsource/literata/600.css";
 @import "@fontsource/golos-text/400.css";
 @import "@fontsource/golos-text/500.css";
 @import "@fontsource/golos-text/600.css";
+@import "@fontsource/golos-text/700.css";
 @import "@fontsource/jetbrains-mono/500.css";
 @import "@fontsource/jetbrains-mono/700.css";
 @import "./tokens.css";
@@ -32,8 +32,9 @@ h1,
 h2,
 h3 {
   margin: 0;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 h1 {
@@ -43,16 +44,26 @@ h1 {
 
 h2 {
   font-size: var(--text-20);
+  font-weight: 600;
 }
 
 a {
   color: var(--accent);
+  text-decoration-thickness: 1px;
   text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--accent-strong);
 }
 
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+::selection {
+  background: var(--accent-soft);
 }
 
 button,

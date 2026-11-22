@@ -9,7 +9,7 @@
 
 .reviews {
   margin: 0;
-  border-top: var(--line) solid var(--ink);
+  border-top: var(--line) solid var(--rule);
 }
 
 .reviews > div {

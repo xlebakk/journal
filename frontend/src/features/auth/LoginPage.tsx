@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CalendarDays, ClipboardList, GraduationCap, UserRound, Users } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router";
 
@@ -23,16 +24,48 @@ type LoginForm = { login: string; password: string; remember: boolean };
 type TotpForm = { code: string };
 const required = (value: string) => value.trim() !== "" || t("common.required");
 
+const FEATURES = [
+  { icon: ClipboardList, text: "login.feature1" },
+  { icon: CalendarDays, text: "login.feature2" },
+  { icon: Users, text: "login.feature3" },
+] as const;
+
+/** Login and the other auth steps: a blue school-portal screen with a white card. */
 export function AuthColumn({ children }: { children: React.ReactNode }) {
   const branding = useBranding();
   return (
-    <main className={styles.column}>
-      <p className={`mono ${styles.date}`}>{formatJournalHeader(new Date())}</p>
-      <h1 className={styles.center}>{branding.data?.center_name || t("app.centerName")}</h1>
-      <p className={styles.subtitle}>{t("login.subtitle")}</p>
-      {children}
-      <LanguageSwitch className={styles.language} />
-    </main>
+    <div className={styles.screen}>
+      <main className={styles.layout}>
+        <section className={styles.intro}>
+          <p className={`mono ${styles.date}`}>{formatJournalHeader(new Date())}</p>
+          <div className={styles.brandRow}>
+            <span className={styles.mark} aria-hidden="true">
+              <GraduationCap size={26} strokeWidth={2} />
+            </span>
+            <h1 className={styles.center}>{branding.data?.center_name || t("app.centerName")}</h1>
+          </div>
+          <p className={styles.subtitle}>{t("login.subtitle")}</p>
+          <p className={styles.heroText}>{t("login.heroText")}</p>
+          <ul className={styles.features}>
+            {FEATURES.map(({ icon: Icon, text }) => (
+              <li key={text}>
+                <span className={styles.featureIcon} aria-hidden="true">
+                  <Icon size={18} strokeWidth={2} />
+                </span>
+                {t(text)}
+              </li>
+            ))}
+          </ul>
+        </section>
+        <div className={styles.card}>
+          <span className={styles.avatar} aria-hidden="true">
+            <UserRound size={34} strokeWidth={1.75} />
+          </span>
+          {children}
+          <LanguageSwitch className={styles.language} />
+        </div>
+      </main>
+    </div>
   );
 }
 
@@ -66,6 +99,7 @@ function PasswordStep({ onTotp }: { onTotp: () => void }) {
 
   return (
     <form className={styles.form} onSubmit={submit} noValidate>
+      <h2 className={styles.cardTitle}>{t("login.signIn")}</h2>
       <TextField
         label={t("login.login")}
         autoComplete="username"

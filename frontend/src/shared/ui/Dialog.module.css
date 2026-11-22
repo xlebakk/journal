@@ -2,7 +2,8 @@
   position: fixed;
   inset: 0;
   z-index: 50;
-  background: rgb(27 33 48 / 35%);
+  background: var(--overlay);
+  backdrop-filter: blur(2px);
   animation: fade var(--duration) var(--easing);
 }
 
@@ -11,14 +12,14 @@
   top: 50%;
   left: 50%;
   z-index: 51;
-  width: min(440px, calc(100vw - 32px));
+  width: min(480px, calc(100vw - 32px));
   max-height: calc(100vh - 32px);
   overflow: auto;
-  padding: var(--space-3);
-  border: var(--line-strong) solid var(--ink);
-  border-radius: var(--radius);
+  padding: var(--space-4) var(--space-3) var(--space-3);
+  border: var(--line) solid var(--rule);
+  border-radius: var(--radius-lg);
   background: var(--sheet);
-  box-shadow: var(--shadow-hard);
+  box-shadow: var(--shadow-pop);
   transform: translate(-50%, -50%);
   animation: rise var(--duration) var(--easing);
 }

@@ -1,25 +1,43 @@
+/* A table is a card: white, rounded, a light header row, rows highlight on hover. */
 .table {
   width: 100%;
-  border-collapse: collapse;
+  border: var(--line) solid var(--rule);
+  border-radius: var(--radius-lg);
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
   background: var(--sheet);
+  box-shadow: var(--shadow-card);
   font-variant-numeric: tabular-nums;
 }
 
 .table th,
 .table td {
   height: var(--row-height);
-  padding: 0 var(--space-1);
+  padding: 6px 12px;
   border-bottom: var(--line) solid var(--rule);
   text-align: left;
+  vertical-align: middle;
 }
 
-.table th {
+.table tbody tr:last-child td,
+.table tbody tr:last-child th {
+  border-bottom: 0;
+}
+
+.table thead th {
+  background: color-mix(in srgb, var(--accent-soft) 60%, var(--sheet));
   font-size: var(--text-12);
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
   color: var(--ink-2);
-  border-bottom-color: var(--ink);
+}
+
+.table tbody tr {
+  transition: background-color var(--duration) var(--easing);
 }
 
 .table tbody tr:hover {
-  background: var(--paper);
+  background: color-mix(in srgb, var(--accent-soft) 55%, transparent);
 }

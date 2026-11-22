@@ -22,8 +22,11 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  border-top: var(--line) solid var(--ink);
+  border: var(--line) solid var(--rule);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
   background: var(--sheet);
+  box-shadow: var(--shadow-card);
 }
 
 .list > li {
@@ -32,8 +35,12 @@
   align-items: baseline;
   gap: 4px var(--space-2);
   min-height: var(--row-height);
-  padding: 6px var(--space-1);
+  padding: 10px var(--space-2);
   border-bottom: var(--line) solid var(--rule);
+}
+
+.list > li:last-child {
+  border-bottom: 0;
 }
 
 .time {
@@ -91,43 +98,42 @@
   white-space: nowrap;
 }
 
-/* --- Diary: two facing pages of a paper diary ------------------------------------------ */
+/* --- Diary: the week as day cards, two columns like facing pages ---------------------- */
 
 .spread {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  border: var(--line) solid var(--ink);
-  background: var(--sheet);
+  gap: var(--space-2);
   touch-action: pan-y;
 }
 
 .leaf {
   display: flex;
   flex-direction: column;
-}
-
-.leaf + .leaf {
-  border-left: var(--line-strong) solid var(--ink);
+  gap: var(--space-2);
 }
 
 .day {
-  border-bottom: var(--line) solid var(--ink);
-}
-
-.day:last-child {
-  border-bottom: 0;
+  border: var(--line) solid var(--rule);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--sheet);
+  box-shadow: var(--shadow-card);
 }
 
 .dayHead {
   margin: 0;
-  padding: 4px var(--space-1);
+  padding: 10px var(--space-2);
   border-bottom: var(--line) solid var(--rule);
+  background: color-mix(in srgb, var(--accent-soft) 60%, var(--sheet));
   font-family: var(--font-display);
   font-size: var(--text-16);
+  font-weight: 600;
 }
 
 .dayHead.today {
-  background: linear-gradient(var(--marker), var(--marker)), var(--sheet);
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 .diaryTable {
@@ -138,7 +144,7 @@
 
 .diaryTable td,
 .diaryTable th {
-  padding: 4px 6px;
+  padding: 6px 12px;
   border-bottom: var(--line) solid var(--rule);
   vertical-align: top;
   text-align: left;
@@ -153,12 +159,10 @@
 
 .colSubject {
   width: 34%;
-  border-right: var(--line) solid var(--rule);
 }
 
 .colMark {
   width: 64px;
-  border-left: var(--line-strong) solid var(--red-pen);
   text-align: center !important;
   font-family: var(--font-mono);
   font-weight: 700;
@@ -209,7 +213,7 @@
   min-width: 180px;
   text-align: left;
   font-weight: 400;
-  border-right: var(--line-strong) solid var(--red-pen);
+  border-right: var(--line-strong) solid var(--rule);
 }
 
 .gradeButton {
@@ -241,7 +245,7 @@
 }
 
 .subjectBlock {
-  border-top: var(--line) solid var(--ink);
+  border-top: var(--line) solid var(--rule);
 }
 
 .subjectBlock > summary {
@@ -275,7 +279,7 @@
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  border-top: var(--line) solid var(--ink);
+  border-top: var(--line) solid var(--rule);
   border-left: var(--line) solid var(--rule);
   background: var(--sheet);
 }
@@ -342,7 +346,7 @@
 
   .leaf + .leaf {
     border-left: 0;
-    border-top: var(--line-strong) solid var(--ink);
+    border-top: var(--line) solid var(--rule);
   }
 
   .calendarDay {

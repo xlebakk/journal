@@ -101,28 +101,36 @@
 }
 
 .label {
-  font-size: var(--text-12);
+  font-size: var(--text-14);
+  font-weight: 500;
   color: var(--ink-2);
 }
 
 .textarea {
-  padding: 4px 0;
-  border: 0;
-  border-bottom: var(--line-strong) solid var(--ink);
-  background: transparent;
+  padding: 10px 12px;
+  border: var(--line) solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--sheet);
   resize: vertical;
+  transition:
+    border-color var(--duration) var(--easing),
+    box-shadow var(--duration) var(--easing);
 }
 
-.textarea:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
+.textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  outline: none;
 }
 
 .students {
   display: flex;
   flex-direction: column;
-  border-top: var(--line) solid var(--ink);
+  border: var(--line) solid var(--rule);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
   background: var(--sheet);
+  box-shadow: var(--shadow-card);
 }
 
 .studentRow {
@@ -130,23 +138,27 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-1);
-  min-height: 44px;
-  padding: 4px var(--space-1);
+  min-height: 52px;
+  padding: 6px var(--space-2);
   border-bottom: var(--line) solid var(--rule);
+}
+
+.studentRow:last-child {
+  border-bottom: 0;
 }
 
 .studentName {
   flex: 0 0 180px;
   padding-right: var(--space-1);
-  border-right: var(--line-strong) solid var(--red-pen);
+  border-right: var(--line-strong) solid var(--rule);
 }
 
 .mark {
-  min-width: 56px;
+  min-width: 60px;
   min-height: 36px;
-  border: var(--line) solid var(--ink);
-  border-radius: var(--radius);
-  background: var(--sheet);
+  border: var(--line) solid var(--rule);
+  border-radius: var(--radius-pill);
+  background: var(--paper);
   font-family: var(--font-mono);
   font-weight: 700;
   cursor: pointer;
@@ -158,14 +170,20 @@
 }
 
 .mark_present {
-  color: var(--ink);
+  border-color: color-mix(in srgb, var(--green) 35%, var(--rule));
+  background: color-mix(in srgb, var(--green) 8%, var(--sheet));
+  color: var(--green);
 }
 
 .mark_late {
+  border-color: color-mix(in srgb, var(--pencil) 35%, var(--rule));
+  background: color-mix(in srgb, var(--pencil) 8%, var(--sheet));
   color: var(--pencil);
 }
 
 .mark_absent {
+  border-color: color-mix(in srgb, var(--red-pen) 35%, var(--rule));
+  background: color-mix(in srgb, var(--red-pen) 8%, var(--sheet));
   color: var(--red-pen);
 }
 
@@ -175,22 +193,31 @@
 
 .lateInput,
 .gradeInput {
-  width: 56px;
+  width: 64px;
   min-height: 36px;
-  padding: 0 6px;
-  border: 0;
-  border-bottom: var(--line-strong) solid var(--ink);
-  background: transparent;
+  padding: 0 10px;
+  border: var(--line) dashed color-mix(in srgb, var(--accent) 40%, var(--rule));
+  border-radius: var(--radius-pill);
+  background: var(--sheet);
   font-weight: 700;
+  text-align: center;
+}
+
+.lateInput:focus,
+.gradeInput:focus {
+  border-style: solid;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  outline: none;
 }
 
 .lateInput {
-  width: 96px;
+  width: 120px;
   font-weight: 400;
 }
 
 .gradeInput[aria-invalid="true"] {
-  border-bottom-color: var(--red-pen);
+  border-color: var(--red-pen);
   color: var(--red-pen);
 }
 
@@ -204,9 +231,10 @@
 .gradeChip {
   min-width: 44px;
   min-height: 36px;
-  border: var(--line) solid var(--rule);
-  border-radius: var(--radius);
-  background: var(--sheet);
+  border: var(--line) solid color-mix(in srgb, var(--accent) 30%, var(--rule));
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
   font-size: var(--text-15);
   font-weight: 700;
   cursor: pointer;
@@ -225,7 +253,7 @@
 .valueButton {
   min-width: var(--tap-target);
   min-height: var(--tap-target);
-  border: var(--line) solid var(--ink);
+  border: var(--line) solid var(--rule);
   border-radius: var(--radius);
   background: var(--sheet);
   font-family: var(--font-mono);
@@ -258,7 +286,9 @@
   max-height: 70vh;
   overflow: auto;
   border: var(--line) solid var(--rule);
+  border-radius: var(--radius-lg);
   background: var(--sheet);
+  box-shadow: var(--shadow-card);
 }
 
 .grid {
@@ -275,7 +305,7 @@
 .grid th,
 .grid td {
   height: var(--row-height);
-  padding: 0 6px;
+  padding: 0 8px;
   border-right: var(--line) solid var(--rule);
   border-bottom: var(--line) solid var(--rule);
   background: var(--sheet);
@@ -286,11 +316,11 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  border-bottom-color: var(--ink);
+  background: color-mix(in srgb, var(--accent-soft) 60%, var(--sheet));
 }
 
 .grid tbody tr:hover > * {
-  background: linear-gradient(var(--rule), var(--rule)), var(--sheet);
+  background: linear-gradient(var(--accent-soft), var(--accent-soft)), var(--sheet);
 }
 
 .grid .nameCell {
@@ -299,8 +329,9 @@
   z-index: 2;
   min-width: 170px;
   text-align: left;
-  font-weight: 400;
-  border-right: var(--line-strong) solid var(--red-pen);
+  font-weight: 500;
+  border-right: var(--line-strong) solid var(--rule);
+  box-shadow: 6px 0 12px -10px var(--ink-2);
 }
 
 .grid thead .nameCell {
@@ -333,7 +364,7 @@
 }
 
 .grid .weekStart {
-  border-left: 2px solid var(--ink-2);
+  border-left: 2px solid color-mix(in srgb, var(--accent) 35%, var(--rule));
 }
 
 .cell {
@@ -466,8 +497,8 @@
   gap: var(--space-1);
   margin-bottom: var(--space-3);
   padding: var(--space-1) 0;
-  border-top: var(--line) solid var(--ink);
-  border-bottom: var(--line) solid var(--ink);
+  border-top: var(--line) solid var(--rule);
+  border-bottom: var(--line) solid var(--rule);
 }
 
 .offlineLine {

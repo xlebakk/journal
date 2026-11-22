@@ -1,6 +1,9 @@
 .empty {
   margin: 0;
-  padding: var(--space-2) 0;
+  padding: var(--space-3) var(--space-2);
+  border: var(--line) dashed var(--rule);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--sheet) 70%, transparent);
   color: var(--ink-2);
-  border-bottom: var(--line) solid var(--rule);
+  text-align: center;
 }

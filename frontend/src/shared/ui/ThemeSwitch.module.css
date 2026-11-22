@@ -1,6 +1,9 @@
+/* A pill segmented control (theme, language). */
 .switch {
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
+  gap: var(--space-1);
   margin: 0;
   padding: 0;
   border: 0;
@@ -9,19 +12,38 @@
 .legend {
   float: left;
   margin-right: var(--space-1);
-  font-size: var(--text-12);
+  font-size: var(--text-14);
+  font-weight: 500;
   color: var(--ink-2);
-  line-height: 36px;
+  line-height: 40px;
+}
+
+.options {
+  display: inline-flex;
 }
 
 .option {
   position: relative;
   display: inline-flex;
   align-items: center;
-  min-height: 36px;
-  padding: 0 12px;
-  border: var(--line) solid var(--ink);
+  min-height: 38px;
+  padding: 0 16px;
+  border: var(--line) solid var(--rule);
+  background: var(--sheet);
+  color: var(--ink-2);
+  font-weight: 500;
   cursor: pointer;
+  transition:
+    background-color var(--duration) var(--easing),
+    color var(--duration) var(--easing);
+}
+
+.option:first-of-type {
+  border-radius: var(--radius-pill) 0 0 var(--radius-pill);
+}
+
+.option:last-of-type {
+  border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
 }
 
 .option + .option {
@@ -36,9 +58,14 @@
   cursor: pointer;
 }
 
+.option:hover {
+  color: var(--accent);
+}
+
 .option:has(input:checked) {
-  background: var(--ink);
-  color: var(--paper);
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 .option:has(input:focus-visible) {

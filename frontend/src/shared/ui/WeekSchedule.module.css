@@ -18,7 +18,9 @@
   max-width: 100%;
   overflow-x: auto;
   border: var(--line) solid var(--rule);
+  border-radius: var(--radius-lg);
   background: var(--sheet);
+  box-shadow: var(--shadow-card);
 }
 
 .timetable {
@@ -39,26 +41,27 @@
 .timeHead,
 .timeCell {
   width: 64px;
-  /* the red margin line of an exercise book */
-  border-right: var(--line-strong) solid var(--red-pen) !important;
+  border-right: var(--line-strong) solid var(--rule) !important;
 }
 
 .timeCell {
   padding: 6px var(--space-1);
   font-size: var(--text-14);
   font-weight: 700;
+  color: var(--ink-2);
   text-align: left;
 }
 
 .dayHead {
-  height: 32px;
+  height: 40px;
   padding: 0 var(--space-1);
-  border-bottom-color: var(--ink) !important;
-  font-family: var(--font-mono);
+  background: color-mix(in srgb, var(--accent-soft) 60%, var(--sheet));
   font-size: var(--text-12);
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   color: var(--ink-2);
   text-align: left;
+  text-transform: uppercase;
 }
 
 .today {
@@ -67,7 +70,7 @@
 }
 
 .cell {
-  padding: 4px;
+  padding: 6px;
 }
 
 .todayCell {
@@ -86,12 +89,13 @@
 .lesson {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   width: 100%;
-  padding: 4px 6px;
-  border: var(--line) solid var(--ink);
+  padding: 6px 8px 6px 10px;
+  border: var(--line) solid color-mix(in srgb, var(--accent) 22%, var(--rule));
+  border-left: 4px solid var(--accent);
   border-radius: var(--radius);
-  background: var(--sheet);
+  background: color-mix(in srgb, var(--accent-soft) 55%, var(--sheet));
   color: var(--ink);
   font: inherit;
   font-size: var(--text-12);
@@ -105,11 +109,14 @@ button.lesson {
 
 button.lesson:hover {
   border-color: var(--accent);
+  box-shadow: var(--shadow-card);
 }
 
 .cancelled {
   border-style: dashed;
   border-color: var(--red-pen);
+  border-left: 4px solid var(--red-pen);
+  background: color-mix(in srgb, var(--red-pen) 6%, var(--sheet));
 }
 
 .cancelled .subject,
@@ -161,10 +168,10 @@ button.lesson:hover {
 }
 
 .listHeading {
-  margin: 0 0 4px;
+  margin: 0 0 6px;
   padding: 4px 0;
-  border-bottom: var(--line) solid var(--ink);
   font-size: var(--text-16);
+  text-transform: capitalize;
 }
 
 .emptyDay {

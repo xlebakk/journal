@@ -3,15 +3,20 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-1);
-  min-height: 36px;
-  padding: 0 var(--space-2);
-  border: var(--line) solid var(--ink);
-  border-radius: var(--radius);
-  background: transparent;
+  min-height: 40px;
+  padding: 0 18px;
+  border: var(--line) solid var(--rule);
+  border-radius: var(--radius-pill);
+  background: var(--sheet);
   color: var(--ink);
   font-weight: 500;
+  white-space: nowrap;
   cursor: pointer;
-  transition: transform var(--duration) var(--easing);
+  transition:
+    background-color var(--duration) var(--easing),
+    border-color var(--duration) var(--easing),
+    box-shadow var(--duration) var(--easing),
+    transform var(--duration) var(--easing);
 }
 
 .button:disabled {
@@ -19,25 +24,36 @@
   opacity: 0.5;
 }
 
-.primary {
-  border-width: var(--line-strong);
-  background: var(--ink);
-  color: var(--paper);
-  box-shadow: var(--shadow-hard);
+.button:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
-.primary:active:not(:disabled) {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0 var(--ink);
+.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.primary:hover:not(:disabled) {
+  border-color: var(--accent-strong);
+  background: var(--accent-strong);
 }
 
 .secondary:hover:not(:disabled) {
-  background: var(--sheet);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .danger {
-  border-color: var(--red-pen);
+  border-color: color-mix(in srgb, var(--red-pen) 40%, transparent);
   color: var(--red-pen);
+}
+
+.danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--red-pen) 8%, transparent);
 }
 
 @media (max-width: 599px) {
