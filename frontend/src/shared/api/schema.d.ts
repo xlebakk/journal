@@ -733,7 +733,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["admin_payments_students_retrieve"];
+        get: operations["admin_payments_students_list"];
         put?: never;
         post?: never;
         delete?: never;
@@ -749,7 +749,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["admin_payments_students_retrieve_2"];
+        get: operations["admin_payments_students_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2590,7 +2590,7 @@ export interface components {
             user_agent: string;
         };
         AdminEntry: {
-            kind: components["schemas"]["KindBd2Enum"];
+            kind: components["schemas"]["LedgerEntryKindEnum"];
             /** Format: uuid */
             id: string;
             /** Format: date */
@@ -3042,7 +3042,7 @@ export interface components {
             ended: number;
         };
         Entry: {
-            kind: components["schemas"]["KindBd2Enum"];
+            kind: components["schemas"]["LedgerEntryKindEnum"];
             /** Format: uuid */
             id: string;
             /** Format: date */
@@ -3306,12 +3306,6 @@ export interface components {
             max_grades: number;
             edit_window_days: number;
         };
-        /**
-         * @description * `charge` - charge
-         *     * `payment` - payment
-         * @enum {string}
-         */
-        KindBd2Enum: "charge" | "payment";
         LeaveRequest: {
             /** Format: date */
             left_on: string;
@@ -3323,6 +3317,12 @@ export interface components {
             discount_percent: number;
             entries: components["schemas"]["Entry"][];
         };
+        /**
+         * @description * `charge` - charge
+         *     * `payment` - payment
+         * @enum {string}
+         */
+        LedgerEntryKindEnum: "charge" | "payment";
         /** @description Admin and teacher view of a lesson in the schedule. */
         Lesson: {
             /** Format: uuid */
@@ -5774,7 +5774,7 @@ export interface operations {
             };
         };
     };
-    admin_payments_students_retrieve: {
+    admin_payments_students_list: {
         parameters: {
             query?: {
                 debtors?: boolean;
@@ -5797,7 +5797,7 @@ export interface operations {
             };
         };
     };
-    admin_payments_students_retrieve_2: {
+    admin_payments_students_retrieve: {
         parameters: {
             query?: never;
             header?: never;

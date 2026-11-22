@@ -4,6 +4,8 @@ from rest_framework import serializers
 
 from .models import PaymentMethod
 
+ENTRY_KINDS = [("charge", "charge"), ("payment", "payment")]
+
 
 class GroupFeeRowSerializer(serializers.Serializer[Any]):
     id = serializers.UUIDField()
@@ -51,7 +53,7 @@ class StudentListSerializer(serializers.Serializer[Any]):
 
 
 class EntrySerializer(serializers.Serializer[Any]):
-    kind = serializers.ChoiceField(choices=["charge", "payment"])
+    kind = serializers.ChoiceField(choices=ENTRY_KINDS)
     id = serializers.UUIDField()
     date = serializers.DateField()
     amount = serializers.IntegerField()

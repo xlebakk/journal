@@ -194,6 +194,7 @@ SPECTACULAR_SETTINGS = {
         "ScheduleRequestKindEnum": "apps.schedule.models.ScheduleRequest.Kind",
         "GradeScaleEnum": "apps.academics.models.GradeScale",
         "WeekdayEnum": "apps.schedule.models.Weekday",
+        "LedgerEntryKindEnum": "apps.payments.serializers.ENTRY_KINDS",
         "AttendanceStatusEnum": "apps.journal.models.AttendanceStatus",
     },
 }

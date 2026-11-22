@@ -154,6 +154,7 @@ class StudentListView(APIView):
     permission_classes = (IsAdmin,)
 
     @extend_schema(
+        operation_id="admin_payments_students_list",
         parameters=[
             OpenApiParameter("group", str),
             OpenApiParameter("q", str),

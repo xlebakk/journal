@@ -1392,7 +1392,7 @@ paths:
           description: No response body
   /api/v1/admin/payments/students:
     get:
-      operationId: admin_payments_students_retrieve
+      operationId: admin_payments_students_list
       parameters:
       - in: query
         name: debtors
@@ -1420,7 +1420,7 @@ paths:
           description: ''
   /api/v1/admin/payments/students/{id}:
     get:
-      operationId: admin_payments_students_retrieve_2
+      operationId: admin_payments_students_retrieve
       parameters:
       - in: path
         name: id
@@ -4658,7 +4658,7 @@ components:
       type: object
       properties:
         kind:
-          $ref: '#/components/schemas/KindBd2Enum'
+          $ref: '#/components/schemas/LedgerEntryKindEnum'
         id:
           type: string
           format: uuid
@@ -5931,7 +5931,7 @@ components:
       type: object
       properties:
         kind:
-          $ref: '#/components/schemas/KindBd2Enum'
+          $ref: '#/components/schemas/LedgerEntryKindEnum'
         id:
           type: string
           format: uuid
@@ -6650,14 +6650,6 @@ components:
       - low_below
       - max_grades
       - scale
-    KindBd2Enum:
-      enum:
-      - charge
-      - payment
-      type: string
-      description: |-
-        * `charge` - charge
-        * `payment` - payment
     LeaveRequest:
       type: object
       properties:
@@ -6687,6 +6679,14 @@ components:
       - discount_percent
       - entries
       - paid
+    LedgerEntryKindEnum:
+      enum:
+      - charge
+      - payment
+      type: string
+      description: |-
+        * `charge` - charge
+        * `payment` - payment
     Lesson:
       type: object
       description: Admin and teacher view of a lesson in the schedule.
