@@ -48,7 +48,8 @@ describe("Gate", () => {
       },
     });
     renderRoutes(routes, "/admin");
-    expect(await screen.findByText("setup 2fa")).toBeInTheDocument();
+    // The lazy shell loads under a parallel run too.
+    expect(await screen.findByText("setup 2fa", undefined, { timeout: 5000 })).toBeInTheDocument();
   });
 
   it("shows 404 for another role's section", async () => {

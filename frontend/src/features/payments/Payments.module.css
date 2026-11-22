@@ -1,0 +1,57 @@
+/* «Оплаты» (stage 12): money is right-aligned mono, a debt is written in red pen. */
+.amount {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.amountField {
+  max-width: 200px;
+}
+
+.debt {
+  color: var(--red-pen);
+}
+
+.voided td {
+  color: var(--ink-2);
+}
+
+.voided td:nth-child(3) {
+  text-decoration: line-through;
+}
+
+.voidNote {
+  font-size: var(--text-14);
+}
+
+.linkButton {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.linkButton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.balance {
+  margin: 0;
+  font-size: var(--text-20);
+  font-weight: 600;
+}
+
+.notice {
+  margin: 0;
+  padding: var(--space-1) 0;
+  border-top: var(--line) solid var(--red-pen);
+  border-bottom: var(--line) solid var(--red-pen);
+}
+
+.noticeLink {
+  white-space: nowrap;
+}

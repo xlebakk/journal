@@ -1,3 +1,4 @@
+from datetime import date
 from io import StringIO
 
 import pytest
@@ -59,6 +60,15 @@ def test_seed_demo_creates_people_and_prints_passwords() -> None:
     from apps.journal.models import TeacherReview
 
     assert TeacherReview.objects.filter(term__name="Модуль 1").exists()  # finished before today
+    from apps.payments.models import Charge, Payment
+    from apps.payments.services import balances
+
+    assert Charge.objects.filter(month=date(2026, 9, 1)).exists()
+    students = list(User.objects.with_role(Role.STUDENT).values_list("pk", flat=True))
+    debts = [b.debt for b in balances(students).values()]
+    assert any(d > 0 for d in debts)  # debtors to show
+    assert all(d >= 0 for d in debts)  # nobody paid more than charged
+    assert Payment.objects.exists()
     text = out.getvalue()
     admin = User.objects.with_role(Role.ADMIN).get()
     assert admin.login in text

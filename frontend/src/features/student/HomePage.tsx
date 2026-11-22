@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
 import { AnnouncementsBoard } from "@/features/announcements/AnnouncementsBoard";
+import { DebtNotice } from "@/features/payments/MyPaymentsPage";
 import { errorMessage } from "@/shared/api/errors";
 import { t } from "@/shared/i18n";
 import { formatDayLong, hhmm } from "@/shared/lib/week";
@@ -19,6 +20,8 @@ export function HomePage() {
   return (
     <section className={styles.page}>
       <h1>{formatDayLong(data.today)}</h1>
+
+      <DebtNotice />
 
       <AnnouncementsBoard className={styles.section} />
 

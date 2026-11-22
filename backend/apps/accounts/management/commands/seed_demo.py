@@ -7,6 +7,8 @@ of recent lessons are left unfilled and two students need attention.
 Stage 5: mock exams (with and without sections, an upcoming one), goals of students per
 subject in %, announcements for everyone, a role and a group.
 Stage 9: teachers' reviews for the last finished term (a few students per course).
+Stage 12: monthly prices of groups, two discounts, charges since September and payments;
+every fourth student owes for the current month, one owes for two months.
 """
 
 import os
@@ -36,6 +38,8 @@ from apps.accounts.models import Role, StudentProfile, TeacherProfile, User
 from apps.announcements.models import Announcement, Audience
 from apps.exams.models import Exam, ExamResult, ExamSection, ExamSectionScore, StudentTarget
 from apps.journal.models import Attendance, AttendanceStatus, Grade, TeacherReview
+from apps.payments.models import Charge, GroupFee, Payment, PaymentMethod, StudentDiscount
+from apps.payments.services import discounted, month_end, month_start
 from apps.schedule import services
 from apps.schedule.models import Lesson, LessonStatus, ScheduleRequest, ScheduleSlot
 
@@ -222,6 +226,7 @@ class Command(BaseCommand):
         self._exceptions(monday, groups, subjects, rooms, teachers)
         self._journal(today, groups, students)
         self._reviews(today)
+        self._payments(today, groups, students)
         self._exams(today, groups, subjects)
         self._announcements(groups)
 
@@ -413,6 +418,67 @@ class Command(BaseCommand):
                 )
         TeacherReview.objects.bulk_create(reviews)
 
+    FEES: ClassVar[dict[str, int]] = {
+        "11-М вечерняя": 600_000,
+        "11-Б утренняя": 550_000,
+        "11-Г вечерняя": 600_000,
+        "10-М выходного дня": 450_000,
+    }
+
+    def _payments(self, today: date, groups: dict[str, Group], students: list[User]) -> None:
+        """Stage 12: September to the current month billed; most of it paid."""
+        admin = User.objects.with_role(Role.ADMIN).first()
+        for name, amount in self.FEES.items():
+            GroupFee.objects.create(group=groups[name], monthly_amount=amount)
+        discounts = {students[5].pk: 10, students[30].pk: 20}
+        for sid, percent in discounts.items():
+            StudentDiscount.objects.create(student_id=sid, percent=percent)
+        months = []
+        first = date(2026, 9, 1)
+        while first <= month_start(today):
+            months.append(first)
+            first = month_end(first) + timedelta(days=1)
+        owes_two = students[3].pk
+        charges, payments = [], []
+        for name, amount in self.FEES.items():
+            for m in GroupMembership.objects.filter(group=groups[name]):
+                for first in months:
+                    last = month_end(first)
+                    if m.joined_on > last or (m.left_on and m.left_on < first):
+                        continue
+                    percent = discounts.get(m.student_id, 0)
+                    due = discounted(amount, percent)
+                    charges.append(
+                        Charge(
+                            student_id=m.student_id,
+                            group=groups[name],
+                            month=first,
+                            full_amount=amount,
+                            discount_percent=percent,
+                            amount=due,
+                            created_by=admin,
+                        )
+                    )
+                    current = first == months[-1]
+                    index = next(i for i, s in enumerate(students) if s.pk == m.student_id)
+                    unpaid = (current and index % 4 == 0) or (
+                        m.student_id == owes_two and first >= months[-2]
+                    )
+                    if unpaid:
+                        continue
+                    paid_on = min(first + timedelta(days=self.rng.randint(0, 9)), today)
+                    payments.append(
+                        Payment(
+                            student_id=m.student_id,
+                            amount=due,
+                            paid_on=paid_on,
+                            method=self.rng.choice(list(PaymentMethod)),
+                            created_by=admin,
+                        )
+                    )
+        Charge.objects.bulk_create(charges)
+        Payment.objects.bulk_create(payments)
+
     # --- Stage 5: mock exams and announcements ---------------------------------------------
 
     def _exams(self, today: date, groups: dict[str, Group], subjects: dict[str, Subject]) -> None:
@@ -536,7 +602,8 @@ class Command(BaseCommand):
                 f"{Attendance.objects.count()} отметок, {Grade.objects.count()} оценок, "
                 f"{Exam.objects.count()} пробных тестов, "
                 f"{Announcement.objects.count()} объявлений, "
-                f"{TeacherReview.objects.count()} отзывов. "
+                f"{TeacherReview.objects.count()} отзывов, "
+                f"{Charge.objects.count()} начислений и {Payment.objects.count()} оплат. "
                 "Администратор при первом входе настроит 2FA."
             )
         )

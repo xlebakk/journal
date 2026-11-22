@@ -25,6 +25,7 @@ const OVERVIEW = {
       user_agent: "Mozilla/5.0 (Linux; Android 15) Chrome/140.0" },
   ],
   audit: [],
+  debt: { debtors: 2, total: 900000 },
 }; // prettier-ignore
 
 describe("OverviewPage, stage 7 blocks", () => {
@@ -36,6 +37,8 @@ describe("OverviewPage, stage 7 blocks", () => {
     expect(within(rows[0]!).getByText(/всплеск/)).toHaveClass("error");
     expect(within(rows[0]!).getByText("25 за сутки, 14 за час")).toBeInTheDocument();
     expect(within(rows[1]!).queryByText(/всплеск/)).not.toBeInTheDocument();
+    const debt = screen.getByRole("region", { name: "Долги за обучение" });
+    expect(within(debt).getByText(/Должников: 2, на сумму 900\s000 сум/)).toBeInTheDocument();
     const devices = screen.getByRole("region", {
       name: "Входы администраторов с новых устройств за неделю",
     });

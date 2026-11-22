@@ -29,6 +29,7 @@ const NAV: Record<Role, NavItem[]> = {
     { to: "/admin/journal", label: "nav.journal" },
     { to: "/admin/exams", label: "nav.exams" },
     { to: "/admin/reports", label: "nav.reports" },
+    { to: "/admin/payments", label: "nav.payments" },
     { to: "/admin/announcements", label: "nav.announcements" },
     { to: "/admin/audit", label: "nav.audit" },
     { to: "/admin/settings", label: "nav.settings" },

@@ -644,6 +644,152 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/payments/bill": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description «Начислить за месяц»: safe to press twice. */
+        post: operations["admin_payments_bill_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payments/charges/{id}/void": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["admin_payments_charges_void_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payments/groups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Prices of the current year's groups (and of any group that still has one). */
+        get: operations["admin_payments_groups_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payments/groups/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["admin_payments_groups_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payments/payments/{id}/void": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["admin_payments_payments_void_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payments/students": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["admin_payments_students_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payments/students/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["admin_payments_students_retrieve_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payments/students/{id}/discount": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["admin_payments_students_discount_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payments/students/{id}/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["admin_payments_students_payments_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/reports/fill-rate": {
         parameters: {
             query?: never;
@@ -2262,6 +2408,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/student/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The student's own account: charges, payments (voided ones hidden) and the debt. */
+        get: operations["student_payments_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/student/profile": {
         parameters: {
             query?: never;
@@ -2426,6 +2589,33 @@ export interface components {
             ip: string | null;
             user_agent: string;
         };
+        AdminEntry: {
+            kind: components["schemas"]["KindBd2Enum"];
+            /** Format: uuid */
+            id: string;
+            /** Format: date */
+            date: string;
+            amount: number;
+            group_name: string;
+            full_amount: number | null;
+            discount_percent: number | null;
+            method: string;
+            comment: string;
+            voided: boolean;
+            void_reason: string;
+            author_name: string;
+        };
+        AdminLedger: {
+            /** Format: uuid */
+            student: string;
+            full_name: string;
+            login: string;
+            charged: number;
+            paid: number;
+            debt: number;
+            discount_percent: number;
+            entries: components["schemas"]["AdminEntry"][];
+        };
         AdminUserDetail: {
             /** Format: uuid */
             readonly id: string;
@@ -2586,6 +2776,14 @@ export interface components {
         };
         BackupCodes: {
             backup_codes: string[];
+        };
+        BillResult: {
+            created: number;
+            existing: number;
+        };
+        BillWriteRequest: {
+            /** Format: date */
+            month: string;
         };
         BlockedLogin: {
             login: string;
@@ -2758,6 +2956,10 @@ export interface components {
             subject_name: string;
             status: string;
         };
+        Debt: {
+            debtors: number;
+            total: number;
+        };
         DeniedUser: {
             /** Format: uuid */
             user: string;
@@ -2820,6 +3022,9 @@ export interface components {
             readonly attendance: (components["schemas"]["AttendanceStatusEnum"] | components["schemas"]["NullEnum"]) | null;
             readonly grades: components["schemas"]["DiaryGrade"][];
         };
+        DiscountWriteRequest: {
+            percent: number;
+        };
         DynamicsPoint: {
             /** Format: uuid */
             exam: string;
@@ -2835,6 +3040,19 @@ export interface components {
         };
         EndedSessions: {
             ended: number;
+        };
+        Entry: {
+            kind: components["schemas"]["KindBd2Enum"];
+            /** Format: uuid */
+            id: string;
+            /** Format: date */
+            date: string;
+            amount: number;
+            group_name: string;
+            full_amount: number | null;
+            discount_percent: number | null;
+            method: string;
+            comment: string;
         };
         Exam: {
             /** Format: uuid */
@@ -3026,6 +3244,24 @@ export interface components {
             readonly members_count: number;
             readonly courses: components["schemas"]["CourseBrief"][];
         };
+        GroupFeeRow: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            year_name: string;
+            is_archived: boolean;
+            members_count: number;
+            monthly_amount: number;
+        };
+        GroupFeeWriteRequest: {
+            monthly_amount: number;
+        };
+        GroupFees: {
+            /** Format: date */
+            month: string;
+            month_charges: number;
+            groups: components["schemas"]["GroupFeeRow"][];
+        };
         GroupRequest: {
             name: string;
             /** Format: uuid */
@@ -3070,9 +3306,22 @@ export interface components {
             max_grades: number;
             edit_window_days: number;
         };
+        /**
+         * @description * `charge` - charge
+         *     * `payment` - payment
+         * @enum {string}
+         */
+        KindBd2Enum: "charge" | "payment";
         LeaveRequest: {
             /** Format: date */
             left_on: string;
+        };
+        Ledger: {
+            charged: number;
+            paid: number;
+            debt: number;
+            discount_percent: number;
+            entries: components["schemas"]["Entry"][];
         };
         /** @description Admin and teacher view of a lesson in the schedule. */
         Lesson: {
@@ -3261,6 +3510,13 @@ export interface components {
             left_on?: string | null;
             readonly is_active: boolean;
         };
+        /**
+         * @description * `cash` - наличные
+         *     * `card` - карта
+         *     * `transfer` - перевод
+         * @enum {string}
+         */
+        MethodEnum: "cash" | "card" | "transfer";
         MoveRequest: {
             version: number;
             /** Format: date */
@@ -3294,6 +3550,7 @@ export interface components {
             denied: components["schemas"]["DeniedUser"][];
             admin_new_devices: components["schemas"]["AdminDeviceLogin"][];
             audit: components["schemas"]["AuditLog"][];
+            debt: components["schemas"]["Debt"];
         };
         OverviewToday: {
             total: number;
@@ -3561,6 +3818,14 @@ export interface components {
             /** Format: decimal */
             weight?: string;
             is_archived?: boolean;
+        };
+        PaymentWriteRequest: {
+            amount: number;
+            /** Format: date */
+            paid_on: string;
+            method: components["schemas"]["MethodEnum"];
+            /** @default  */
+            comment: string;
         };
         Performance: {
             /** Format: date */
@@ -4051,6 +4316,11 @@ export interface components {
             readonly planned_end_time: string;
             readonly planned_room_name: string;
         };
+        StudentList: {
+            debtors: number;
+            debt_total: number;
+            rows: components["schemas"]["StudentRow"][];
+        };
         StudentProfile: {
             phone?: string;
             school?: string;
@@ -4087,6 +4357,17 @@ export interface components {
             text: string;
             /** Format: date-time */
             updated_at: string;
+        };
+        StudentRow: {
+            /** Format: uuid */
+            id: string;
+            full_name: string;
+            login: string;
+            groups: string[];
+            discount_percent: number;
+            charged: number;
+            paid: number;
+            debt: number;
         };
         StudentSubjectExams: {
             /** Format: uuid */
@@ -4321,6 +4602,9 @@ export interface components {
         };
         VersionRequest: {
             version: number;
+        };
+        VoidWriteRequest: {
+            reason: string;
         };
         /**
          * @description * `1` - понедельник
@@ -5372,6 +5656,213 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Overview"];
+                };
+            };
+        };
+    };
+    admin_payments_bill_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BillWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BillResult"];
+                };
+            };
+        };
+    };
+    admin_payments_charges_void_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VoidWriteRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    admin_payments_groups_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupFees"];
+                };
+            };
+        };
+    };
+    admin_payments_groups_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupFeeWriteRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    admin_payments_payments_void_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VoidWriteRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    admin_payments_students_retrieve: {
+        parameters: {
+            query?: {
+                debtors?: boolean;
+                group?: string;
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentList"];
+                };
+            };
+        };
+    };
+    admin_payments_students_retrieve_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminLedger"];
+                };
+            };
+        };
+    };
+    admin_payments_students_discount_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DiscountWriteRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    admin_payments_students_payments_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PaymentWriteRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminLedger"];
                 };
             };
         };
@@ -7945,6 +8436,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StudentHome"];
+                };
+            };
+        };
+    };
+    student_payments_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Ledger"];
                 };
             };
         };

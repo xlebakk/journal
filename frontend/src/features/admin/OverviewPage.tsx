@@ -10,6 +10,8 @@ import { describeUserAgent } from "@/shared/lib/userAgent";
 import { formatDate, formatDayLong } from "@/shared/lib/week";
 import { EmptyState, RuledSkeleton, Table } from "@/shared/ui";
 
+import { money } from "@/features/payments/api";
+
 import { actionText } from "./audit/labels";
 
 type Overview = Schemas["Overview"];
@@ -84,6 +86,18 @@ export function OverviewPage() {
             </tbody>
           </Table>
         )}
+      </section>
+
+      <section className={styles.section} aria-labelledby="ov-debt">
+        <div className={styles.titleRow}>
+          <h2 id="ov-debt">{t("payments.overviewTitle")}</h2>
+          <Link to="/admin/payments">{t("payments.title")}</Link>
+        </div>
+        <p className={data.debt.debtors ? styles.error : styles.note}>
+          {data.debt.debtors
+            ? t("payments.debtSummary", { count: data.debt.debtors, total: money(data.debt.total) })
+            : t("payments.noDebtors")}
+        </p>
       </section>
 
       <section className={styles.section} aria-labelledby="ov-attendance">

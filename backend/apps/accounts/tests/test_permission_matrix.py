@@ -113,6 +113,16 @@ MATRIX: list[tuple[str, str, dict[str, int]]] = [
     ("get", "/api/v1/me/calendar", {"admin": 403, "teacher": 200, "student": 200}),
     ("post", "/api/v1/me/calendar", {"admin": 403, "teacher": 201, "student": 201}),
     ("delete", "/api/v1/me/calendar", {"admin": 403, "teacher": 204, "student": 204}),
+    # Stage 12: money — the administrator; a student sees only their own account.
+    ("get", "/api/v1/admin/payments/groups", {"admin": 200, "teacher": 403, "student": 403}),
+    ("get", "/api/v1/admin/payments/students", {"admin": 200, "teacher": 403, "student": 403}),
+    (
+        "get",
+        "/api/v1/admin/payments/students/{other}",
+        {"admin": 200, "teacher": 403, "student": 403},
+    ),
+    ("post", "/api/v1/admin/payments/bill", {"admin": 400, "teacher": 403, "student": 403}),
+    ("get", "/api/v1/student/payments", {"admin": 403, "teacher": 403, "student": 200}),
     ("patch", "/api/v1/admin/settings", {"admin": 200, "teacher": 403, "student": 403}),
 ]
 

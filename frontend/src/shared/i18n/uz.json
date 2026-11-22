@@ -146,7 +146,8 @@
     "announcements": "Eʼlonlar",
     "import": "Import",
     "audit": "Audit",
-    "settings": "Sozlamalar"
+    "settings": "Sozlamalar",
+    "payments": "Toʻlovlar"
   },
   "sessions": {
     "title": "Faol seanslar",
@@ -338,7 +339,12 @@
     "export_failed": "Faylni yuklab boʻlmadi.",
     "not_course_teacher": "Fikrlarni kursning asosiy oʻqituvchisi yozadi.",
     "term_not_started": "Modul hali boshlanmagan.",
-    "no_terms": "Oʻquv yilida modullar yoʻq — fikrlar modullar boʻyicha yoziladi."
+    "no_terms": "Oʻquv yilida modullar yoʻq — fikrlar modullar boʻyicha yoziladi.",
+    "month_in_future": "Bu oy hali boshlanmagan.",
+    "invalid_month": "Oyning birinchi kuni kerak.",
+    "paid_in_future": "Toʻlov sanasi kelajakda boʻlishi mumkin emas.",
+    "already_voided": "Yozuv allaqachon bekor qilingan.",
+    "discount_range": "Chegirma — 0 dan 100% gacha."
   },
   "schedule": {
     "title": "Dars jadvali",
@@ -939,7 +945,12 @@
     "user": "foydalanuvchi",
     "auth": "kirish",
     "review": "oʻqituvchi fikri",
-    "calendar": "kalendar havolasi"
+    "calendar": "kalendar havolasi",
+    "billing": "hisoblash",
+    "fee": "guruh narxi",
+    "discount": "chegirma",
+    "payment": "toʻlov",
+    "charge": "hisoblangan summa"
   },
   "auditVerbs": {
     "create": "yaratish",
@@ -986,7 +997,9 @@
     "backup_codes_regenerate": "yangi zaxira kodlar",
     "issue": "chiqarish",
     "reissue": "qayta chiqarish",
-    "revoke": "oʻchirish"
+    "revoke": "oʻchirish",
+    "run": "ishga tushirish",
+    "void": "bekor qilish"
   },
   "offline": {
     "title": "Aloqa yoʻq",
@@ -1025,5 +1038,69 @@
     "secret": "Havola — dars jadvalingizga parol kabi: uni eʼlon qilmang. Agar begonalar qoʻliga tushgan boʻlsa, uni qayta chiqaring.",
     "reissueTitle": "Havola qayta chiqarilsinmi?",
     "reissueText": "Eski havola darhol ishlamay qoladi: unga obuna boʻlgan kalendarlarni qaytadan obuna qilish kerak boʻladi."
+  },
+  "payments": {
+    "title": "Toʻlovlar",
+    "tabStudents": "Oʻquvchilar",
+    "tabGroups": "Narxlar va hisoblash",
+    "currency": "soʻm",
+    "student": "Oʻquvchi",
+    "groups": "Guruhlar",
+    "group": "Guruh",
+    "discount": "Chegirma",
+    "discountField": "Chegirma, %",
+    "discountHint": "Keyingi hisoblashlarga taʼsir qiladi; avvalgilari oʻzgarmaydi.",
+    "charged": "Hisoblangan",
+    "paid": "Toʻlangan",
+    "debt": "Qarz",
+    "advance": "ortiqcha toʻlov {amount}",
+    "onlyDebtors": "faqat qarzdorlar",
+    "debtSummary": "Qarzdorlar: {count}, jami {total}.",
+    "noDebtors": "Qarzdorlar yoʻq.",
+    "noStudents": "Oʻquvchilar topilmadi.",
+    "billing": "Hisoblash",
+    "billingStatus": "{month} uchun hisoblashlar: {count}.",
+    "month": "Oy",
+    "bill": "{month} uchun hisoblash",
+    "billingHint": "Har bir oʻquvchiga — oyning kamida bir kunida boʻlgan narxli har bir guruh uchun: guruh narxidan uning chegirmasi ayirilgan holda. Qayta bosish hech narsani ikkilantirmaydi.",
+    "billed": "Hisoblandi: {created}, avval bor edi: {existing}.",
+    "fees": "Guruhlarning oylik narxi",
+    "feesHint": "Boʻsh yoki 0 — guruh uchun toʻlov olinmaydi. Yangi narx keyingi hisoblashdan amal qiladi.",
+    "fee": "Oylik narx, soʻm",
+    "feeFor": "{group} uchun oylik narx",
+    "back": "barcha oʻquvchilar",
+    "acceptTitle": "Toʻlov qabul qilish",
+    "amount": "Summa",
+    "date": "Sana",
+    "methodField": "Usul",
+    "comment": "Izoh",
+    "accept": "toʻlovni qabul qilish",
+    "accepted": "Toʻlov yozildi.",
+    "history": "Tarix",
+    "noEntries": "Hozircha hisoblash va toʻlovlar yoʻq.",
+    "operation": "Amaliyot",
+    "details": "Tafsilotlar",
+    "author": "Kim kiritgan",
+    "chargeFor": "{month} uchun hisoblash · {group}",
+    "paymentBy": "Toʻlov · {method}",
+    "withDiscount": "{full}, {percent}% chegirma bilan",
+    "void": "bekor qilish",
+    "voidTitle": "Yozuv bekor qilinsinmi?",
+    "voidText": "Yozuv tarixda chizilgan holda qoladi va qarzga taʼsir qilmaydi.",
+    "voidReason": "Sabab",
+    "voidedBecause": "bekor qilingan: {reason}",
+    "myTitle": "Toʻlov",
+    "myDebt": "Oʻqish uchun qarz: {amount}.",
+    "myAdvance": "Ortiqcha toʻlov: {amount}.",
+    "myClear": "Qarz yoʻq.",
+    "myDiscount": "Sizning chegirmangiz: {percent}%.",
+    "myHint": "Toʻlovni markaz administratori qabul qiladi. Bu yerda xato boʻlsa — unga murojaat qiling.",
+    "more": "batafsil",
+    "overviewTitle": "Oʻqish uchun qarzlar",
+    "method": {
+      "cash": "naqd",
+      "card": "karta",
+      "transfer": "oʻtkazma"
+    }
   }
 }

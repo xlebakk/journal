@@ -106,6 +106,14 @@ const routes: RouteObject[] = [
         path: "announcements",
         lazy: page(() => import("@/features/announcements/AnnouncementsPage"), "AnnouncementsPage"),
       },
+      {
+        path: "payments",
+        lazy: page(() => import("@/features/payments/PaymentsPage"), "PaymentsPage"),
+      },
+      {
+        path: "payments/:id",
+        lazy: page(() => import("@/features/payments/StudentPaymentsPage"), "StudentPaymentsPage"),
+      },
       { path: "audit", lazy: page(() => import("@/features/admin/audit/AuditPage"), "AuditPage") },
       {
         path: "settings",
@@ -146,6 +154,10 @@ const routes: RouteObject[] = [
       { path: "diary", lazy: page(() => import("@/features/student/DiaryPage"), "DiaryPage") },
       { path: "grades", lazy: page(() => import("@/features/student/GradesPage"), "GradesPage") },
       { path: "tests", lazy: page(() => import("@/features/student/TestsPage"), "TestsPage") },
+      {
+        path: "payments",
+        lazy: page(() => import("@/features/payments/MyPaymentsPage"), "MyPaymentsPage"),
+      },
       {
         path: "attendance",
         lazy: page(() => import("@/features/student/AttendancePage"), "AttendancePage"),

@@ -256,6 +256,26 @@
 | `DELETE /me/calendar` | 401 | 204 | 204 | 403 |
 | `GET /calendar/{id}.ics?token=…` | 200 с верным токеном, иначе 404 | — | — | — |
 
+## Этап 12: оплаты
+
+| Мера | Тест |
+| --- | --- |
+| Деньги видит и меняет только администратор; преподаватель и ученик → 403 на всех `/admin/payments/*` | `test_teachers_and_students_have_no_admin_access`, `test_permission_matrix` |
+| Ученик видит только свой счёт, без аннулированных записей, авторов и причин | `test_student_sees_own_account_without_voided_entries` |
+| Карточка «не ученика» → 404 | `test_ledger_of_a_non_student_is_404` |
+| Начисление раз в месяц на ученика и группу — уникальность в БД; повтор безопасен | `test_month_charges_members_with_price_minus_discount` |
+| Ничего не удаляется: аннулирование с причиной, повторное → 400; всё в аудите | `test_payments_reduce_the_debt_and_voids_restore_it`, `test_voided_charge_is_not_billed_again` |
+| Будущий месяц, оплата будущей датой, нулевая сумма, неизвестный способ → 400 | `TestBilling.test_rules`, `TestPayments.test_rules` |
+| Суммы — целые, положительные; скидка 1–100 — CHECK в БД | миграция `payments.0001_initial` |
+
+| Эндпоинт | Аноним | Ученик | Преподаватель | Администратор |
+| --- | --- | --- | --- | --- |
+| `GET /admin/payments/groups`, `PUT /admin/payments/groups/{id}` | 401 | 403 | 403 | 200 / 204 |
+| `POST /admin/payments/bill` | 401 | 403 | 403 | 200 |
+| `GET /admin/payments/students`, `/students/{ученик}` | 401 | 403 | 403 | 200 (не ученик — 404) |
+| `PUT .../discount`, `POST .../payments`, `POST /admin/payments/{charges,payments}/{id}/void` | 401 | 403 | 403 | 204 / 201 / 204 |
+| `GET /student/payments` | 401 | 200 (только свой) | 403 | 403 |
+
 ## Модель угроз (кратко)
 
 1. **IDOR (подмена ID).** Объекты выбираются только из `for_user()`-queryset; чужое → 404; UUID-ключи. Начиная с этапа 2 каждая новая сущность добавляет строки в матрицу.

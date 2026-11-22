@@ -19,6 +19,7 @@ from apps.audit.views import AuditLogSerializer
 from apps.core.models import CenterSettings
 from apps.journal import services as journal
 from apps.journal.stats import course_stats
+from apps.payments import services as payments
 from apps.schedule.models import Lesson, LessonStatus
 
 from .views import members_in
@@ -87,6 +88,11 @@ class AdminDeviceLoginSerializer(serializers.Serializer[Any]):
     user_agent = serializers.CharField(allow_blank=True)
 
 
+class DebtSerializer(serializers.Serializer[Any]):
+    debtors = serializers.IntegerField()
+    total = serializers.IntegerField()
+
+
 class OverviewSerializer(serializers.Serializer[Any]):
     today = serializers.DateField()
     lessons = OverviewTodaySerializer()
@@ -99,6 +105,7 @@ class OverviewSerializer(serializers.Serializer[Any]):
     denied = DeniedUserSerializer(many=True)
     admin_new_devices = AdminDeviceLoginSerializer(many=True)
     audit = AuditLogSerializer(many=True)
+    debt = DebtSerializer()
 
 
 class OverviewView(APIView):
@@ -123,8 +130,15 @@ class OverviewView(APIView):
             "denied": self._denied(now),
             "admin_new_devices": self._admin_new_devices(now),
             "audit": AuditLog.objects.select_related("actor")[:20],
+            "debt": self._debt(),
         }
         return Response(OverviewSerializer(data).data)
+
+    def _debt(self) -> dict[str, int]:
+        """Stage 12: how many students owe and how much, from the one balance function."""
+        students = list(User.objects.with_role(Role.STUDENT).values_list("pk", flat=True))
+        debts = [b.debt for b in payments.balances(students).values() if b.debt > 0]
+        return {"debtors": len(debts), "total": sum(debts)}
 
     def _today(self, day: Any, now: datetime) -> dict[str, int]:
         lessons = list(Lesson.objects.filter(date=day).values_list("status", "start_time"))

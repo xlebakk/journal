@@ -1279,6 +1279,219 @@ paths:
               schema:
                 $ref: '#/components/schemas/Overview'
           description: ''
+  /api/v1/admin/payments/bill:
+    post:
+      operationId: admin_payments_bill_create
+      description: '«Начислить за месяц»: safe to press twice.'
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillWriteRequest'
+        required: true
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillResult'
+          description: ''
+  /api/v1/admin/payments/charges/{id}/void:
+    post:
+      operationId: admin_payments_charges_void_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoidWriteRequest'
+        required: true
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/admin/payments/groups:
+    get:
+      operationId: admin_payments_groups_retrieve
+      description: Prices of the current year's groups (and of any group that still
+        has one).
+      tags:
+      - admin
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupFees'
+          description: ''
+  /api/v1/admin/payments/groups/{id}:
+    put:
+      operationId: admin_payments_groups_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupFeeWriteRequest'
+        required: true
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/admin/payments/payments/{id}/void:
+    post:
+      operationId: admin_payments_payments_void_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoidWriteRequest'
+        required: true
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/admin/payments/students:
+    get:
+      operationId: admin_payments_students_retrieve
+      parameters:
+      - in: query
+        name: debtors
+        schema:
+          type: boolean
+      - in: query
+        name: group
+        schema:
+          type: string
+      - in: query
+        name: q
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentList'
+          description: ''
+  /api/v1/admin/payments/students/{id}:
+    get:
+      operationId: admin_payments_students_retrieve_2
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminLedger'
+          description: ''
+  /api/v1/admin/payments/students/{id}/discount:
+    put:
+      operationId: admin_payments_students_discount_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiscountWriteRequest'
+        required: true
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/admin/payments/students/{id}/payments:
+    post:
+      operationId: admin_payments_students_payments_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentWriteRequest'
+        required: true
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminLedger'
+          description: ''
   /api/v1/admin/reports/fill-rate:
     get:
       operationId: admin_reports_fill_rate_retrieve
@@ -4171,6 +4384,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/StudentHome'
           description: ''
+  /api/v1/student/payments:
+    get:
+      operationId: student_payments_retrieve
+      description: 'The student''s own account: charges, payments (voided ones hidden)
+        and the debt.'
+      tags:
+      - student
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ledger'
+          description: ''
   /api/v1/student/profile:
     get:
       operationId: student_profile_retrieve
@@ -4424,6 +4654,81 @@ components:
       - ip
       - user
       - user_agent
+    AdminEntry:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/KindBd2Enum'
+        id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        amount:
+          type: integer
+        group_name:
+          type: string
+        full_amount:
+          type: integer
+          nullable: true
+        discount_percent:
+          type: integer
+          nullable: true
+        method:
+          type: string
+        comment:
+          type: string
+        voided:
+          type: boolean
+        void_reason:
+          type: string
+        author_name:
+          type: string
+      required:
+      - amount
+      - author_name
+      - comment
+      - date
+      - discount_percent
+      - full_amount
+      - group_name
+      - id
+      - kind
+      - method
+      - void_reason
+      - voided
+    AdminLedger:
+      type: object
+      properties:
+        student:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        login:
+          type: string
+        charged:
+          type: integer
+        paid:
+          type: integer
+        debt:
+          type: integer
+        discount_percent:
+          type: integer
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminEntry'
+      required:
+      - charged
+      - debt
+      - discount_percent
+      - entries
+      - full_name
+      - login
+      - paid
+      - student
     AdminUserDetail:
       type: object
       properties:
@@ -4878,6 +5183,24 @@ components:
             type: string
       required:
       - backup_codes
+    BillResult:
+      type: object
+      properties:
+        created:
+          type: integer
+        existing:
+          type: integer
+      required:
+      - created
+      - existing
+    BillWriteRequest:
+      type: object
+      properties:
+        month:
+          type: string
+          format: date
+      required:
+      - month
     BlockedLogin:
       type: object
       properties:
@@ -5362,6 +5685,16 @@ components:
       - status
       - subject_name
       - subject_short
+    Debt:
+      type: object
+      properties:
+        debtors:
+          type: integer
+        total:
+          type: integer
+      required:
+      - debtors
+      - total
     DeniedUser:
       type: object
       properties:
@@ -5547,6 +5880,15 @@ components:
       - subject_short
       - teacher_name
       - topic
+    DiscountWriteRequest:
+      type: object
+      properties:
+        percent:
+          type: integer
+          maximum: 100
+          minimum: 0
+      required:
+      - percent
     DynamicsPoint:
       type: object
       properties:
@@ -5585,6 +5927,41 @@ components:
           type: integer
       required:
       - ended
+    Entry:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/KindBd2Enum'
+        id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        amount:
+          type: integer
+        group_name:
+          type: string
+        full_amount:
+          type: integer
+          nullable: true
+        discount_percent:
+          type: integer
+          nullable: true
+        method:
+          type: string
+        comment:
+          type: string
+      required:
+      - amount
+      - comment
+      - date
+      - discount_percent
+      - full_amount
+      - group_name
+      - id
+      - kind
+      - method
     Exam:
       type: object
       properties:
@@ -6114,6 +6491,54 @@ components:
       - members_count
       - name
       - year_name
+    GroupFeeRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        year_name:
+          type: string
+        is_archived:
+          type: boolean
+        members_count:
+          type: integer
+        monthly_amount:
+          type: integer
+      required:
+      - id
+      - is_archived
+      - members_count
+      - monthly_amount
+      - name
+      - year_name
+    GroupFeeWriteRequest:
+      type: object
+      properties:
+        monthly_amount:
+          type: integer
+          maximum: 100000000
+          minimum: 0
+      required:
+      - monthly_amount
+    GroupFees:
+      type: object
+      properties:
+        month:
+          type: string
+          format: date
+        month_charges:
+          type: integer
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupFeeRow'
+      required:
+      - groups
+      - month
+      - month_charges
     GroupRequest:
       type: object
       properties:
@@ -6225,6 +6650,14 @@ components:
       - low_below
       - max_grades
       - scale
+    KindBd2Enum:
+      enum:
+      - charge
+      - payment
+      type: string
+      description: |-
+        * `charge` - charge
+        * `payment` - payment
     LeaveRequest:
       type: object
       properties:
@@ -6233,6 +6666,27 @@ components:
           format: date
       required:
       - left_on
+    Ledger:
+      type: object
+      properties:
+        charged:
+          type: integer
+        paid:
+          type: integer
+        debt:
+          type: integer
+        discount_percent:
+          type: integer
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/Entry'
+      required:
+      - charged
+      - debt
+      - discount_percent
+      - entries
+      - paid
     Lesson:
       type: object
       description: Admin and teacher view of a lesson in the schedule.
@@ -6767,6 +7221,16 @@ components:
       - is_active
       - joined_on
       - student
+    MethodEnum:
+      enum:
+      - cash
+      - card
+      - transfer
+      type: string
+      description: |-
+        * `cash` - наличные
+        * `card` - карта
+        * `transfer` - перевод
     MoveRequest:
       type: object
       properties:
@@ -6851,12 +7315,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AuditLog'
+        debt:
+          $ref: '#/components/schemas/Debt'
       required:
       - admin_new_devices
       - attendance_threshold
       - attendance_window_days
       - audit
       - blocked_logins
+      - debt
       - denied
       - failed_logins_24h
       - lessons
@@ -7432,6 +7899,26 @@ components:
           pattern: ^-?\d{0,2}(?:\.\d{0,2})?$
         is_archived:
           type: boolean
+    PaymentWriteRequest:
+      type: object
+      properties:
+        amount:
+          type: integer
+          maximum: 1000000000
+          minimum: 1
+        paid_on:
+          type: string
+          format: date
+        method:
+          $ref: '#/components/schemas/MethodEnum'
+        comment:
+          type: string
+          default: ''
+          maxLength: 300
+      required:
+      - amount
+      - method
+      - paid_on
     Performance:
       type: object
       properties:
@@ -8702,6 +9189,21 @@ components:
       - subject_name
       - subject_short
       - teacher_name
+    StudentList:
+      type: object
+      properties:
+        debtors:
+          type: integer
+        debt_total:
+          type: integer
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentRow'
+      required:
+      - debt_total
+      - debtors
+      - rows
     StudentProfile:
       type: object
       properties:
@@ -8815,6 +9317,37 @@ components:
       - term_name
       - text
       - updated_at
+    StudentRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        login:
+          type: string
+        groups:
+          type: array
+          items:
+            type: string
+        discount_percent:
+          type: integer
+        charged:
+          type: integer
+        paid:
+          type: integer
+        debt:
+          type: integer
+      required:
+      - charged
+      - debt
+      - discount_percent
+      - full_name
+      - groups
+      - id
+      - login
+      - paid
     StudentSubjectExams:
       type: object
       properties:
@@ -9433,6 +9966,15 @@ components:
           minimum: 1
       required:
       - version
+    VoidWriteRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 300
+      required:
+      - reason
     WeekdayEnum:
       enum:
       - 1

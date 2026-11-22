@@ -46,6 +46,11 @@ export function InitialsMenu({ me }: { me: Me }) {
               {t("nav.attendance")}
             </Menu.Item>
           )}
+          {me.active_role === "student" && (
+            <Menu.Item className={styles.item} onSelect={() => navigate("/student/payments")}>
+              {t("nav.payments")}
+            </Menu.Item>
+          )}
           <Menu.Item className={styles.item} onSelect={() => navigate("/account/password")}>
             {t("menu.password")}
           </Menu.Item>

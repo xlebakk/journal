@@ -9,6 +9,7 @@ api_v1: list[URLPattern | URLResolver] = [
     path("", include("apps.exams.urls")),
     path("", include("apps.announcements.urls")),
     path("", include("apps.reports.urls")),
+    path("", include("apps.payments.urls")),
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
 ]
 
