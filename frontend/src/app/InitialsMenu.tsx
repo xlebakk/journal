@@ -24,6 +24,7 @@ export function InitialsMenu({ me }: { me: Me }) {
   };
 
   // Not modal: a modal menu locks scrolling with an injected <style>, which the CSP blocks.
+  const studentLike = me.active_role === "student" || me.active_role === "parent";
   return (
     <Menu.Root modal={false}>
       <Menu.Trigger asChild>
@@ -42,12 +43,12 @@ export function InitialsMenu({ me }: { me: Me }) {
           <Menu.Item className={styles.item} onSelect={() => navigate("/account/profile")}>
             {t("menu.profile")}
           </Menu.Item>
-          {me.active_role === "student" && (
+          {studentLike && (
             <Menu.Item className={styles.item} onSelect={() => navigate("/student/attendance")}>
               {t("nav.attendance")}
             </Menu.Item>
           )}
-          {me.active_role === "student" && (
+          {studentLike && (
             <Menu.Item className={styles.item} onSelect={() => navigate("/student/payments")}>
               {t("nav.payments")}
             </Menu.Item>

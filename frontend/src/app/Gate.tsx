@@ -47,7 +47,9 @@ export function Gate({ section, mode }: GateProps) {
       </Suspense>
     );
   if (user.totp_setup_required) return <Navigate to="/setup-2fa" replace />;
-  if (section && user.active_role !== section) return <NotFoundPage />;
+  // A parent opens the student section, for a linked child (stage 14).
+  const role = user.active_role === "parent" ? "student" : user.active_role;
+  if (section && role !== section) return <NotFoundPage />;
 
   return (
     <Suspense fallback={<RuledSkeleton />}>

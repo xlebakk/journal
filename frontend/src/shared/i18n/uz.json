@@ -344,7 +344,8 @@
     "invalid_month": "Oyning birinchi kuni kerak.",
     "paid_in_future": "Toʻlov sanasi kelajakda boʻlishi mumkin emas.",
     "already_voided": "Yozuv allaqachon bekor qilingan.",
-    "discount_range": "Chegirma — 0 dan 100% gacha."
+    "discount_range": "Chegirma — 0 dan 100% gacha.",
+    "already_linked": "Bu ota-ona allaqachon biriktirilgan."
   },
   "schedule": {
     "title": "Dars jadvali",
@@ -950,7 +951,8 @@
     "fee": "guruh narxi",
     "discount": "chegirma",
     "payment": "toʻlov",
-    "charge": "hisoblangan summa"
+    "charge": "hisoblangan summa",
+    "parent": "ota-ona"
   },
   "auditVerbs": {
     "create": "yaratish",
@@ -999,7 +1001,9 @@
     "reissue": "qayta chiqarish",
     "revoke": "oʻchirish",
     "run": "ishga tushirish",
-    "void": "bekor qilish"
+    "void": "bekor qilish",
+    "link": "biriktirish",
+    "unlink": "ajratish"
   },
   "offline": {
     "title": "Aloqa yoʻq",
@@ -1117,5 +1121,22 @@
       "card": "karta",
       "transfer": "oʻtkazma"
     }
+  },
+  "parent": {
+    "child": "Farzand",
+    "noChildren": "Hisobingizga hali farzand biriktirilmagan. Markaz administratoriga murojaat qiling."
+  },
+  "family": {
+    "parents": "Ota-onalar",
+    "parentsHint": "Ota-ona oʻz logini bilan kiradi va oʻquvchi sahifalarini koʻradi: dars jadvali, kundalik, baholar, davomat, testlar, fikrlar va toʻlovlar — faqat oʻqish uchun.",
+    "noParents": "Ota-onalar biriktirilmagan.",
+    "addHow": "Ota-ona qoʻshish",
+    "addNew": "yangi hisob",
+    "addExisting": "tizimda allaqachon bor (aka-uka yoki opa-singil)",
+    "parent": "Ota-ona",
+    "add": "ota-ona qoʻshish",
+    "unlink": "ajratish",
+    "children": "Farzandlar",
+    "noChildren": "Farzandlar biriktirilmagan — oʻquvchi kartochkasidan biriktirish mumkin."
   }
 }

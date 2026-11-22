@@ -1,0 +1,9 @@
+/* Stage 14: whose pages the parent is looking at. */
+.single {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.switcher {
+  min-width: 200px;
+}

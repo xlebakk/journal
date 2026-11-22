@@ -9,6 +9,7 @@ subject in %, announcements for everyone, a role and a group.
 Stage 9: teachers' reviews for the last finished term (a few students per course).
 Stage 12: monthly prices of groups, two discounts, charges since September and payments;
 every fourth student owes for the current month, one owes for two months.
+Stage 14: three parents — one of them with two children.
 """
 
 import os
@@ -34,7 +35,7 @@ from apps.academics.models import (
     WorkType,
 )
 from apps.accounts import credentials
-from apps.accounts.models import Role, StudentProfile, TeacherProfile, User
+from apps.accounts.models import ParentLink, Role, StudentProfile, TeacherProfile, User
 from apps.announcements.models import Announcement, Audience
 from apps.exams.models import Exam, ExamResult, ExamSection, ExamSectionScore, StudentTarget
 from apps.journal.models import Attendance, AttendanceStatus, Grade, TeacherReview
@@ -227,6 +228,7 @@ class Command(BaseCommand):
         self._journal(today, groups, students)
         self._reviews(today)
         self._payments(today, groups, students)
+        self._parents(students)
         self._exams(today, groups, subjects)
         self._announcements(groups)
 
@@ -479,6 +481,26 @@ class Command(BaseCommand):
         Charge.objects.bulk_create(charges)
         Payment.objects.bulk_create(payments)
 
+    @staticmethod
+    def _surname(last: str, female: bool) -> str:
+        """The family's surname in the right form: «Мирзаев» → «Мирзаева» for a woman."""
+        for male_form, female_form in LAST_NAMES:
+            if last in (male_form, female_form):
+                return female_form if female else male_form
+        return last
+
+    def _parents(self, students: list[User]) -> None:
+        """Stage 14: a mother of two (brother and sister of one family), two more parents."""
+        families = [(students[0], students[1]), (students[3],), (students[20],)]
+        for children in families:
+            family = children[0].last_name
+            for child in children[1:]:
+                child.last_name = self._surname(family, child.first_name in FEMALE)
+                child.save(update_fields=["last_name"])
+            mother = self._make([Role.PARENT], self._surname(family, True), self.rng.choice(FEMALE))
+            for child in children:
+                ParentLink.objects.create(parent=mother, student=child)
+
     # --- Stage 5: mock exams and announcements ---------------------------------------------
 
     def _exams(self, today: date, groups: dict[str, Group], subjects: dict[str, Subject]) -> None:
@@ -596,14 +618,15 @@ class Command(BaseCommand):
             self.stdout.write(f"{roles:<8}  {name:<{width}}  {login:<14}  {password}")
         self.stdout.write(
             self.style.SUCCESS(
-                f"\nСоздано: 1 администратор, 6 преподавателей, 60 учеников, "
+                f"\nСоздано: 1 администратор, 6 преподавателей, 60 учеников, 3 родителя, "
                 f"{Group.objects.count()} группы, {Course.objects.count()} курсов, "
                 f"{Lesson.objects.count()} занятий (4 недели назад и 4 вперёд), "
                 f"{Attendance.objects.count()} отметок, {Grade.objects.count()} оценок, "
                 f"{Exam.objects.count()} пробных тестов, "
                 f"{Announcement.objects.count()} объявлений, "
                 f"{TeacherReview.objects.count()} отзывов, "
-                f"{Charge.objects.count()} начислений и {Payment.objects.count()} оплат. "
+                f"{Charge.objects.count()} начислений и {Payment.objects.count()} оплат, "
+                f"{ParentLink.objects.count()} связей «родитель — ребёнок». "
                 "Администратор при первом входе настроит 2FA."
             )
         )

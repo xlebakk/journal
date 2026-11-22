@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 
 from apps.academics.models import AcademicYear, Group, GroupMembership
 from apps.accounts.models import Role, User
-from apps.accounts.permissions import IsAdmin, IsStudent, current_user
+from apps.accounts.permissions import STUDENT_PAGES, IsAdmin, subject_student
 from apps.core.params import uuid_param
 
 from . import serializers as s
@@ -272,8 +272,8 @@ class VoidPaymentView(APIView):
 class MyPaymentsView(APIView):
     """The student's own account: charges, payments (voided ones hidden) and the debt."""
 
-    permission_classes = (IsStudent,)
+    permission_classes = STUDENT_PAGES
 
     @extend_schema(responses=s.LedgerSerializer)
     def get(self, request: Request) -> Response:
-        return Response(s.LedgerSerializer(_ledger(current_user(request), admin=False)).data)
+        return Response(s.LedgerSerializer(_ledger(subject_student(request), admin=False)).data)

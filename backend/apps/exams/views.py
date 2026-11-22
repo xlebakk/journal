@@ -14,7 +14,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.accounts.models import Role, User
-from apps.accounts.permissions import IsAdmin, IsStudent, IsTeacher, current_user
+from apps.accounts.permissions import (
+    STUDENT_PAGES,
+    IsAdmin,
+    IsTeacher,
+    subject_student,
+)
 from apps.audit import services as audit
 from apps.core.files import read_table
 from apps.core.params import uuid_param
@@ -338,11 +343,11 @@ class ExamDynamicsView(APIView):
 class StudentExamsView(APIView):
     """«Пробные тесты» of a student: per subject, own results only, target in % (SPEC §6.4)."""
 
-    permission_classes = (IsStudent,)
+    permission_classes = STUDENT_PAGES
 
     @extend_schema(responses=s.StudentSubjectExamsSerializer(many=True))
     def get(self, request: Request) -> Response:
-        me = current_user(request)
+        me = subject_student(request)
         results = (
             ExamResult.objects.filter(student=me)
             .select_related("exam__subject")

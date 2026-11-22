@@ -19,7 +19,7 @@ from rest_framework.views import APIView
 from apps.academics.models import AcademicYear, Course, GroupMembership, Term
 from apps.academics.serializers import current_groups_of
 from apps.accounts.models import User
-from apps.accounts.permissions import IsStudent, current_user
+from apps.accounts.permissions import STUDENT_PAGES, subject_student
 from apps.core.models import CenterSettings
 from apps.core.params import date_param, uuid_param
 from apps.schedule.models import Lesson, LessonStatus
@@ -118,11 +118,11 @@ def _no_year() -> Response:
 class StudentHomeView(APIView):
     """«Главная» (SPEC §6.1)."""
 
-    permission_classes = (IsStudent,)
+    permission_classes = STUDENT_PAGES
 
     @extend_schema(responses=s.StudentHomeSerializer)
     def get(self, request: Request) -> Response:
-        me = current_user(request)
+        me = subject_student(request)
         day = today()
         visible = Lesson.objects.for_user(me, "student")
         lessons_today = lesson_queryset(visible).filter(date=day).order_by("start_time")
@@ -205,11 +205,11 @@ class StudentHomeView(APIView):
 class StudentDiaryView(APIView):
     """«Дневник»: a week of lessons with topics, homework, own marks and grades (SPEC §6.2)."""
 
-    permission_classes = (IsStudent,)
+    permission_classes = STUDENT_PAGES
 
     @extend_schema(parameters=[OpenApiParameter("week", str)], responses=s.DiarySerializer)
     def get(self, request: Request) -> Response:
-        me = current_user(request)
+        me = subject_student(request)
         day = date_param(request, "week") or today()
         monday = day - timedelta(days=day.isoweekday() - 1)
         sunday = monday + timedelta(days=6)
@@ -248,11 +248,11 @@ class StudentDiaryView(APIView):
 class StudentGradesView(APIView):
     """«Оценки»: subjects × dates for a term or the year, weighted averages (SPEC §6.3)."""
 
-    permission_classes = (IsStudent,)
+    permission_classes = STUDENT_PAGES
 
     @extend_schema(parameters=[OpenApiParameter("term", str)], responses=s.StudentGradesSerializer)
     def get(self, request: Request) -> Response:
-        me = current_user(request)
+        me = subject_student(request)
         year = current_year()
         if year is None:
             return _no_year()
@@ -312,24 +312,24 @@ class StudentGradesView(APIView):
 class StudentGradeDetailView(APIView):
     """One grade with its lesson — the student's own only; anyone else's id is 404 (SPEC §15)."""
 
-    permission_classes = (IsStudent,)
+    permission_classes = STUDENT_PAGES
 
     @extend_schema(operation_id="student_grade_detail", responses=s.StudentGradeSerializer)
     def get(self, request: Request, pk: str) -> Response:
-        grade = get_object_or_404(_my_grades(current_user(request)), pk=pk)
+        grade = get_object_or_404(_my_grades(subject_student(request)), pk=pk)
         return Response(s.StudentGradeSerializer(_grade_row(grade)).data)
 
 
 class StudentAttendanceView(APIView):
     """«Посещаемость»: per subject and overall for the year so far, a month calendar (SPEC §6.5)."""
 
-    permission_classes = (IsStudent,)
+    permission_classes = STUDENT_PAGES
 
     @extend_schema(
         parameters=[OpenApiParameter("month", str)], responses=s.StudentAttendanceSerializer
     )
     def get(self, request: Request) -> Response:
-        me = current_user(request)
+        me = subject_student(request)
         year = current_year()
         if year is None:
             return _no_year()
@@ -416,11 +416,11 @@ class StudentAttendanceView(APIView):
 class StudentProfileView(APIView):
     """«Профиль»: name, groups, target (filled in by the administrator) (SPEC §6.7)."""
 
-    permission_classes = (IsStudent,)
+    permission_classes = STUDENT_PAGES
 
     @extend_schema(responses=s.StudentProfileViewSerializer)
     def get(self, request: Request) -> Response:
-        me = current_user(request)
+        me = subject_student(request)
         profile = getattr(me, "student_profile", None)
         data = {
             "full_name": me.full_name,

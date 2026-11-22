@@ -53,8 +53,30 @@ tokens.configure(`${apiRoot()}/auth/token/refresh`);
 // The app's login and refresh calls carry no access token and must not trigger a refresh.
 const TOKEN_FREE = /^\/auth\/(token|login)/;
 
+/**
+ * Extra query parameters for every request under a path prefix. Stage 14: the child a parent
+ * is looking at goes with each `/student/*` request; the server checks it is their child.
+ */
+const scopes = new Map<string, Record<string, string>>();
+
+export function setQueryScope(prefix: string, params: Record<string, string> | null): void {
+  if (params) scopes.set(prefix, params);
+  else scopes.delete(prefix);
+}
+
+function scoped(
+  path: string,
+  query?: Record<string, string | undefined>,
+): Record<string, string | undefined> | undefined {
+  for (const [prefix, params] of scopes) {
+    if (path.startsWith(prefix)) return { ...params, ...query };
+  }
+  return query;
+}
+
 function withQuery(path: string, query?: Record<string, string | undefined>): string {
   let url = `${apiRoot()}${path}`;
+  query = scoped(path, query);
   if (query) {
     const params = new URLSearchParams();
     for (const [key, value] of Object.entries(query)) if (value) params.set(key, value);

@@ -2548,6 +2548,110 @@ paths:
               schema:
                 $ref: '#/components/schemas/AdminUserDetail'
           description: ''
+  /api/v1/admin/users/{id}/children:
+    get:
+      operationId: admin_users_children_list
+      description: '`/admin/users/<parent>/children`: the parent''s card lists the
+        children.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FamilyMember'
+          description: ''
+  /api/v1/admin/users/{id}/parents:
+    get:
+      operationId: admin_users_parents_list
+      description: '`/admin/users/<student>/parents`: who can see this student''s
+        pages.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FamilyMember'
+          description: ''
+    post:
+      operationId: admin_users_parents_create
+      description: '`/admin/users/<student>/parents`: who can see this student''s
+        pages.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParentAddRequest'
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParentAdded'
+          description: ''
+  /api/v1/admin/users/{id}/parents/{parent_id}:
+    delete:
+      operationId: admin_users_parents_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: parent_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - admin
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/admin/users/{id}/reset-2fa:
     post:
       operationId: admin_users_reset_2fa_create
@@ -4198,6 +4302,25 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/parent/children:
+    get:
+      operationId: parent_children_list
+      description: '`/parent/children`: whom the parent can look at; the switch in
+        the header.'
+      tags:
+      - parent
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Child'
+          description: ''
   /api/v1/reports/courses/{id}:
     get:
       operationId: reports_courses_retrieve
@@ -5381,6 +5504,25 @@ components:
       - last_restore_check_ok
       - logo
       - updated_at
+    Child:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        short_name:
+          type: string
+        groups:
+          type: array
+          items:
+            type: string
+      required:
+      - full_name
+      - groups
+      - id
+      - short_name
     ClearRequest:
       type: object
       properties:
@@ -6190,6 +6332,23 @@ components:
       - date
       - end_time
       - start_time
+    FamilyMember:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        login:
+          type: string
+        is_active:
+          type: boolean
+      required:
+      - full_name
+      - id
+      - is_active
+      - login
     FeedItem:
       type: object
       description: 'What a reader sees: no audience details.'
@@ -7488,6 +7647,39 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Session'
+    ParentAddRequest:
+      type: object
+      description: Either `existing` (a parent account already in the system) or the
+        name of a new one.
+      properties:
+        existing:
+          type: string
+          format: uuid
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        middle_name:
+          type: string
+          maxLength: 100
+        login:
+          type: string
+          maxLength: 64
+    ParentAdded:
+      type: object
+      properties:
+        parent:
+          $ref: '#/components/schemas/FamilyMember'
+        temporary_password:
+          type: string
+          nullable: true
+      required:
+      - parent
+      - temporary_password
     PasswordChangeRequest:
       type: object
       properties:

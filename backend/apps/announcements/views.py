@@ -8,7 +8,14 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.accounts.permissions import IsAdmin, IsStudent, IsTeacher, active_role, current_user
+from apps.accounts.permissions import (
+    IsAdmin,
+    IsParent,
+    IsStudent,
+    IsTeacher,
+    active_role,
+    current_user,
+)
 from apps.core.viewsets import AuditedAdminViewSet
 
 from .models import Announcement
@@ -37,7 +44,7 @@ def feed(request: Request, *, pinned_only: bool = False, limit: int = 50) -> lis
 class AnnouncementFeedView(APIView):
     """Live announcements for the active role: pinned first, then the newest."""
 
-    permission_classes = (IsAdmin | IsTeacher | IsStudent,)
+    permission_classes = (IsAdmin | IsTeacher | IsStudent | IsParent,)
 
     @extend_schema(
         parameters=[OpenApiParameter("pinned", bool)], responses=FeedItemSerializer(many=True)

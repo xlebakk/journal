@@ -12,11 +12,22 @@ import type { Me, Role } from "@/features/auth/api";
 import { useBranding } from "@/features/auth/api";
 import { t, type MessageKey } from "@/shared/i18n";
 
+import { EmptyState } from "@/shared/ui";
 import { OfflineBar } from "@/features/journal/OfflineBar";
+import { ChildSwitcher } from "@/features/parent/ChildSwitcher";
+import { useHasChildren } from "@/features/parent/children";
 import styles from "./AppShell.module.css";
 import { InitialsMenu } from "./InitialsMenu";
 
 type NavItem = { to: string; label: MessageKey; end?: boolean; icon?: LucideIcon };
+
+const STUDENT_NAV: NavItem[] = [
+  { to: "/student", label: "nav.home", end: true, icon: House },
+  { to: "/student/diary", label: "nav.diary", icon: BookOpen },
+  { to: "/student/grades", label: "nav.grades", icon: ClipboardList },
+  { to: "/student/tests", label: "nav.tests", icon: FileCheck },
+  { to: "/student/schedule", label: "nav.schedule", icon: CalendarDays },
+];
 
 const NAV: Record<Role, NavItem[]> = {
   admin: [
@@ -42,14 +53,9 @@ const NAV: Record<Role, NavItem[]> = {
     { to: "/teacher/exams", label: "nav.exams" },
     { to: "/teacher/reports", label: "nav.reports" },
   ],
-  student: [
-    { to: "/student", label: "nav.home", end: true, icon: House },
-    { to: "/student/diary", label: "nav.diary", icon: BookOpen },
-    { to: "/student/grades", label: "nav.grades", icon: ClipboardList },
-    { to: "/student/tests", label: "nav.tests", icon: FileCheck },
-    { to: "/student/schedule", label: "nav.schedule", icon: CalendarDays },
-  ],
-  parent: [],
+  student: STUDENT_NAV,
+  // A parent reads the child's student pages (stage 14).
+  parent: STUDENT_NAV,
 };
 
 function Links({ items, className }: { items: NavItem[]; className: string | undefined }) {
@@ -77,19 +83,23 @@ export function AppShell({ me }: { me: Me }) {
   const role = me.active_role ?? "student";
   const items = NAV[role];
   const isAdmin = role === "admin";
+  const isParent = role === "parent";
+  const studentLike = role === "student" || isParent;
+  const hasChildren = useHasChildren(isParent);
   return (
-    <div className={role === "student" ? `${styles.shell} ${styles.withBottomNav}` : styles.shell}>
+    <div className={studentLike ? `${styles.shell} ${styles.withBottomNav}` : styles.shell}>
       <header className={styles.header}>
         <span className={styles.brand}>{branding.data?.center_name || t("app.centerName")}</span>
         {!isAdmin && (
           <nav
-            className={role === "student" ? `${styles.tabs} ${styles.studentTabs}` : styles.tabs}
+            className={studentLike ? `${styles.tabs} ${styles.studentTabs}` : styles.tabs}
             aria-label={t("nav.sections")}
           >
             <Links items={items} className={styles.tab} />
           </nav>
         )}
         <span className={styles.spacer} />
+        {isParent && <ChildSwitcher />}
         <InitialsMenu me={me} />
       </header>
       <div className={isAdmin ? styles.withSidebar : styles.body}>
@@ -99,11 +109,15 @@ export function AppShell({ me }: { me: Me }) {
           </nav>
         )}
         <main className={styles.main}>
-          {role !== "student" && <OfflineBar />}
-          <Outlet />
+          {(role === "teacher" || isAdmin) && <OfflineBar />}
+          {isParent && hasChildren === false ? (
+            <EmptyState text={t("parent.noChildren")} />
+          ) : (
+            <Outlet />
+          )}
         </main>
       </div>
-      {role === "student" && (
+      {studentLike && (
         // Phones: a bottom bar of five items with thin icons and labels (SPEC §6, §12).
         <nav className={styles.bottomNav} aria-label={t("nav.sections")}>
           {items.map((item) => {

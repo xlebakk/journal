@@ -32,6 +32,7 @@ E2E_TOTP_SECRET = "JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP"
 E2E_TOTP_SECRET_2 = "KRSXG5CTMVRXEZLUKRSXG5CTMVRXEZLU"
 E2E_TOTP_SECRET_3 = "MFRGGZDFMZTWQ2LKNNWG23TPOBYXE43U"
 E2E_TOTP_SECRET_4 = "ONSWG4TFORZWK3TUMVZXI5DFON2HE2LO"
+E2E_TOTP_SECRET_5 = "OBQXEZLOORZWC3DPNZSWY6LMNFZXIZLO"
 
 
 class Command(BaseCommand):
@@ -95,6 +96,14 @@ class Command(BaseCommand):
                 "Севара",
                 totp_enabled=True,
                 totp_secret=totp.encrypt_secret(E2E_TOTP_SECRET_4),
+            )
+            make(
+                "e2e.admin5",
+                [Role.ADMIN],
+                "Назарова",
+                "Камила",
+                totp_enabled=True,
+                totp_secret=totp.encrypt_secret(E2E_TOTP_SECRET_5),
             )
             self._schedule(teacher, student)
         logins = ", ".join(u.login for u in (admin, teacher, student, newbie))

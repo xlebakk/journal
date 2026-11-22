@@ -14,6 +14,7 @@ import { usersApi, useInvalidateUsers, useUser, useUserSessions, type UserDetail
 import { TemporaryPasswordDialog } from "./TemporaryPasswordDialog";
 import { UserForm } from "./UserForm";
 import { statusLabel } from "./labels";
+import { ChildrenSection, ParentsSection } from "./FamilySection";
 import { StudentExtras } from "./TargetsEditor";
 import styles from "./Users.module.css";
 
@@ -172,6 +173,8 @@ export function UserDetailPage() {
         }}
       />
       {data.roles.includes("student") && <StudentExtras userId={data.id} />}
+      {data.roles.includes("student") && <ParentsSection student={data} />}
+      {data.roles.includes("parent") && <ChildrenSection parentId={data.id} />}
       <Actions user={data} />
       <UserSessions userId={data.id} />
     </div>

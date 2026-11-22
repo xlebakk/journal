@@ -14,6 +14,7 @@ const ROLE_OPTIONS = [
   { value: "", label: t("users.any") },
   { value: "admin", label: t("roles.admin") },
   { value: "teacher", label: t("roles.teacher") },
+  { value: "parent", label: t("roles.parent") },
   { value: "student", label: t("roles.student") },
 ];
 const STATUS_OPTIONS = [

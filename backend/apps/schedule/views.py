@@ -17,7 +17,14 @@ from rest_framework.views import APIView
 
 from apps.academics.models import Room
 from apps.accounts.models import User
-from apps.accounts.permissions import IsAdmin, IsStudent, IsTeacher, active_role, current_user
+from apps.accounts.permissions import (
+    STUDENT_PAGES,
+    IsAdmin,
+    IsTeacher,
+    active_role,
+    current_user,
+    subject_student,
+)
 from apps.audit import services as audit
 from apps.core.params import date_param, uuid_param
 
@@ -678,12 +685,12 @@ class StudentScheduleView(APIView):
     """Lessons of the groups the student belonged to on each date; cancelled ones included
     (shown struck through)."""
 
-    permission_classes = (IsStudent,)
+    permission_classes = STUDENT_PAGES
 
     @extend_schema(parameters=RANGE_PARAMS, responses=StudentLessonSerializer(many=True))
     def get(self, request: Request) -> Response:
         first, last = date_range(request)
-        scoped = Lesson.objects.for_user(current_user(request), "student")
+        scoped = Lesson.objects.for_user(subject_student(request), "student")
         qs = lesson_queryset(scoped).filter(date__range=(first, last))
         return Response(StudentLessonSerializer(qs.order_by("date", "start_time"), many=True).data)
 

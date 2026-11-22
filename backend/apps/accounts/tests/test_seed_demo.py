@@ -69,6 +69,10 @@ def test_seed_demo_creates_people_and_prints_passwords() -> None:
     assert any(d > 0 for d in debts)  # debtors to show
     assert all(d >= 0 for d in debts)  # nobody paid more than charged
     assert Payment.objects.exists()
+    from apps.accounts.models import ParentLink
+
+    assert User.objects.with_role(Role.PARENT).count() == 3
+    assert ParentLink.objects.count() == 4  # one parent has two children
     text = out.getvalue()
     admin = User.objects.with_role(Role.ADMIN).get()
     assert admin.login in text

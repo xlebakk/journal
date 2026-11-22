@@ -40,6 +40,13 @@ class AnnouncementQuerySet(models.QuerySet["Announcement"]):
             )
         elif role == "teacher":
             groups = Course.objects.filter(Q(teacher=user) | Q(assistants=user)).values("group_id")
+        elif role == "parent":
+            # A parent reads what the children read: their groups and «ученикам» (stage 14).
+            day = timezone.localdate()
+            groups = GroupMembership.objects.filter(
+                members_on(day), student__parent_links__parent=user
+            ).values("group_id")
+            role = "student"
         else:
             return self.none()
         return self.filter(

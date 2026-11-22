@@ -94,6 +94,11 @@ export async function logout(): Promise<void> {
     await api("/auth/logout", { method: "POST" });
   } finally {
     if (isNativeApp) await tokens.clear();
+    try {
+      sessionStorage.removeItem("journal.child"); // the parent's chosen child (stage 14)
+    } catch {
+      // Storage may be unavailable; the page reloads anyway.
+    }
     if ("caches" in window) {
       const names = await caches.keys().catch(() => []);
       await Promise.all(names.map((name) => caches.delete(name)));
@@ -172,6 +177,8 @@ export function homePath(role: Role | null | undefined): string {
     case "teacher":
       return "/teacher";
     case "student":
+    case "parent":
+      // A parent reads the child's student pages (stage 14).
       return "/student";
     default:
       return "/login";

@@ -123,6 +123,9 @@ MATRIX: list[tuple[str, str, dict[str, int]]] = [
     ),
     ("post", "/api/v1/admin/payments/bill", {"admin": 400, "teacher": 403, "student": 403}),
     ("get", "/api/v1/student/payments", {"admin": 403, "teacher": 403, "student": 200}),
+    # Stage 14: parents are linked from the student's card ({other} is a student).
+    ("get", "/api/v1/admin/users/{other}/parents", {"admin": 200, "teacher": 403, "student": 403}),
+    ("get", "/api/v1/parent/children", {"admin": 403, "teacher": 403, "student": 403}),
     ("patch", "/api/v1/admin/settings", {"admin": 200, "teacher": 403, "student": 403}),
 ]
 

@@ -4,7 +4,7 @@ import { t } from "@/shared/i18n";
 
 import type { UserDetail, UserWrite } from "./api";
 
-export const ROLES = ["admin", "teacher", "student"] as const;
+export const ROLES = ["admin", "teacher", "parent", "student"] as const;
 const LOGIN_RE = /^$|^[a-z0-9][a-z0-9._-]{1,62}[a-z0-9]$/i;
 
 export const schema = z.object({

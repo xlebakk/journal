@@ -5,13 +5,13 @@ type Handler = (init: RequestInit & { url: string }) => Reply | Promise<Reply>;
 
 /** Routes `fetch` by "METHOD /path"; unknown routes fail the test loudly. */
 export function mockApi(routes: Record<string, Handler | Reply>) {
-  const calls: { method: string; path: string; body: unknown }[] = [];
+  const calls: { method: string; path: string; body: unknown; url?: string }[] = [];
   const fetchMock = vi.fn(async (input: RequestInfo | URL, init: RequestInit = {}) => {
     const url = new URL(String(input), "http://localhost");
     const method = (init.method ?? "GET").toUpperCase();
     const path = url.pathname.replace(/^\/api\/v1/, "");
     const body = typeof init.body === "string" ? JSON.parse(init.body) : undefined;
-    calls.push({ method, path, body });
+    calls.push({ method, path, body, url: url.href });
     const route = routes[`${method} ${path}`];
     if (!route) throw new Error(`Unexpected request: ${method} ${path}`);
     const reply = typeof route === "function" ? await route({ ...init, url: url.href }) : route;

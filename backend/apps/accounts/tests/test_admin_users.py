@@ -81,7 +81,7 @@ class TestCreate:
             ([], "roles_required"),
             (["student", "teacher"], "student_role_exclusive"),
             (["superuser"], "unknown_role"),
-            (["parent"], "unknown_role"),
+            (["parent", "student"], "student_role_exclusive"),  # parent is assignable (stage 14)
         ],
     )
     def test_invalid_roles(self, admin_client: APIClient, roles: list[str], error: str) -> None:

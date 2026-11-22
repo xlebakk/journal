@@ -3,7 +3,7 @@ from rest_framework.routers import SimpleRouter
 
 from apps.audit.views import AuditLogExportView, AuditLogListView, LoginEventListView
 
-from . import views_admin, views_auth, views_import, views_token
+from . import views_admin, views_auth, views_import, views_parents, views_token
 
 router = SimpleRouter(trailing_slash=False, use_regex_path=False)
 router.register("admin/users", views_admin.AdminUserViewSet, basename="admin-user")
@@ -33,6 +33,22 @@ urlpatterns: list[URLPattern | URLResolver] = [
         views_admin.AdminUserSessionView.as_view(),
         name="admin-user-session",
     ),
+    path(
+        "admin/users/<uuid:pk>/parents",
+        views_parents.StudentParentsView.as_view(),
+        name="admin-user-parents",
+    ),
+    path(
+        "admin/users/<uuid:pk>/parents/<uuid:parent_id>",
+        views_parents.StudentParentView.as_view(),
+        name="admin-user-parent",
+    ),
+    path(
+        "admin/users/<uuid:pk>/children",
+        views_parents.ParentChildrenAdminView.as_view(),
+        name="admin-user-children",
+    ),
+    path("parent/children", views_parents.MyChildrenView.as_view(), name="parent-children"),
     path("admin/audit", AuditLogListView.as_view(), name="admin-audit"),
     path("admin/audit/export", AuditLogExportView.as_view(), name="admin-audit-export"),
     path("admin/login-events", LoginEventListView.as_view(), name="admin-login-events"),

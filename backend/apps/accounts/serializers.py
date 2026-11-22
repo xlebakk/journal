@@ -22,8 +22,8 @@ from .models import (
 )
 from .permissions import active_role
 
-# Roles an administrator can assign today. «parent» is reserved in the model (SPEC §16).
-ASSIGNABLE_ROLES = (Role.ADMIN, Role.TEACHER, Role.STUDENT)
+# Roles an administrator can assign. «parent» since stage 14; a student has no other role.
+ASSIGNABLE_ROLES = (Role.ADMIN, Role.TEACHER, Role.PARENT, Role.STUDENT)
 
 
 def validate_roles(roles: list[str]) -> list[str]:

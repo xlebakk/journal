@@ -1303,6 +1303,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/users/{id}/children": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `/admin/users/<parent>/children`: the parent's card lists the children. */
+        get: operations["admin_users_children_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/users/{id}/parents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `/admin/users/<student>/parents`: who can see this student's pages. */
+        get: operations["admin_users_parents_list"];
+        put?: never;
+        /** @description `/admin/users/<student>/parents`: who can see this student's pages. */
+        post: operations["admin_users_parents_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/users/{id}/parents/{parent_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["admin_users_parents_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/users/{id}/reset-2fa": {
         parameters: {
             query?: never;
@@ -2272,6 +2323,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/parent/children": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description `/parent/children`: whom the parent can look at; the switch in the header. */
+        get: operations["parent_children_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/reports/courses/{id}": {
         parameters: {
             query?: never;
@@ -2842,6 +2910,13 @@ export interface components {
             /** Format: date-time */
             readonly updated_at: string;
         };
+        Child: {
+            /** Format: uuid */
+            id: string;
+            full_name: string;
+            short_name: string;
+            groups: string[];
+        };
         ClearRequest: {
             version: number;
             /** @default  */
@@ -3131,6 +3206,13 @@ export interface components {
             lesson_type?: string | null;
             /** Format: uuid */
             teacher?: string | null;
+        };
+        FamilyMember: {
+            /** Format: uuid */
+            id: string;
+            full_name: string;
+            login: string;
+            is_active: boolean;
         };
         /** @description What a reader sees: no audience details. */
         FeedItem: {
@@ -3649,6 +3731,19 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["Session"][];
+        };
+        /** @description Either `existing` (a parent account already in the system) or the name of a new one. */
+        ParentAddRequest: {
+            /** Format: uuid */
+            existing?: string;
+            last_name?: string;
+            first_name?: string;
+            middle_name?: string;
+            login?: string;
+        };
+        ParentAdded: {
+            parent: components["schemas"]["FamilyMember"];
+            temporary_password: string | null;
         };
         PasswordChangeRequest: {
             current_password: string;
@@ -6750,6 +6845,94 @@ export interface operations {
             };
         };
     };
+    admin_users_children_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyMember"][];
+                };
+            };
+        };
+    };
+    admin_users_parents_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyMember"][];
+                };
+            };
+        };
+    };
+    admin_users_parents_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ParentAddRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ParentAdded"];
+                };
+            };
+        };
+    };
+    admin_users_parents_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                parent_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     admin_users_reset_2fa_create: {
         parameters: {
             query?: never;
@@ -8272,6 +8455,25 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    parent_children_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Child"][];
+                };
             };
         };
     };
