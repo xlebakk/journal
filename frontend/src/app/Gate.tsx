@@ -27,9 +27,12 @@ type GateProps = {
 export function Gate({ section, mode }: GateProps) {
   const me = useMe();
   if (me.isPending) return <RuledSkeleton />;
-  // Offline the shell still opens (service worker), but there is no data: say so.
-  if (me.error instanceof TypeError) return <OfflinePage onRetry={() => void me.refetch()} />;
-  if (me.error) return <p role="alert">{errorMessage(me.error)}</p>;
+  // Offline the shell still opens (service worker), but there is no data: say so. When the
+  // network drops during work, the screen stays — the teacher's changes wait (stage 13).
+  if (me.error instanceof TypeError && !me.data) {
+    return <OfflinePage onRetry={() => void me.refetch()} />;
+  }
+  if (me.error && !me.data) return <p role="alert">{errorMessage(me.error)}</p>;
   const user = me.data;
   if (!user) return <Navigate to="/login" replace />;
 

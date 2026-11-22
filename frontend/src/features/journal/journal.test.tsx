@@ -7,6 +7,8 @@ import { renderRoutes, withQuery } from "@/test/render";
 import { statusFromKey } from "./actions";
 import type { Grid, Rules } from "./api";
 import { JournalPage } from "./JournalPage";
+import { OfflineBar } from "./OfflineBar";
+import { resetQueue } from "./offlineQueue";
 import { StudentEditor } from "./StudentEditor";
 
 const RULES: Rules = { scale: "100", low_below: "50.00", max_grades: 3, edit_window_days: 7 };
@@ -173,7 +175,9 @@ describe("JournalPage", () => {
     expect(screen.getByText("87")).toBeInTheDocument();
     fireEvent.keyDown(table, { key: "Enter" });
     await waitFor(() =>
-      expect(posted).toEqual([{ student: "s1", value: 87, work_type: null, reason: "" }]),
+      expect(posted).toEqual([
+        { student: "s1", value: 87, work_type: null, reason: "", client_key: expect.any(String) },
+      ]),
     );
   });
 
@@ -279,5 +283,57 @@ describe("ReviewsTab", () => {
     renderRoutes(routes, "/teacher/journal?tab=reviews");
     expect(await screen.findByLabelText("Алиев Фарход")).toBeDisabled();
     expect(screen.getByText(/пишет основной преподаватель/)).toBeInTheDocument();
+  });
+});
+
+describe("offline queue on the grid (stage 13)", () => {
+  beforeEach(resetQueue); // versions remembered by the tests above
+  afterEach(() => {
+    vi.restoreAllMocks();
+    resetQueue();
+  });
+
+  it("keeps a mark while there is no network and sends it when the network is back", async () => {
+    const online = vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
+    const { calls } = mockApi({
+      "GET /me": { body: ME_TEACHER },
+      "GET /journal/courses": {
+        body: [{ id: "c1", group_name: "11-М", subject_name: "Математика", teacher_name: "Ю", year: "y" }],
+      },
+      "GET /journal/courses/c1/terms": { body: [] },
+      "GET /journal/courses/c1": { body: grid() },
+      "PUT /journal/lessons/l1/attendance/s1": {
+        body: { id: "a1", lesson: "l1", student: "s1", status: "absent", late_minutes: null, comment: "", version: 1 },
+      },
+    }); // prettier-ignore
+    renderRoutes(
+      [
+        {
+          path: "/teacher/journal",
+          element: (
+            <>
+              <OfflineBar />
+              <JournalPage />
+            </>
+          ),
+        },
+      ],
+      "/teacher/journal",
+    );
+    const table = await screen.findByRole("grid");
+    table.focus();
+    fireEvent.keyDown(table, { key: "н", code: "KeyY" });
+    expect(await screen.findByText("Не отправлено: 1")).toBeInTheDocument();
+    expect(screen.getByText("Алиев Ф. · отсутствовал")).toBeInTheDocument();
+    expect(calls.some((c) => c.method === "PUT")).toBe(false);
+
+    online.mockReturnValue(true);
+    window.dispatchEvent(new Event("online"));
+    await waitFor(() => expect(screen.queryByText("Не отправлено: 1")).not.toBeInTheDocument());
+    expect(calls.find((c) => c.method === "PUT")?.body).toEqual({
+      status: "absent",
+      version: null,
+      reason: "",
+    });
   });
 });

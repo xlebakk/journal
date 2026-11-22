@@ -294,8 +294,14 @@ def _work_type(work_type_id: Any, lesson: Lesson) -> WorkType:
 def add_grade(request: Request, lesson_id: Any, data: dict[str, Any], reason: str) -> Grade:
     """SPEC §10.3, §10.6: a member of the group on that date, not absent, at most N grades."""
     who = actor(request)
+    key = data.get("client_key")
     with transaction.atomic():
         lesson = lock(who, lesson_id)
+        if key:
+            # The same request again (stage 13 offline queue): the grade already exists.
+            again = Grade.objects.filter(client_key=key, created_by=who.user, lesson=lesson).first()
+            if again is not None:
+                return again
         require_writable(lesson, who, reason)
         student = require_member(lesson, data["student"])
         mark = Attendance.objects.filter(lesson=lesson, student=student).first()
@@ -315,6 +321,7 @@ def add_grade(request: Request, lesson_id: Any, data: dict[str, Any], reason: st
                     lesson=lesson, student=student, value=data["value"], scale=scale,
                     work_type=work_type, weight=work_type.weight,
                     comment=data.get("comment", ""), position=position, created_by=who.user,
+                    client_key=key,
                 )  # fmt: skip
         except IntegrityError as exc:  # pragma: no cover — guarded by the lesson lock
             raise Rule("too_many_grades") from exc

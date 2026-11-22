@@ -63,6 +63,7 @@ type Reason = { reason?: string };
 
 /** Every write of the journal. `version` comes from the last response (SPEC §10.12). */
 export const journalApi = {
+  lessonPage: (id: string) => api<LessonPageData>(`/journal/lessons/${id}`),
   updateLesson: (id: string, body: { version: number } & Reason & Record<string, unknown>) =>
     api<LessonPageData>(`/journal/lessons/${id}`, { method: "PATCH", body }),
   conduct: (id: string, body: { version: number } & Reason) =>
@@ -86,7 +87,13 @@ export const journalApi = {
     }),
   addGrade: (
     lesson: string,
-    body: { student: string; value: number; work_type?: string | null; comment?: string } & Reason,
+    body: {
+      student: string;
+      value: number;
+      work_type?: string | null;
+      comment?: string;
+      client_key?: string;
+    } & Reason,
   ) => api<Grade>(`/journal/lessons/${lesson}/grades`, { method: "POST", body }),
   updateGrade: (
     id: string,

@@ -2,6 +2,7 @@ import * as Menu from "@radix-ui/react-dropdown-menu";
 import { useNavigate } from "react-router";
 
 import { homePath, logout, useSwitchRole, type Me, type Role } from "@/features/auth/api";
+import { queueSnapshot } from "@/features/journal/offlineQueue";
 import { t } from "@/shared/i18n";
 import { useTheme, type ThemePreference } from "@/shared/lib/theme";
 import { InitialsStamp } from "@/shared/ui";
@@ -77,7 +78,19 @@ export function InitialsMenu({ me }: { me: Me }) {
             </Menu.Item>
           ))}
           <Menu.Separator className={styles.separator} />
-          <Menu.Item className={styles.item} onSelect={() => void logout()}>
+          <Menu.Item
+            className={styles.item}
+            onSelect={() => {
+              // Unsent offline changes live only in this tab (stage 13).
+              if (
+                queueSnapshot().pending.length > 0 &&
+                !window.confirm(t("offline.logoutConfirm"))
+              ) {
+                return;
+              }
+              void logout();
+            }}
+          >
             {t("menu.logout")}
           </Menu.Item>
         </Menu.Content>

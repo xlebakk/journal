@@ -3185,6 +3185,8 @@ export interface components {
             reason: string;
             /** Format: uuid */
             student: string;
+            /** Format: uuid */
+            client_key?: string | null;
             value: number;
             /** Format: uuid */
             work_type?: string | null;

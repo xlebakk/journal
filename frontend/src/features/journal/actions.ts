@@ -1,6 +1,16 @@
 import { t, type MessageKey } from "@/shared/i18n";
 
 import { journalApi, type Attendance, type AttendanceStatus, type Grade } from "./api";
+import { dequeue, rememberVersion, versionOf } from "./offlineQueue";
+import {
+  isPendingId,
+  patchAllPresent,
+  patchAttendance,
+  patchGradeAdd,
+  patchGradeRemove,
+  patchLesson,
+  PENDING,
+} from "./offlinePatches";
 import type { Action } from "./useSave";
 
 export type LessonRef = { id: string; editable: boolean; needs_reason: boolean };
@@ -43,23 +53,37 @@ export function statusFromKey(event: { key: string; code: string }): AttendanceS
   return KEYS[event.key.toLowerCase()] ?? CODES[event.code];
 }
 
+/** Version 0 marks a row only the screen has (queued, not yet on the server). */
+function known(version: number | undefined): number | null {
+  return version ? version : null;
+}
+
+async function currentAttendance(lessonId: string, studentId: string) {
+  const page = await journalApi.lessonPage(lessonId);
+  return page.attendance.find((a) => a.student === studentId);
+}
+
 export function attendanceAction(
   lesson: LessonRef,
   studentId: string,
   previous: Attendance | undefined,
   changes: { status: AttendanceStatus; late_minutes?: number | null; comment?: string },
   reason: string,
+  who = "",
 ): Action {
+  const key = `attendance:${lesson.id}:${studentId}`;
+  const send = (version: number | null) =>
+    journalApi
+      .setAttendance(lesson.id, studentId, { ...changes, version, reason })
+      .then((saved) => {
+        rememberVersion(key, saved.version);
+        return saved;
+      });
   return {
-    run: () =>
-      journalApi.setAttendance(lesson.id, studentId, {
-        ...changes,
-        version: previous?.version ?? null,
-        reason,
-      }),
+    run: () => send(versionOf(key, known(previous?.version))),
     undo: (result) => {
       const saved = result as Attendance;
-      return previous
+      return previous && previous.version
         ? () =>
             journalApi.setAttendance(lesson.id, studentId, {
               status: previous.status,
@@ -71,6 +95,35 @@ export function attendanceAction(
         : () =>
             journalApi.clearAttendance(lesson.id, studentId, { version: saved.version, reason });
     },
+    offline: {
+      key,
+      label: `${who} · ${t(STATUS_NAME[changes.status])}`,
+      patch: patchAttendance(lesson.id, studentId, changes),
+      force: async () => send(known((await currentAttendance(lesson.id, studentId))?.version)),
+      alreadyThere: async () => {
+        const current = await currentAttendance(lesson.id, studentId);
+        if (!current || current.status !== changes.status) return false;
+        rememberVersion(key, current.version);
+        return true;
+      },
+    },
+  };
+}
+
+export function allPresentAction(lessonId: string, reason: string): Action {
+  return {
+    run: () =>
+      journalApi.allPresent(lessonId, { reason }).then((marks) => {
+        for (const mark of marks) {
+          rememberVersion(`attendance:${lessonId}:${mark.student}`, mark.version);
+        }
+        return marks;
+      }),
+    offline: {
+      key: `all-present:${lessonId}`,
+      label: t("journal.allPresent"),
+      patch: patchAllPresent(lessonId),
+    },
   };
 }
 
@@ -80,7 +133,11 @@ export function addGradeAction(
   value: number,
   reason: string,
   workType?: string,
+  who = "",
 ): Action {
+  // The same key goes with every resend: the server creates the grade once (stage 13).
+  const clientKey = crypto.randomUUID();
+  const key = `grade:${clientKey}`;
   return {
     run: () =>
       journalApi.addGrade(lesson.id, {
@@ -88,18 +145,56 @@ export function addGradeAction(
         value,
         work_type: workType ?? null,
         reason,
+        client_key: clientKey,
       }),
     undo: (result) => {
       const grade = result as Grade;
       return () => journalApi.deleteGrade(grade.id, { version: grade.version, reason });
     },
+    offline: {
+      key,
+      label: `${who} · ${value}`,
+      patch: patchGradeAdd(lesson.id, studentId, value, workType ?? null, key),
+    },
   };
 }
 
 export function deleteGradeAction(grade: Grade, reason: string): Action {
+  if (isPendingId(grade.id)) {
+    // Not on the server yet: take it out of the queue, nothing to send.
+    const key = grade.id.slice(PENDING.length);
+    return {
+      run: async () => dequeue(key),
+      localPatch: patchGradeRemove(grade.id),
+    };
+  }
   return {
     run: () => journalApi.deleteGrade(grade.id, { version: grade.version, reason }),
     undo: (result) => () =>
       journalApi.restoreGrade(grade.id, { version: (result as Grade).version, reason }),
+  };
+}
+
+/** Topic, homework, lesson type or comment of a lesson; each field waits on its own. */
+export function lessonAction(
+  lesson: { id: string; version: number },
+  changes: Record<string, unknown>,
+  reason: string,
+  label: string,
+): Action {
+  const key = `lesson:${lesson.id}`;
+  const send = (version: number) =>
+    journalApi.updateLesson(lesson.id, { version, reason, ...changes }).then((page) => {
+      rememberVersion(key, page.lesson.version);
+      return page;
+    });
+  return {
+    run: () => send(versionOf(key, lesson.version) ?? lesson.version),
+    offline: {
+      key: `${key}:${Object.keys(changes).sort().join(",")}`,
+      label,
+      patch: patchLesson(lesson.id, changes),
+      force: async () => send((await journalApi.lessonPage(lesson.id)).lesson.version),
+    },
   };
 }

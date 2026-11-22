@@ -12,6 +12,7 @@ import type { Me, Role } from "@/features/auth/api";
 import { useBranding } from "@/features/auth/api";
 import { t, type MessageKey } from "@/shared/i18n";
 
+import { OfflineBar } from "@/features/journal/OfflineBar";
 import styles from "./AppShell.module.css";
 import { InitialsMenu } from "./InitialsMenu";
 
@@ -98,6 +99,7 @@ export function AppShell({ me }: { me: Me }) {
           </nav>
         )}
         <main className={styles.main}>
+          {role !== "student" && <OfflineBar />}
           <Outlet />
         </main>
       </div>

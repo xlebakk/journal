@@ -17,7 +17,6 @@ import {
 
 import {
   isLow,
-  journalApi,
   SCALE_RANGE,
   useGrid,
   useJournalCourses,
@@ -30,7 +29,13 @@ import {
 } from "./api";
 import styles from "./Journal.module.css";
 import { journalBase } from "./paths";
-import { addGradeAction, deleteGradeAction, mark, statusFromKey } from "./actions";
+import {
+  addGradeAction,
+  attendanceAction,
+  deleteGradeAction,
+  mark,
+  statusFromKey,
+} from "./actions";
 import { StudentEditor } from "./StudentEditor";
 import { SaveStatus } from "./SaveStatus";
 import { useSave } from "./useSave";
@@ -314,7 +319,17 @@ export function JournalPage() {
       setBuffer("");
       if (value < min || value > max) return setHint(t("journal.outOfRange", { min, max }));
       return guarded(
-        (why) => void perform(addGradeAction(target.lesson, target.student.id, value, why)),
+        (why) =>
+          void perform(
+            addGradeAction(
+              target.lesson,
+              target.student.id,
+              value,
+              why,
+              undefined,
+              target.student.short_name,
+            ),
+          ),
       );
     }
     if (event.key === "Escape") {
@@ -338,29 +353,16 @@ export function JournalPage() {
       const previous = target.cell?.attendance;
       guarded(
         (why) =>
-          void perform({
-            run: () =>
-              journalApi.setAttendance(target.lesson.id, target.student.id, {
-                status: "absent",
-                version: previous?.version ?? null,
-                reason: why,
-              }),
-            undo: (result) => {
-              const saved = result as Attendance;
-              return previous
-                ? () =>
-                    journalApi.setAttendance(target.lesson.id, target.student.id, {
-                      status: previous.status,
-                      version: saved.version,
-                      reason: why,
-                    })
-                : () =>
-                    journalApi.clearAttendance(target.lesson.id, target.student.id, {
-                      version: saved.version,
-                      reason: why,
-                    });
-            },
-          }),
+          void perform(
+            attendanceAction(
+              target.lesson,
+              target.student.id,
+              previous,
+              { status: "absent" },
+              why,
+              target.student.short_name,
+            ),
+          ),
       );
     }
   };

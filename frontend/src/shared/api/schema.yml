@@ -6334,6 +6334,10 @@ components:
         student:
           type: string
           format: uuid
+        client_key:
+          type: string
+          format: uuid
+          nullable: true
         value:
           type: integer
         work_type:

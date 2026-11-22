@@ -99,6 +99,9 @@ class Grade(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
     )
     version = models.PositiveIntegerField(default=1)
+    # Stage 13: a key made by the client, so a grade sent again from the offline queue
+    # (the answer was lost, not the request) is not created twice.
+    client_key = models.UUIDField(null=True, blank=True, unique=True)
 
     objects = GradeQuerySet.as_manager()
 

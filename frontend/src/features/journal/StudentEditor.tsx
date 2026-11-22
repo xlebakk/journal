@@ -17,6 +17,7 @@ import {
   type WorkTypeOption,
 } from "./api";
 import styles from "./Journal.module.css";
+import { isPendingId } from "./offlinePatches";
 import type { Action } from "./useSave";
 import {
   addGradeAction,
@@ -149,6 +150,20 @@ function GradeDialog({
   const remove = async () => {
     if (await perform(deleteGradeAction(grade, reason))) onClose();
   };
+  if (isPendingId(grade.id)) {
+    // Still in the offline queue: it can only be taken back.
+    return (
+      <div className={styles.form}>
+        <p className={styles.note}>{t("offline.notSentGrade")}</p>
+        <DialogActions>
+          <Button variant="danger" onClick={() => void remove()}>
+            {t("journal.deleteGrade")}
+          </Button>
+          <Button onClick={onClose}>{t("common.cancel")}</Button>
+        </DialogActions>
+      </div>
+    );
+  }
   return (
     <div className={styles.form}>
       <TextField
@@ -198,7 +213,16 @@ export function StudentEditor(props: EditorProps) {
     next: AttendanceStatus,
     extra: { late_minutes?: number | null; comment?: string } = {},
   ) =>
-    perform(attendanceAction(lesson, student.id, attendance, { status: next, ...extra }, reason));
+    perform(
+      attendanceAction(
+        lesson,
+        student.id,
+        attendance,
+        { status: next, ...extra },
+        reason,
+        student.short_name,
+      ),
+    );
 
   const cycle = () => {
     const next = STATUS_CYCLE[(STATUS_CYCLE.indexOf(status) + 1) % STATUS_CYCLE.length]!;
@@ -217,7 +241,9 @@ export function StudentEditor(props: EditorProps) {
       <span className={styles.studentName}>{student.short_name}</span>
       <button
         type="button"
-        className={`${styles.mark} ${styles[`mark_${status}`]} ${attendance ? "" : styles.unmarked}`}
+        className={`${styles.mark} ${styles[`mark_${status}`]} ${attendance ? "" : styles.unmarked} ${
+          attendance && isPendingId(attendance.id) ? styles.pending : ""
+        }`}
         aria-label={t("journal.statusCycle", { status: t(STATUS_NAME[status]) })}
         disabled={blocked || busy}
         onClick={cycle}
@@ -253,11 +279,15 @@ export function StudentEditor(props: EditorProps) {
             <button
               key={grade.id}
               type="button"
-              className={`mono ${styles.gradeChip} ${isLow(grade.value, rules) ? styles.low : ""}`}
+              className={`mono ${styles.gradeChip} ${isLow(grade.value, rules) ? styles.low : ""} ${
+                isPendingId(grade.id) ? styles.pending : ""
+              }`}
               title={
-                own
-                  ? grade.comment || undefined
-                  : t("journal.notYours", { name: grade.author_name })
+                isPendingId(grade.id)
+                  ? t("offline.notSent")
+                  : own
+                    ? grade.comment || undefined
+                    : t("journal.notYours", { name: grade.author_name })
               }
               disabled={blocked || !own}
               onClick={() => setEditing(grade)}
@@ -271,7 +301,11 @@ export function StudentEditor(props: EditorProps) {
             rules={rules}
             disabled={busy}
             label={t("journal.addGrade", { name: student.short_name })}
-            onSubmit={(value) => void perform(addGradeAction(lesson, student.id, value, reason))}
+            onSubmit={(value) =>
+              void perform(
+                addGradeAction(lesson, student.id, value, reason, undefined, student.short_name),
+              )
+            }
           />
         )}
       </span>

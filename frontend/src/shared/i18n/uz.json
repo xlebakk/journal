@@ -1004,7 +1004,22 @@
   "offline": {
     "title": "Aloqa yoʻq",
     "text": "Jurnal faqat internet bilan ishlaydi: baholar va dars jadvali qurilmada saqlanmaydi.",
-    "retry": "takrorlash"
+    "retry": "takrorlash",
+    "barTitle": "Tarmoqsiz oʻzgarishlar",
+    "barOffline": "Tarmoq yoʻq. Davom etish mumkin: belgilar, baholar va mavzular tarmoq qaytganda oʻzi yuboriladi. Varaqni yopmang — oʻzgarishlar faqat unda saqlanadi.",
+    "barPending": "Yuborilmagan: {count}",
+    "barSyncing": "Yuborilmoqda: {count}…",
+    "sendNow": "hozir yuborish",
+    "queued": "Tarmoq yoʻq — oʻzgarish yuborilishini kutmoqda",
+    "notSent": "Hali yuborilmagan",
+    "notSentGrade": "Baho hali serverga yuborilmagan: uni faqat olib tashlash mumkin.",
+    "needsNetwork": "Tarmoq kerak va barcha oʻzgarishlar yuborilgan boʻlishi kerak",
+    "conflict": "{label}: serverda allaqachon boshqa qiymat — uni boshqa kishi oʻzgartirgan.",
+    "refused": "{label}: saqlanmadi — {error}",
+    "keepMine": "meniki qolsin",
+    "takeServer": "serverdagini olish",
+    "dismiss": "olib tashlash",
+    "logoutConfirm": "Yuborilmagan oʻzgarishlar bor. Chiqqandan keyin ular yoʻqoladi. Chiqilsinmi?"
   },
   "install": {
     "ios": "iPhoneʼda jurnalni ilova sifatida oʻrnatish mumkin: «Ulashish» → «Uy ekraniga»."

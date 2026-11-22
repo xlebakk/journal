@@ -197,6 +197,7 @@ class AttendanceWriteSerializer(ReasonMixin):
 
 class GradeCreateSerializer(ReasonMixin):
     student = serializers.UUIDField()
+    client_key = serializers.UUIDField(required=False, allow_null=True)
     value = serializers.IntegerField()
     work_type = serializers.UUIDField(required=False, allow_null=True)
     comment = serializers.CharField(max_length=300, required=False, allow_blank=True)

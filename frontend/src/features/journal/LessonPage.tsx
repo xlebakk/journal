@@ -14,6 +14,9 @@ import styles from "./Journal.module.css";
 import { journalBase } from "./paths";
 import { SaveStatus } from "./SaveStatus";
 import { StudentEditor } from "./StudentEditor";
+import { allPresentAction, lessonAction } from "./actions";
+import { useQueue } from "./offlineQueue";
+import { useOnline } from "./useOnline";
 import { useSave, type Action } from "./useSave";
 
 type Draft = { topic: string; homework: string; comment: string };
@@ -60,11 +63,8 @@ function LessonFields({ data, reason, blocked, busy, perform, onDraft }: FieldsP
     comment: data.comment,
   });
   const suggestions = useId();
-  const save = (changes: Record<string, unknown>) =>
-    void perform({
-      run: () =>
-        journalApi.updateLesson(lesson.id, { version: lesson.version, reason, ...changes }),
-    });
+  const save = (changes: Record<string, unknown>, label: string) =>
+    void perform(lessonAction(lesson, changes, reason, label));
   const change = (name: keyof Draft, value: string) => {
     const next = { ...values, [name]: value };
     setValues(next);
@@ -77,7 +77,7 @@ function LessonFields({ data, reason, blocked, busy, perform, onDraft }: FieldsP
         label={t("journal.lessonType")}
         value={lesson.lesson_type ?? ""}
         disabled={blocked || busy}
-        onChange={(e) => save({ lesson_type: e.target.value || null })}
+        onChange={(e) => save({ lesson_type: e.target.value || null }, t("journal.lessonType"))}
         options={[
           { value: "", label: "—" },
           ...data.lesson_types.map((x) => ({ value: x.id, label: x.name })),
@@ -89,7 +89,9 @@ function LessonFields({ data, reason, blocked, busy, perform, onDraft }: FieldsP
         list={suggestions}
         disabled={blocked}
         onChange={(e) => change("topic", e.target.value)}
-        onBlur={() => values.topic !== lesson.topic && save({ topic: values.topic })}
+        onBlur={() =>
+          values.topic !== lesson.topic && save({ topic: values.topic }, t("journal.topic"))
+        }
       />
       <datalist id={suggestions}>
         {data.topic_suggestions.map((x) => (
@@ -104,7 +106,10 @@ function LessonFields({ data, reason, blocked, busy, perform, onDraft }: FieldsP
           disabled={blocked}
           rows={2}
           onChange={(e) => change("homework", e.target.value)}
-          onBlur={() => values.homework !== lesson.homework && save({ homework: values.homework })}
+          onBlur={() =>
+            values.homework !== lesson.homework &&
+            save({ homework: values.homework }, t("journal.homework"))
+          }
         />
       </label>
       <label className={styles.textareaField}>
@@ -115,7 +120,10 @@ function LessonFields({ data, reason, blocked, busy, perform, onDraft }: FieldsP
           disabled={blocked}
           rows={2}
           onChange={(e) => change("comment", e.target.value)}
-          onBlur={() => values.comment !== data.comment && save({ comment: values.comment })}
+          onBlur={() =>
+            values.comment !== data.comment &&
+            save({ comment: values.comment }, t("journal.comment"))
+          }
         />
       </label>
     </div>
@@ -128,6 +136,8 @@ export function LessonPage() {
   const me = useMe();
   const page = useLessonPage(id);
   const { state, perform, retry, undo, busy } = useSave();
+  const queue = useQueue();
+  const online = useOnline();
   const [reason, setReason] = useState("");
   const [draft, setDraft] = useState<Draft | null>(null);
 
@@ -219,12 +229,17 @@ export function LessonPage() {
       <div className={styles.actions}>
         <Button
           disabled={blocked || busy}
-          onClick={() => void perform({ run: () => journalApi.allPresent(lesson.id, { reason }) })}
+          onClick={() => void perform(allPresentAction(lesson.id, reason))}
         >
           {t("journal.allPresent")}
         </Button>
         {lesson.status !== "conducted" && (
-          <Button variant="primary" disabled={blocked || busy} onClick={conduct}>
+          <Button
+            variant="primary"
+            disabled={blocked || busy || !online || queue.pending.length > 0}
+            title={!online || queue.pending.length > 0 ? t("offline.needsNetwork") : undefined}
+            onClick={conduct}
+          >
             {t("journal.conduct")}
           </Button>
         )}

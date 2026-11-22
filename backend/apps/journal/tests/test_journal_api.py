@@ -239,6 +239,18 @@ class TestGradeRules:
             assert add_grade(client, lesson, student).status_code == 201
         assert add_grade(client, lesson, student).json() == {"detail": ["too_many_grades"]}
 
+    def test_the_same_client_key_creates_one_grade(
+        self, lesson: Lesson, teacher: User, student: User, client_for: ClientFor
+    ) -> None:
+        """Stage 13: the offline queue resends a grade whose answer was lost."""
+        client = client_for(teacher)
+        key = "5f0c4f3e-2b7a-4d7e-9a77-1f3f1c2b9d10"
+        first = add_grade(client, lesson, student, client_key=key).json()
+        again = add_grade(client, lesson, student, client_key=key).json()
+        assert again["id"] == first["id"]
+        assert Grade.objects.count() == 1
+        assert AuditLog.objects.filter(action="journal.grade_create").count() == 1
+
     @pytest.mark.parametrize(("scale", "value", "ok"), [
         ("100", 0, True), ("100", 100, True), ("100", 101, False), ("100", -1, False),
         ("5", 2, True), ("5", 1, False), ("5", 6, False), ("10", 1, True), ("10", 11, False),

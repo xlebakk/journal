@@ -453,3 +453,32 @@
 .reviewName {
   font-weight: 600;
 }
+
+/* Stage 13: changes waiting for the network — a dashed pencil line, like a draft. */
+.pending {
+  outline: var(--line) dashed var(--pencil);
+  outline-offset: 2px;
+}
+
+.offlineBar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+  padding: var(--space-1) 0;
+  border-top: var(--line) solid var(--ink);
+  border-bottom: var(--line) solid var(--ink);
+}
+
+.offlineLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  margin: 0;
+}
+
+.offlineLabels {
+  color: var(--ink-2);
+  font-size: var(--text-14);
+}

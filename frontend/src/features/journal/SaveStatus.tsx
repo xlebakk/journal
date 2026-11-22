@@ -20,6 +20,7 @@ export function SaveStatus({
     <div className={styles.saveStatus} role="status" aria-live="polite">
       {state.kind === "saved" && <span>{t("journal.saved", { time: formatTime(state.at) })}</span>}
       {state.kind === "undone" && <span>{t("journal.undone")}</span>}
+      {state.kind === "queued" && <span>{t("offline.queued")}</span>}
       {state.kind === "error" && (
         <span className={styles.error}>
           {t("journal.unsaved")}: {errorMessage(state.error)}{" "}
