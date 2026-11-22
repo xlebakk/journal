@@ -38,13 +38,20 @@ function say(line) {
 // (empty code caches) is an outlier, not the page.
 const RUNS = Number(process.env.LIGHTHOUSE_RUNS ?? 3);
 
-async function once(page, path, keepSession) {
+// Lighthouse's own hiccups (the trace was not recorded) say nothing about the page: run again.
+const FLAKY = new Set(["NO_NAVSTART", "NO_FCP", "NO_TRACING_STARTED", "PROTOCOL_TIMEOUT"]);
+
+async function once(page, path, keepSession, attempt = 1) {
   const { lhr } = await lighthouse(
     `${base}${path}`,
     { onlyCategories: Object.keys(MIN), disableStorageReset: keepSession, logLevel: "error" },
     undefined,
     page,
   );
+  if (lhr.runtimeError && FLAKY.has(lhr.runtimeError.code) && attempt < 3) {
+    say(`  ${path}: ${lhr.runtimeError.code}, run again`);
+    return once(page, path, keepSession, attempt + 1);
+  }
   if (lhr.runtimeError) throw new Error(`${path}: ${lhr.runtimeError.message}`);
   if (lhr.finalDisplayedUrl.replace(base, "") !== path) {
     throw new Error(`${path} redirected to ${lhr.finalDisplayedUrl}: not logged in?`);
