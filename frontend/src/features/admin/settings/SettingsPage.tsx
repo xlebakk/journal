@@ -127,6 +127,11 @@ function SettingsForm({ initial }: { initial: Settings }) {
       <h2>{t("settings.security")}</h2>
       <div className={styles.grid}>{SECURITY.map(number)}</div>
       <Checkbox
+        label={t("settings.require_admin_2fa")}
+        checked={draft.require_admin_2fa ?? false}
+        onChange={(e) => setDraft({ ...draft, require_admin_2fa: e.target.checked })}
+      />
+      <Checkbox
         label={t("settings.require_teacher_2fa")}
         checked={draft.require_teacher_2fa ?? false}
         onChange={(e) => setDraft({ ...draft, require_teacher_2fa: e.target.checked })}

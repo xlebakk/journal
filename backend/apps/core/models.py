@@ -30,7 +30,8 @@ class CenterSettings(models.Model):
     student_absolute_hours = models.PositiveSmallIntegerField(default=12)
     student_remember_days = models.PositiveSmallIntegerField(default=30)
 
-    # 2FA is always required for administrators; for teachers — by this switch.
+    # 2FA is each user's choice (in the profile); the center can require it per role.
+    require_admin_2fa = models.BooleanField(default=False)
     require_teacher_2fa = models.BooleanField(default=False)
 
     # Journal (SPEC §2).

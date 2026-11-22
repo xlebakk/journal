@@ -129,7 +129,7 @@ class Command(BaseCommand):
             last_name=last,
             first_name=first,
             roles=roles,
-            # Demo convenience: skip the forced change; the admin still sets up 2FA.
+            # Demo convenience: skip the forced change; 2FA is each user's choice.
             must_change_password=False,
         )
         self.rows.append((", ".join(roles), user.full_name, user.login, password))
@@ -627,6 +627,6 @@ class Command(BaseCommand):
                 f"{TeacherReview.objects.count()} отзывов, "
                 f"{Charge.objects.count()} начислений и {Payment.objects.count()} оплат, "
                 f"{ParentLink.objects.count()} связей «родитель — ребёнок». "
-                "Администратор при первом входе настроит 2FA."
+                "2FA каждый включает сам в профиле."
             )
         )

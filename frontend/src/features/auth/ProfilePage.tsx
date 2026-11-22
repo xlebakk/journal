@@ -38,7 +38,8 @@ export function ProfilePage() {
 
   if (!me.data) return null;
   const user = me.data;
-  const canToggle = !user.roles.includes("admin");
+  // 2FA is the user's choice; when the center requires it, the server says no.
+  const canToggle = true;
 
   return (
     <section className={styles.page}>

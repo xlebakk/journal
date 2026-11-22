@@ -5466,6 +5466,8 @@ components:
           type: integer
           maximum: 365
           minimum: 7
+        require_admin_2fa:
+          type: boolean
         require_teacher_2fa:
           type: boolean
         default_grade_scale:
@@ -7855,6 +7857,8 @@ components:
           type: integer
           maximum: 365
           minimum: 7
+        require_admin_2fa:
+          type: boolean
         require_teacher_2fa:
           type: boolean
         default_grade_scale:

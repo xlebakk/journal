@@ -875,6 +875,7 @@
     "teacher_remember_days": "Преподаватель: «запомнить», дней",
     "student_absolute_hours": "Ученик: сеанс, часов",
     "student_remember_days": "Ученик: «запомнить», дней",
+    "require_admin_2fa": "Требовать 2FA от администраторов",
     "require_teacher_2fa": "Требовать 2FA от преподавателей",
     "journal": "Журнал",
     "edit_window_days": "Окно редактирования, дней",

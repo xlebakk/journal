@@ -15,7 +15,7 @@
 | CSRF на входе и шаге TOTP (не только для залогиненных) | `core/csrf.py` | `TestCsrfAndCookies` |
 | Argon2id, длина ≥ 10, список распространённых, непохожесть на логин и ФИО; фразы без спецсимволов допустимы | `AUTH_PASSWORD_VALIDATORS` | `TestTemporaryPassword` |
 | Временный пароль: до смены любой запрос, кроме `/me`, `/auth/password`, `/auth/logout`, → 403 `password_change_required` | `ForcedActionMiddleware` | `test_only_password_change_is_allowed` |
-| Администратору 2FA обязательна; до настройки — 403 `totp_setup_required`; администратор может сделать 2FA обязательной для преподавателей | `middleware.totp_setup_required` | `TestTotpSetup` |
+| 2FA — по желанию пользователя (этап 15); центр может сделать её обязательной для администраторов и для преподавателей, тогда до настройки — 403 `totp_setup_required` | `middleware.totp_setup_required` | `TestTotpSetup` |
 | TOTP-секрет зашифрован (Fernet, ключи из окружения, ротация через MultiFernet); код нельзя использовать повторно; 5 неверных кодов → вход заново + засчитанная неудача | `totp.py` | `TestTotpLogin` |
 | 10 резервных кодов, одноразовые, хранятся как HMAC | `totp.generate_backup_codes` | `test_backup_code_works_once` |
 | Cookie `__Host-session`: `HttpOnly`, `Secure`, `SameSite=Lax`, `Path=/`, без `Domain` | `settings/base.py` | `test_session_cookie_flags` |
@@ -61,7 +61,7 @@
 | `GET /auth/sessions`, `DELETE /auth/sessions/{свой}` | 401 | 200 / 204 | 200 / 204 | 200 / 204 |
 | `DELETE /auth/sessions/{чужой}` | 401 | 404 | 404 | 404 |
 | `/auth/totp/setup` (GET/POST), `/auth/totp/backup-codes` | 401 | 200 | 200 | 200 |
-| `DELETE /auth/totp/setup` | 401 | 204 | 204 (если 2FA не обязательна) | 403 `totp_required` |
+| `DELETE /auth/totp/setup` | 401 | 204 | 204 (если 2FA не обязательна) | 204 (если 2FA не обязательна), иначе 403 `totp_required` |
 | `/admin/users*`, `/admin/audit`, `/admin/login-events` | 401 | 403 | 403 | 200 |
 | `GET /schema/` | 401 | 403 | 403 | 200 |
 | Администратор в активной роли «преподаватель» → `/admin/*` | — | — | 403 | — |

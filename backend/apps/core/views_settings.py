@@ -72,6 +72,7 @@ class CenterSettingsSerializer(serializers.ModelSerializer[CenterSettings]):
             "contacts",
             "site_url",
             *RANGES,
+            "require_admin_2fa",
             "require_teacher_2fa",
             "default_grade_scale",
             "logo",

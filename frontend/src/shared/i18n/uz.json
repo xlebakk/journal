@@ -875,6 +875,7 @@
     "teacher_remember_days": "Oʻqituvchi: «eslab qolish», kun",
     "student_absolute_hours": "Oʻquvchi: seans, soat",
     "student_remember_days": "Oʻquvchi: «eslab qolish», kun",
+    "require_admin_2fa": "Administratorlardan 2FA talab qilish",
     "require_teacher_2fa": "Oʻqituvchilardan 2FA talab qilish",
     "journal": "Jurnal",
     "edit_window_days": "Tahrirlash muddati, kun",

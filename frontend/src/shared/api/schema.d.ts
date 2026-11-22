@@ -2898,6 +2898,7 @@ export interface components {
             low_grade_percent?: number;
             attendance_threshold_percent?: number;
             attendance_window_days?: number;
+            require_admin_2fa?: boolean;
             require_teacher_2fa?: boolean;
             default_grade_scale: components["schemas"]["GradeScaleEnum"];
             readonly logo: string | null;
@@ -3803,6 +3804,7 @@ export interface components {
             low_grade_percent?: number;
             attendance_threshold_percent?: number;
             attendance_window_days?: number;
+            require_admin_2fa?: boolean;
             require_teacher_2fa?: boolean;
             default_grade_scale?: components["schemas"]["GradeScaleEnum"];
         };

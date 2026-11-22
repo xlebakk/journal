@@ -46,11 +46,13 @@ class AppTokenMiddleware:
 
 
 def totp_setup_required(user: User) -> bool:
+    """2FA is the user's choice unless the center requires it for one of their roles."""
     if user.totp_enabled:
         return False
-    if user.is_admin:
+    settings = CenterSettings.load()
+    if user.is_admin and settings.require_admin_2fa:
         return True
-    return user.has_role(Role.TEACHER) and CenterSettings.load().require_teacher_2fa
+    return user.has_role(Role.TEACHER) and settings.require_teacher_2fa
 
 
 # URL names reachable while the user must first change the temporary password / set up 2FA.

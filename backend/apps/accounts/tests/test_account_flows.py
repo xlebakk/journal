@@ -150,7 +150,22 @@ class TestTotpLogin:
 
 @pytest.mark.django_db
 class TestTotpSetup:
-    def test_admin_must_set_up_2fa_first(self, make_user: MakeUser, client_for: ClientFor) -> None:
+    def test_admin_2fa_is_optional_by_default(
+        self, make_user: MakeUser, client_for: ClientFor
+    ) -> None:
+        admin = make_user(Role.ADMIN, totp_enabled=False)
+        client = client_for(admin)
+        assert client.get("/api/v1/me").json()["totp_setup_required"] is False
+        assert client.get("/api/v1/admin/users").status_code == 200
+
+    def test_center_can_require_2fa_for_admins(
+        self, make_user: MakeUser, client_for: ClientFor
+    ) -> None:
+        from apps.core.models import CenterSettings
+
+        s = CenterSettings.load()
+        s.require_admin_2fa = True
+        s.save()
         admin = make_user(Role.ADMIN, totp_enabled=False)
         client = client_for(admin)
         assert client.get("/api/v1/me").json()["totp_setup_required"] is True
@@ -176,10 +191,17 @@ class TestTotpSetup:
         stored = list(BackupCode.objects.values_list("code_hash", flat=True))
         assert not set(response.json()["backup_codes"]) & set(stored)
 
-    def test_admin_cannot_turn_2fa_off(self, admin_client: APIClient) -> None:
+    def test_admin_turns_2fa_off_unless_required(self, admin_client: APIClient) -> None:
+        from apps.core.models import CenterSettings
+
+        s = CenterSettings.load()
+        s.require_admin_2fa = True
+        s.save()
         response = admin_client.delete("/api/v1/auth/totp/setup")
-        assert response.status_code == 403
         assert response.json() == {"detail": "totp_required"}
+        s.require_admin_2fa = False
+        s.save()
+        assert admin_client.delete("/api/v1/auth/totp/setup").status_code == 204
 
     def test_teacher_2fa_is_optional(self, make_user: MakeUser, client_for: ClientFor) -> None:
         teacher = make_user(Role.TEACHER, totp_enabled=True)
