@@ -109,6 +109,10 @@ MATRIX: list[tuple[str, str, dict[str, int]]] = [
         "/api/v1/journal/courses/{other}/reviews",
         {"admin": 404, "teacher": 404, "student": 403},
     ),
+    # Stage 10: the personal iCal link exists for the teacher and student roles only.
+    ("get", "/api/v1/me/calendar", {"admin": 403, "teacher": 200, "student": 200}),
+    ("post", "/api/v1/me/calendar", {"admin": 403, "teacher": 201, "student": 201}),
+    ("delete", "/api/v1/me/calendar", {"admin": 403, "teacher": 204, "student": 204}),
     ("patch", "/api/v1/admin/settings", {"admin": 200, "teacher": 403, "student": 403}),
 ]
 

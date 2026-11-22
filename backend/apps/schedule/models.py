@@ -246,3 +246,35 @@ class ScheduleRequest(models.Model):
 
     def __str__(self) -> str:
         return f"{self.kind} {self.lesson_id} ({self.status})"
+
+
+class CalendarFeedRole(models.TextChoices):
+    TEACHER = "teacher", "преподаватель"
+    STUDENT = "student", "ученик"
+
+
+class CalendarFeed(models.Model):
+    """A personal iCal subscription (SPEC §16.7): `/api/v1/calendar/<id>.ics?token=…`.
+
+    The token is an HMAC of the id under SECRET_KEY, so the database holds no secret and the
+    owner can see the link again. Reissuing replaces the row: the old link becomes 404.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="calendar_feeds"
+    )
+    role = models.CharField(max_length=10, choices=CalendarFeedRole.choices)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_used_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["user", "role"], name="schedule_calendar_feed_unique"),
+            models.CheckConstraint(
+                condition=Q(role__in=["teacher", "student"]), name="schedule_calendar_feed_role"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user} ({self.role})"

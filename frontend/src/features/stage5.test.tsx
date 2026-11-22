@@ -64,6 +64,8 @@ describe("audit labels", () => {
   it("translates actions and lists changed fields only", () => {
     expect(actionText("journal.grade_create")).toBe("журнал: оценка");
     expect(actionText("something.odd")).toBe("something.odd");
+    expect(actionText("calendar.reissue")).toBe("ссылка на календарь: перевыпуск");
+    expect(actionText("review.create")).toBe("отзыв преподавателя: создание");
     expect(changes({ a: 1, b: "x" }, { a: 2, b: "x", c: null })).toEqual([
       { field: "a", before: "1", after: "2" },
       { field: "c", before: "", after: "—" },

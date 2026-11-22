@@ -3,7 +3,7 @@ from rest_framework.routers import SimpleRouter
 
 from apps.academics import views as academics
 
-from . import views
+from . import calendar_views, views
 
 router = SimpleRouter(trailing_slash=False, use_regex_path=False)
 router.register("admin/years", academics.AcademicYearViewSet, basename="admin-year")
@@ -37,6 +37,8 @@ urlpatterns: list[URLPattern | URLResolver] = [
     ),
     path("admin/teachers", academics.TeacherOptionsView.as_view(), name="admin-teachers"),
     path("rooms", views.RoomOptionsView.as_view(), name="rooms"),
+    path("me/calendar", calendar_views.MyCalendarView.as_view(), name="me-calendar"),
+    path("calendar/<uuid:pk>.ics", calendar_views.CalendarFeedView.as_view(), name="calendar-feed"),
     path("teacher/schedule", views.TeacherScheduleView.as_view(), name="teacher-schedule"),
     path(
         "teacher/lessons/<uuid:pk>/requests",

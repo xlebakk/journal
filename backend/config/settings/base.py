@@ -172,6 +172,7 @@ REST_FRAMEWORK = {
         "anon": "60/min",
         "export": "20/min",
         "import": "10/min",
+        "calendar": "60/hour",
     },
     "DEFAULT_PAGINATION_CLASS": "apps.core.pagination.Pagination",
     "PAGE_SIZE": 50,

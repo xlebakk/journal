@@ -313,6 +313,25 @@ jobs:
           student = User.objects.create_user(login='ci.student', password='a-long-ci-password-42', last_name='CI', first_name='Student', roles=['student'], must_change_password=False)
           StudentProfile.objects.create(user=student)
           "
+      - name: iCal link works and its token stays out of the logs
+        if: ${{ !cancelled() }}
+        run: |
+          link="$(docker compose -f infra/docker-compose.prod.yml --env-file .env.prod exec -T api python manage.py shell -c "
+          from apps.accounts.models import User
+          from apps.schedule import calendar
+          from apps.schedule.models import CalendarFeed
+          feed = CalendarFeed.objects.create(user=User.objects.get(login='ci.student'), role='student')
+          print(f'/api/v1/calendar/{feed.pk}.ics?token={calendar.token_for(feed.pk)}')
+          " | tail -1)"
+          token="${link##*token=}"
+          test -n "$token"
+          curl -sk -D /tmp/ics.headers -o /tmp/ics.body "https://journal.localhost$link"
+          grep -qi "^content-type: text/calendar" /tmp/ics.headers
+          head -c 15 /tmp/ics.body | grep -q "BEGIN:VCALENDAR"
+          test "$(curl -sk -o /dev/null -w '%{http_code}' "https://journal.localhost${link%token=*}token=wrong")" = 404
+          logs="$(docker compose -f infra/docker-compose.prod.yml --env-file .env.prod logs --no-color web api)"
+          ! echo "$logs" | grep -q "$token"
+          echo "$logs" | grep -q "token=REDACTED"
       - name: Lighthouse — accessibility ≥ 95, performance ≥ 90 (SPEC §15)
         if: ${{ !cancelled() }}
         working-directory: frontend

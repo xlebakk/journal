@@ -1682,6 +1682,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/calendar/{id}.ics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description `GET /calendar/<id>.ics?token=…` — public, because calendar apps cannot log in.
+         *
+         *     The token is in the query string: gunicorn logs only the path and Caddy masks `token`, so
+         *     it stays out of the access logs. Wrong id or token, a blocked owner
+         *     or a removed role — 404.
+         */
+        get: operations["calendar_.ics_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/exams": {
         parameters: {
             query?: never;
@@ -2079,6 +2102,25 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/calendar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The link for the active role: a teacher's lessons or a student's groups. */
+        get: operations["me_calendar_retrieve"];
+        put?: never;
+        /** @description Issue a link, or reissue it: the old one stops working at once. */
+        post: operations["me_calendar_create"];
+        /** @description The link for the active role: a teacher's lessons or a student's groups. */
+        delete: operations["me_calendar_destroy"];
         options?: never;
         head?: never;
         patch?: never;
@@ -3229,6 +3271,13 @@ export interface components {
             end_time: string;
             /** Format: uuid */
             room: string | null;
+        };
+        MyCalendar: {
+            url: string | null;
+            /** Format: date-time */
+            created_at: string | null;
+            /** Format: date-time */
+            last_used_at: string | null;
         };
         /** @enum {unknown} */
         NullEnum: null;
@@ -6999,6 +7048,29 @@ export interface operations {
             };
         };
     };
+    "calendar_.ics_retrieve": {
+        parameters: {
+            query: {
+                token: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/calendar": string;
+                };
+            };
+        };
+    };
     exams_list: {
         parameters: {
             query?: {
@@ -7651,6 +7723,62 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Me"];
                 };
+            };
+        };
+    };
+    me_calendar_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyCalendar"];
+                };
+            };
+        };
+    };
+    me_calendar_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyCalendar"];
+                };
+            };
+        };
+    };
+    me_calendar_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

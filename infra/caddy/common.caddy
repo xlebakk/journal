@@ -41,9 +41,17 @@
 		file_server
 	}
 
-	# Structured access log; Caddy redacts Cookie and Authorization by default.
+	# Structured access log; Caddy redacts Cookie and Authorization by default. The secret of
+	# an iCal link (`/api/v1/calendar/<id>.ics?token=…`) is masked too.
 	log {
 		output stdout
-		format json
+		format filter {
+			wrap json
+			fields {
+				request>uri query {
+					replace token REDACTED
+				}
+			}
+		}
 	}
 }

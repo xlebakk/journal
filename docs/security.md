@@ -237,6 +237,25 @@
 | `GET /journal/courses/{чужой}/reviews` | 401 | 403 | 404 | 200 |
 | `PUT /journal/courses/{свой}/reviews/{ученик}` | 401 | 403 | 200 (основной преподаватель, в окне); ассистент — 403 | 200 (после окна — с причиной) |
 
+## Этап 10: подписка на расписание (iCal)
+
+| Мера | Тест |
+| --- | --- |
+| Токен — HMAC id ссылки под `SECRET_KEY`, сравнение за постоянное время; в базе секрета нет | `test_token_is_bound_to_the_feed_and_the_key`, `test_old_key_still_opens_links` |
+| Неверный токен, перевыпущенная или отключённая ссылка → 404 | `test_wrong_token_reissue_and_revoke` |
+| Заблокированный владелец или снятая роль → 404 | `test_link_dies_with_the_account_or_role` |
+| В ленте — только занятия, которые владелец видит в своей роли (`for_user`) | `test_student_sees_own_groups_and_cancellations` |
+| Ссылка — для активной роли; у администратора её нет | `test_by_active_role`, `test_admin_has_no_feed` |
+| Токен не попадает в журналы: он в query-строке, Caddy маскирует `token` | шаг CI «iCal link works and its token stays out of the logs» |
+| 60 запросов в час на ссылку | `CalendarFeedThrottle` |
+
+| Эндпоинт | Аноним | Ученик | Преподаватель | Администратор |
+| --- | --- | --- | --- | --- |
+| `GET /me/calendar` | 401 | 200 | 200 | 403 |
+| `POST /me/calendar` (выпуск и перевыпуск) | 401 | 201 | 201 | 403 |
+| `DELETE /me/calendar` | 401 | 204 | 204 | 403 |
+| `GET /calendar/{id}.ics?token=…` | 200 с верным токеном, иначе 404 | — | — | — |
+
 ## Модель угроз (кратко)
 
 1. **IDOR (подмена ID).** Объекты выбираются только из `for_user()`-queryset; чужое → 404; UUID-ключи. Начиная с этапа 2 каждая новая сущность добавляет строки в матрицу.

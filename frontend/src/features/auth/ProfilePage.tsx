@@ -12,6 +12,7 @@ import { useStudentProfile } from "@/features/student/api";
 
 import { ME_KEY, useMe } from "./api";
 import styles from "./AccountPages.module.css";
+import { CalendarSection } from "./CalendarSection";
 import { useReauth } from "./reauthContext";
 import { BackupCodes } from "./TotpSetupPage";
 
@@ -90,6 +91,10 @@ export function ProfilePage() {
         <p className={styles.error} role="alert">
           {errorMessage(disable.error ?? regenerate.error)}
         </p>
+      )}
+
+      {(user.active_role === "teacher" || user.active_role === "student") && (
+        <CalendarSection activeRole={user.active_role} />
       )}
 
       <ThemeSwitch value={theme} onChange={setTheme} />

@@ -3166,6 +3166,38 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/calendar/{id}.ics:
+    get:
+      operationId: calendar_.ics_retrieve
+      description: |-
+        `GET /calendar/<id>.ics?token=…` — public, because calendar apps cannot log in.
+
+        The token is in the query string: gunicorn logs only the path and Caddy masks `token`, so
+        it stays out of the access logs. Wrong id or token, a blocked owner
+        or a removed role — 404.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: token
+        schema:
+          type: string
+        required: true
+      tags:
+      - calendar
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            text/calendar:
+              schema:
+                type: string
+          description: ''
   /api/v1/exams:
     get:
       operationId: exams_list
@@ -3909,6 +3941,50 @@ paths:
               schema:
                 $ref: '#/components/schemas/Me'
           description: ''
+  /api/v1/me/calendar:
+    get:
+      operationId: me_calendar_retrieve
+      description: 'The link for the active role: a teacher''s lessons or a student''s
+        groups.'
+      tags:
+      - me
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyCalendar'
+          description: ''
+    post:
+      operationId: me_calendar_create
+      description: 'Issue a link, or reissue it: the old one stops working at once.'
+      tags:
+      - me
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyCalendar'
+          description: ''
+    delete:
+      operationId: me_calendar_destroy
+      description: 'The link for the active role: a teacher''s lessons or a student''s
+        groups.'
+      tags:
+      - me
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/reports/courses/{id}:
     get:
       operationId: reports_courses_retrieve
@@ -6716,6 +6792,24 @@ components:
       - room
       - start_time
       - version
+    MyCalendar:
+      type: object
+      properties:
+        url:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        last_used_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - created_at
+      - last_used_at
+      - url
     NullEnum:
       enum:
       - null
