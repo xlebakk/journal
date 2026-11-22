@@ -238,3 +238,36 @@ class TodaySerializer(serializers.Serializer[Any]):
     lessons = TodayLessonSerializer(many=True)
     unfilled = TodayLessonSerializer(many=True)
     attention = AttentionSerializer(many=True)
+
+
+class ReviewTermSerializer(serializers.Serializer[Any]):
+    id = serializers.UUIDField()
+    name = serializers.CharField()
+    starts_on = serializers.DateField()
+    ends_on = serializers.DateField()
+
+
+class ReviewRowSerializer(serializers.Serializer[Any]):
+    student = serializers.UUIDField()
+    full_name = serializers.CharField()
+    text = serializers.CharField(allow_blank=True)
+    author_name = serializers.CharField(allow_blank=True)
+    updated_at = serializers.DateTimeField(allow_null=True)
+    version = serializers.IntegerField(allow_null=True)
+
+
+class ReviewsSerializer(serializers.Serializer[Any]):
+    term = ReviewTermSerializer()
+    editable = serializers.BooleanField()
+    needs_reason = serializers.BooleanField()
+    locked = serializers.CharField(allow_null=True)
+    closes_on = serializers.DateField()
+    max_length = serializers.IntegerField()
+    rows = ReviewRowSerializer(many=True)
+
+
+class ReviewWriteSerializer(serializers.Serializer[Any]):
+    term = serializers.UUIDField()
+    text = serializers.CharField(allow_blank=True, max_length=2000, trim_whitespace=False)
+    version = serializers.IntegerField(required=False, allow_null=True)
+    reason = serializers.CharField(required=False, allow_blank=True, default="", max_length=300)

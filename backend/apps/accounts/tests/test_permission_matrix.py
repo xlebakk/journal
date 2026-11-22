@@ -103,6 +103,12 @@ MATRIX: list[tuple[str, str, dict[str, int]]] = [
     ("post", "/api/v1/admin/import/students", {"admin": 415, "teacher": 403, "student": 403}),
     ("get", "/api/v1/admin/access-cards", {"admin": 200, "teacher": 403, "student": 403}),
     ("get", "/api/v1/admin/settings", {"admin": 200, "teacher": 403, "student": 403}),
+    # Stage 9: teacher reviews ({other} is not a course: 404 for staff).
+    (
+        "get",
+        "/api/v1/journal/courses/{other}/reviews",
+        {"admin": 404, "teacher": 404, "student": 403},
+    ),
     ("patch", "/api/v1/admin/settings", {"admin": 200, "teacher": 403, "student": 403}),
 ]
 

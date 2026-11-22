@@ -56,6 +56,9 @@ def test_seed_demo_creates_people_and_prints_passwords() -> None:
         assert not scores or sum(scores) == result.total
     assert StudentTarget.objects.exists()
     assert Announcement.objects.live().count() == 4
+    from apps.journal.models import TeacherReview
+
+    assert TeacherReview.objects.filter(term__name="Модуль 1").exists()  # finished before today
     text = out.getvalue()
     admin = User.objects.with_role(Role.ADMIN).get()
     assert admin.login in text

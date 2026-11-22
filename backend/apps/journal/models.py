@@ -11,7 +11,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 
-from apps.academics.models import GradeScale, WorkType
+from apps.academics.models import Course, GradeScale, Term, WorkType
 from apps.schedule.models import Lesson
 
 
@@ -120,3 +120,32 @@ class Grade(models.Model):
 
     def __str__(self) -> str:
         return f"{self.student_id}: {self.value} ({self.lesson_id})"
+
+
+class TeacherReview(models.Model):
+    """«Отзыв преподавателя раз в модуль» (SPEC §16.5): two or three sentences about a student's
+    strengths and weaknesses in the course's subject. One per course, student and term; the
+    student sees it, and it goes into the summary sheet for parents."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    course = models.ForeignKey(Course, on_delete=models.PROTECT, related_name="reviews")
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="reviews"
+    )
+    term = models.ForeignKey(Term, on_delete=models.PROTECT, related_name="reviews")
+    text = models.TextField(max_length=600)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    version = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        constraints: ClassVar = [
+            models.UniqueConstraint(
+                fields=["course", "student", "term"], name="journal_review_unique"
+            ),
+            models.CheckConstraint(condition=~Q(text=""), name="journal_review_not_empty"),
+        ]
+
+    def __str__(self) -> str:
+        return f"review {self.course_id} {self.student_id} {self.term_id}"

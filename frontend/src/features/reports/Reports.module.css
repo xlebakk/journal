@@ -7,6 +7,25 @@
   font-family: var(--font-display);
 }
 
+.reviews {
+  margin: 0;
+  border-top: var(--line) solid var(--ink);
+}
+
+.reviews > div {
+  padding: var(--space-1) 0;
+  border-bottom: var(--line) solid var(--rule);
+  break-inside: avoid;
+}
+
+.reviews dt {
+  font-weight: 600;
+}
+
+.reviews dd {
+  margin: 4px 0 0;
+}
+
 @media print {
   @page {
     size: A4 portrait;

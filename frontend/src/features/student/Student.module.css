@@ -349,3 +349,16 @@
     min-height: 48px;
   }
 }
+
+.list > li.review {
+  flex-direction: column;
+  align-items: stretch;
+  padding: var(--space-1);
+}
+
+.reviewHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px var(--space-2);
+}

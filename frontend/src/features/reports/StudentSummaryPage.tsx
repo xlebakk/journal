@@ -134,6 +134,21 @@ export function StudentSummaryPage() {
           </Table>
         </>
       )}
+      {data.reviews.length > 0 && (
+        <>
+          <h2>{t("reviews.summaryTitle")}</h2>
+          <dl className={local.reviews}>
+            {data.reviews.map((r) => (
+              <div key={`${r.term_name}-${r.subject_name}`}>
+                <dt>
+                  {r.subject_name} · {r.term_name} · {r.teacher_name}
+                </dt>
+                <dd>{r.text}</dd>
+              </div>
+            ))}
+          </dl>
+        </>
+      )}
       <p className={styles.status}>{t("reports.printedOn", { date: formatDate(centerToday()) })}</p>
     </section>
   );

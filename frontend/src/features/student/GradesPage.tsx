@@ -10,6 +10,28 @@ import { Button, Dialog, DialogActions, EmptyState, RuledSkeleton, SelectField }
 import { useStudentGrades, type StudentGrade, type StudentGrades } from "./api";
 import styles from "./Student.module.css";
 
+/** Teachers' term reviews (SPEC §16.5): plain text, newest term last. */
+function Reviews({ reviews }: { reviews: StudentGrades["reviews"] }) {
+  return (
+    <section className={styles.section} aria-labelledby="reviews-title">
+      <h2 id="reviews-title">{t("reviews.studentTitle")}</h2>
+      <ul className={styles.list}>
+        {reviews.map((r) => (
+          <li key={`${r.term_name}-${r.subject_name}`} className={styles.review}>
+            <span className={styles.reviewHead}>
+              <strong>{r.subject_name}</strong>
+              <span className={styles.meta}>
+                {r.term_name} · {r.teacher_name}
+              </span>
+            </span>
+            <span>{r.text}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function GradeDetails({ grade, onClose }: { grade: StudentGrade | null; onClose: () => void }) {
   return (
     <Dialog
@@ -174,6 +196,7 @@ export function GradesPage() {
       ) : (
         <GradesTable data={data} onOpen={setOpen} />
       )}
+      {data && data.reviews.length > 0 && <Reviews reviews={data.reviews} />}
       <GradeDetails grade={open} onClose={() => setOpen(null)} />
     </section>
   );

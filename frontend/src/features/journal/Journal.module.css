@@ -427,3 +427,29 @@
     min-width: 100%;
   }
 }
+
+/* «Отзывы» (stage 9): a ruled list, one student per entry. */
+.reviews {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: 760px;
+}
+
+.reviewList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reviewRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-1) 0;
+  border-bottom: var(--line) solid var(--rule);
+}
+
+.reviewName {
+  font-weight: 600;
+}

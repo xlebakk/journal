@@ -26,6 +26,7 @@ from apps.core.params import date_param, uuid_param
 from apps.exams.models import ExamResult, StudentTarget
 from apps.exams.services import percent
 from apps.journal import services as journal
+from apps.journal.models import TeacherReview
 from apps.journal.stats import StudentStats, course_stats, low_threshold, summarise_group
 from apps.journal.views import course_period, course_roster, courses_for
 from apps.schedule.models import Lesson, LessonStatus
@@ -406,6 +407,20 @@ class StudentSummaryView(APIView):
             )
         exam_rows = [row for items in exams.values() for row in items[-3:]]
         exam_rows.sort(key=lambda r: (r["subject_name"], r["date"]))
+        # Teacher reviews of the terms that overlap the period (SPEC §16.5).
+        reviews = [
+            {
+                "subject_name": r.course.subject.name,
+                "teacher_name": r.author.short_name,
+                "term_name": r.term.name,
+                "text": r.text,
+            }
+            for r in TeacherReview.objects.filter(
+                student=student, term__starts_on__lte=last, term__ends_on__gte=first
+            )
+            .select_related("course__subject", "author", "term")
+            .order_by("term__starts_on", "course__subject__name")
+        ]
         profile = getattr(student, "student_profile", None)
         data = {
             "student": {
@@ -421,5 +436,6 @@ class StudentSummaryView(APIView):
             "last": last,
             "subjects": subjects,
             "exams": exam_rows,
+            "reviews": reviews,
         }
         return Response(s.StudentSummarySerializer(data).data)

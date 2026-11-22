@@ -119,6 +119,13 @@ class SummaryExamSerializer(serializers.Serializer[Any]):
     target_percent = serializers.IntegerField(allow_null=True)
 
 
+class SummaryReviewSerializer(serializers.Serializer[Any]):
+    subject_name = serializers.CharField()
+    teacher_name = serializers.CharField()
+    term_name = serializers.CharField()
+    text = serializers.CharField()
+
+
 class StudentSummarySerializer(serializers.Serializer[Any]):
     student = SummaryStudentSerializer()
     year_name = serializers.CharField()
@@ -127,3 +134,4 @@ class StudentSummarySerializer(serializers.Serializer[Any]):
     last = serializers.DateField()
     subjects = SummarySubjectSerializer(many=True)
     exams = SummaryExamSerializer(many=True)
+    reviews = SummaryReviewSerializer(many=True)

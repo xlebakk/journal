@@ -34,6 +34,7 @@ import { addGradeAction, deleteGradeAction, MARK, statusFromKey } from "./action
 import { StudentEditor } from "./StudentEditor";
 import { SaveStatus } from "./SaveStatus";
 import { useSave } from "./useSave";
+import { ReviewsTab } from "./ReviewsTab";
 
 type Cell = { attendance?: Attendance; grades: Grade[] };
 type Maps = Map<string, Cell>;
@@ -187,6 +188,12 @@ function TopicsTab({ grid, base }: { grid: Grid; base: string }) {
   );
 }
 
+const TAB_LABELS = {
+  grades: "journal.tabGrades",
+  topics: "journal.tabTopics",
+  reviews: "journal.tabReviews",
+} as const;
+
 /** «Журнал»: students × lessons with keyboard input (SPEC §7.3). */
 export function JournalPage() {
   const me = useMe();
@@ -196,7 +203,8 @@ export function JournalPage() {
   const courses = useJournalCourses();
   const course = params.get("course") || courses.data?.[0]?.id;
   const term = params.get("term") || undefined;
-  const tab = params.get("tab") === "topics" ? "topics" : "grades";
+  const rawTab = params.get("tab");
+  const tab = rawTab === "topics" || rawTab === "reviews" ? rawTab : "grades";
   const terms = useTerms(course);
   const grid = useGrid(course, term);
   const { state, perform, retry, undo, busy } = useSave();
@@ -392,7 +400,7 @@ export function JournalPage() {
         />
       </div>
       <div className={styles.tabs} role="tablist">
-        {(["grades", "topics"] as const).map((value) => (
+        {(["grades", "topics", "reviews"] as const).map((value) => (
           <button
             key={value}
             type="button"
@@ -401,12 +409,14 @@ export function JournalPage() {
             className={styles.tab}
             onClick={() => setParam("tab", value === "grades" ? "" : value)}
           >
-            {t(value === "grades" ? "journal.tabGrades" : "journal.tabTopics")}
+            {t(TAB_LABELS[value])}
           </button>
         ))}
       </div>
 
-      {grid.isPending ? (
+      {tab === "reviews" && course ? (
+        <ReviewsTab course={course} term={term} />
+      ) : grid.isPending ? (
         <RuledSkeleton rows={10} />
       ) : grid.error || !data ? (
         <p className={styles.error}>{errorMessage(grid.error)}</p>

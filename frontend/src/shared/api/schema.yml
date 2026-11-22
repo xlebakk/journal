@@ -3521,6 +3521,69 @@ paths:
               schema:
                 $ref: '#/components/schemas/Grid'
           description: ''
+  /api/v1/journal/courses/{id}/reviews:
+    get:
+      operationId: journal_courses_reviews_retrieve
+      description: |-
+        «Отзывы»: one short review per student and term (SPEC §16.5). The course team reads,
+        the course teacher (or the administrator) writes.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: term
+        schema:
+          type: string
+      tags:
+      - journal
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reviews'
+          description: ''
+  /api/v1/journal/courses/{id}/reviews/{student_id}:
+    put:
+      operationId: journal_courses_reviews_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: student_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - journal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewWriteRequest'
+        required: true
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewRow'
+          description: ''
   /api/v1/journal/courses/{id}/terms:
     get:
       operationId: journal_courses_terms_list
@@ -7510,6 +7573,99 @@ components:
       - needs_reason
       - rows
       - window_closes_on
+    ReviewRow:
+      type: object
+      properties:
+        student:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        text:
+          type: string
+        author_name:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+        version:
+          type: integer
+          nullable: true
+      required:
+      - author_name
+      - full_name
+      - student
+      - text
+      - updated_at
+      - version
+    ReviewTerm:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        starts_on:
+          type: string
+          format: date
+        ends_on:
+          type: string
+          format: date
+      required:
+      - ends_on
+      - id
+      - name
+      - starts_on
+    ReviewWriteRequest:
+      type: object
+      properties:
+        term:
+          type: string
+          format: uuid
+        text:
+          type: string
+          maxLength: 2000
+        version:
+          type: integer
+          nullable: true
+        reason:
+          type: string
+          default: ''
+          maxLength: 300
+      required:
+      - term
+      - text
+    Reviews:
+      type: object
+      properties:
+        term:
+          $ref: '#/components/schemas/ReviewTerm'
+        editable:
+          type: boolean
+        needs_reason:
+          type: boolean
+        locked:
+          type: string
+          nullable: true
+        closes_on:
+          type: string
+          format: date
+        max_length:
+          type: integer
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReviewRow'
+      required:
+      - closes_on
+      - editable
+      - locked
+      - max_length
+      - needs_reason
+      - rows
+      - term
     RoleEnum:
       enum:
       - admin
@@ -8261,12 +8417,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CourseGrades'
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudentReview'
       required:
       - courses
       - low_below
       - period
       - period_from
       - period_to
+      - reviews
       - scale
       - terms
     StudentHome:
@@ -8540,6 +8701,26 @@ components:
       - school_grade
       - target
       - target_score
+    StudentReview:
+      type: object
+      properties:
+        subject_name:
+          type: string
+        teacher_name:
+          type: string
+        term_name:
+          type: string
+        text:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - subject_name
+      - teacher_name
+      - term_name
+      - text
+      - updated_at
     StudentSubjectExams:
       type: object
       properties:
@@ -8583,10 +8764,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SummaryExam'
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/SummaryReview'
       required:
       - exams
       - first
       - last
+      - reviews
       - scale
       - student
       - subjects
@@ -8735,6 +8921,22 @@ components:
       - title
       - total
       - was_absent
+    SummaryReview:
+      type: object
+      properties:
+        subject_name:
+          type: string
+        teacher_name:
+          type: string
+        term_name:
+          type: string
+        text:
+          type: string
+      required:
+      - subject_name
+      - teacher_name
+      - term_name
+      - text
     SummaryStudent:
       type: object
       properties:

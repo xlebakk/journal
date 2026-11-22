@@ -225,3 +225,59 @@ describe("JournalPage", () => {
     expect(screen.getByText("Логарифмы")).toBeInTheDocument();
   });
 });
+
+describe("ReviewsTab", () => {
+  const routes = [{ path: "/teacher/journal", element: <JournalPage /> }];
+  const term = { id: "t2", name: "Модуль 2", starts_on: "2026-11-01", ends_on: "2026-12-31" };
+  const row = {
+    student: "s1",
+    full_name: "Алиев Фарход",
+    text: "",
+    author_name: "",
+    updated_at: null,
+    version: null,
+  };
+
+  function setup(extra: Record<string, unknown> = {}) {
+    return mockApi({
+      "GET /me": { body: ME_TEACHER },
+      "GET /journal/courses": {
+        body: [{ id: "c1", group_name: "11-М", subject_name: "Математика", teacher_name: "Ю", year: "y" }],
+      },
+      "GET /journal/courses/c1/terms": { body: [] },
+      "GET /journal/courses/c1": { body: grid() },
+      "GET /journal/courses/c1/reviews": {
+        body: {
+          term, editable: true, needs_reason: false, locked: null,
+          closes_on: "2027-01-07", max_length: 600, rows: [row], ...extra,
+        },
+      },
+      "PUT /journal/courses/c1/reviews/s1": (init) => ({
+        body: { ...row, text: JSON.parse(init.body as string).text.trim(), author_name: "Юсупов Т.",
+          updated_at: "2026-11-16T09:00:00Z", version: 1 },
+      }),
+    }); // prettier-ignore
+  }
+
+  it("saves a review when the field loses focus", async () => {
+    const { calls } = setup();
+    renderRoutes(routes, "/teacher/journal?tab=reviews");
+    const field = await screen.findByLabelText("Алиев Фарход");
+    await userEvent.type(field, "Сильная алгебра.");
+    await userEvent.tab();
+    expect(await screen.findByText(/Юсупов Т\., 16\.11\.2026/)).toBeInTheDocument();
+    expect(calls.find((c) => c.method === "PUT")?.body).toEqual({
+      term: "t2",
+      text: "Сильная алгебра.",
+      version: null,
+      reason: "",
+    });
+  });
+
+  it("is read-only for an assistant", async () => {
+    setup({ editable: false, locked: "not_course_teacher" });
+    renderRoutes(routes, "/teacher/journal?tab=reviews");
+    expect(await screen.findByLabelText("Алиев Фарход")).toBeDisabled();
+    expect(screen.getByText(/пишет основной преподаватель/)).toBeInTheDocument();
+  });
+});

@@ -6,6 +6,12 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("journal/courses", views.JournalCoursesView.as_view(), name="journal-courses"),
     path("journal/courses/<uuid:pk>", views.JournalGridView.as_view(), name="journal-grid"),
     path("journal/courses/<uuid:pk>/terms", views.JournalTermsView.as_view(), name="journal-terms"),
+    path("journal/courses/<uuid:pk>/reviews", views.ReviewsView.as_view(), name="journal-reviews"),
+    path(
+        "journal/courses/<uuid:pk>/reviews/<uuid:student_id>",
+        views.ReviewView.as_view(),
+        name="journal-review",
+    ),
     path("journal/lessons/<uuid:pk>", views.LessonPageView.as_view(), name="journal-lesson"),
     path(
         "journal/lessons/<uuid:pk>/conduct",

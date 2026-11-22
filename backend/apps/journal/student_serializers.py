@@ -113,6 +113,14 @@ class CourseGradesSerializer(serializers.Serializer[Any]):
     grades = StudentGradeSerializer(many=True)
 
 
+class StudentReviewSerializer(serializers.Serializer[Any]):
+    subject_name = serializers.CharField()
+    teacher_name = serializers.CharField()
+    term_name = serializers.CharField()
+    text = serializers.CharField()
+    updated_at = serializers.DateTimeField()
+
+
 class StudentGradesSerializer(serializers.Serializer[Any]):
     period_from = serializers.DateField()
     period_to = serializers.DateField()
@@ -121,6 +129,7 @@ class StudentGradesSerializer(serializers.Serializer[Any]):
     scale = serializers.CharField()
     low_below = serializers.DecimalField(max_digits=6, decimal_places=2)
     courses = CourseGradesSerializer(many=True)
+    reviews = StudentReviewSerializer(many=True)
 
 
 class CourseAttendanceSerializer(serializers.Serializer[Any]):

@@ -18,9 +18,9 @@ from apps.core.models import CenterSettings
 from apps.core.params import date_param, uuid_param
 from apps.schedule.models import Lesson, LessonStatus
 
+from . import reviews, services
 from . import serializers as s
-from . import services
-from .models import Attendance, Grade
+from .models import Attendance, Grade, TeacherReview
 from .stats import StudentStats, course_stats, low_threshold
 
 STAFF = (IsAdmin | IsTeacher,)
@@ -482,3 +482,72 @@ class TeacherTodayView(APIView):
         for row in result:
             row["student_name"] = people.get(row["student"], "")
         return sorted(result, key=lambda r: (r["student_name"], r["subject_name"]))
+
+
+def _review_rows(course: Course, term: Term) -> list[dict[str, Any]]:
+    existing = {
+        r.student_id: r
+        for r in TeacherReview.objects.filter(course=course, term=term).select_related("author")
+    }
+    rows = []
+    for student in reviews.students(course, term):
+        review = existing.get(student.pk)
+        rows.append(
+            {
+                "student": student.pk,
+                "full_name": student.full_name,
+                "text": review.text if review else "",
+                "author_name": review.author.short_name if review else "",
+                "updated_at": review.updated_at if review else None,
+                "version": review.version if review else None,
+            }
+        )
+    return rows
+
+
+class ReviewsView(APIView):
+    """«Отзывы»: one short review per student and term (SPEC §16.5). The course team reads,
+    the course teacher (or the administrator) writes."""
+
+    permission_classes = STAFF
+
+    @extend_schema(parameters=[OpenApiParameter("term", str)], responses=s.ReviewsSerializer)
+    def get(self, request: Request, pk: str) -> Response:
+        who = services.actor(request)
+        course = get_object_or_404(courses_for(who), pk=pk)
+        term = reviews.term_for(course, uuid_param(request, "term"))
+        state = reviews.editability(who, course, term)
+        data = {
+            "term": term,
+            "editable": state.editable,
+            "needs_reason": state.needs_reason,
+            "locked": state.locked,
+            "closes_on": state.closes_on,
+            "max_length": reviews.MAX_LENGTH,
+            "rows": _review_rows(course, term),
+        }
+        return Response(s.ReviewsSerializer(data).data)
+
+
+class ReviewView(APIView):
+    permission_classes = STAFF
+
+    @extend_schema(request=s.ReviewWriteSerializer, responses=s.ReviewRowSerializer)
+    def put(self, request: Request, pk: str, student_id: str) -> Response:
+        who = services.actor(request)
+        course = get_object_or_404(courses_for(who), pk=pk)
+        form = s.ReviewWriteSerializer(data=request.data)
+        form.is_valid(raise_exception=True)
+        term = reviews.term_for(course, form.validated_data["term"])
+        reviews.set_review(
+            request,
+            who,
+            course,
+            term,
+            student_id,
+            form.validated_data["text"],
+            form.validated_data.get("version"),
+            form.validated_data["reason"],
+        )
+        row = next(r for r in _review_rows(course, term) if str(r["student"]) == str(student_id))
+        return Response(s.ReviewRowSerializer(row).data)

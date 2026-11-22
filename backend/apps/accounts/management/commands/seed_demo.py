@@ -6,6 +6,7 @@ Stage 3: past lessons are conducted with topics, homework, attendance and grades
 of recent lessons are left unfilled and two students need attention.
 Stage 5: mock exams (with and without sections, an upcoming one), goals of students per
 subject in %, announcements for everyone, a role and a group.
+Stage 9: teachers' reviews for the last finished term (a few students per course).
 """
 
 import os
@@ -34,7 +35,7 @@ from apps.accounts import credentials
 from apps.accounts.models import Role, StudentProfile, TeacherProfile, User
 from apps.announcements.models import Announcement, Audience
 from apps.exams.models import Exam, ExamResult, ExamSection, ExamSectionScore, StudentTarget
-from apps.journal.models import Attendance, AttendanceStatus, Grade
+from apps.journal.models import Attendance, AttendanceStatus, Grade, TeacherReview
 from apps.schedule import services
 from apps.schedule.models import Lesson, LessonStatus, ScheduleRequest, ScheduleSlot
 
@@ -220,6 +221,7 @@ class Command(BaseCommand):
         )
         self._exceptions(monday, groups, subjects, rooms, teachers)
         self._journal(today, groups, students)
+        self._reviews(today)
         self._exams(today, groups, subjects)
         self._announcements(groups)
 
@@ -376,6 +378,41 @@ class Command(BaseCommand):
         Attendance.objects.bulk_create(attendance)
         Grade.objects.bulk_create(grades)
 
+    STRENGTHS: ClassVar[list[str]] = [
+        "Внимательно решает задачи и доводит их до ответа.",
+        "Хорошо работает на занятиях, задаёт точные вопросы.",
+        "Уверенно знает теорию и объясняет её своими словами.",
+        "Домашние задания выполняет полностью и в срок.",
+    ]
+    WEAKNESSES: ClassVar[list[str]] = [
+        "Стоит больше практиковаться на задачах повышенной сложности.",
+        "Теряет баллы на невнимательности — нужна проверка решений.",
+        "Нужно подтянуть пропущенные темы и не опаздывать.",
+        "Следующий шаг — решать задачи на время, как на экзамене.",
+    ]
+
+    def _reviews(self, today: date) -> None:
+        """Stage 9: two sentences for a few students in the last finished term."""
+        term = Term.objects.filter(ends_on__lt=today).order_by("-ends_on").first()
+        if term is None:
+            return
+        reviews = []
+        for course in Course.objects.select_related("teacher").order_by("group__name", "id"):
+            members = (
+                GroupMembership.objects.filter(group=course.group, joined_on__lte=term.ends_on)
+                .exclude(left_on__lt=term.starts_on)
+                .order_by("student__last_name", "student__first_name")
+                .values_list("student_id", flat=True)[:4]
+            )
+            for sid in members:
+                text = f"{self.rng.choice(self.STRENGTHS)} {self.rng.choice(self.WEAKNESSES)}"
+                reviews.append(
+                    TeacherReview(
+                        course=course, student_id=sid, term=term, text=text, author=course.teacher
+                    )
+                )
+        TeacherReview.objects.bulk_create(reviews)
+
     # --- Stage 5: mock exams and announcements ---------------------------------------------
 
     def _exams(self, today: date, groups: dict[str, Group], subjects: dict[str, Subject]) -> None:
@@ -498,7 +535,8 @@ class Command(BaseCommand):
                 f"{Lesson.objects.count()} занятий (4 недели назад и 4 вперёд), "
                 f"{Attendance.objects.count()} отметок, {Grade.objects.count()} оценок, "
                 f"{Exam.objects.count()} пробных тестов, "
-                f"{Announcement.objects.count()} объявлений. "
+                f"{Announcement.objects.count()} объявлений, "
+                f"{TeacherReview.objects.count()} отзывов. "
                 "Администратор при первом входе настроит 2FA."
             )
         )

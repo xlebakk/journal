@@ -26,7 +26,7 @@ from apps.schedule.models import Lesson, LessonStatus
 from apps.schedule.views import lesson_queryset
 
 from . import student_serializers as s
-from .models import Attendance, AttendanceStatus, Grade
+from .models import Attendance, AttendanceStatus, Grade, TeacherReview
 from .services import today
 from .stats import course_stats, low_threshold, rounded
 
@@ -280,10 +280,27 @@ class StudentGradesView(APIView):
                 }
             )
         settings = CenterSettings.load()
+        my_reviews = (
+            TeacherReview.objects.filter(
+                student=me, term__starts_on__lte=last, term__ends_on__gte=first
+            )
+            .select_related("course__subject", "author", "term")
+            .order_by("term__starts_on", "course__subject__name")
+        )
         data = {
             "period_from": first,
             "period_to": last,
             "period": period,
+            "reviews": [
+                {
+                    "subject_name": r.course.subject.name,
+                    "teacher_name": r.author.full_name,
+                    "term_name": r.term.name,
+                    "text": r.text,
+                    "updated_at": r.updated_at,
+                }
+                for r in my_reviews
+            ],
             "terms": Term.objects.filter(year=year).order_by("starts_on"),
             "scale": year.grade_scale,
             "low_below": low_threshold(year.grade_scale, settings.low_grade_percent),

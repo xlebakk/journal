@@ -1869,6 +1869,42 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/journal/courses/{id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description «Отзывы»: one short review per student and term (SPEC §16.5). The course team reads,
+         *     the course teacher (or the administrator) writes.
+         */
+        get: operations["journal_courses_reviews_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/journal/courses/{id}/reviews/{student_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["journal_courses_reviews_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/journal/courses/{id}/terms": {
         parameters: {
             query?: never;
@@ -3571,6 +3607,43 @@ export interface components {
             window_closes_on: string;
             rows: components["schemas"]["ResultRow"][];
         };
+        ReviewRow: {
+            /** Format: uuid */
+            student: string;
+            full_name: string;
+            text: string;
+            author_name: string;
+            /** Format: date-time */
+            updated_at: string | null;
+            version: number | null;
+        };
+        ReviewTerm: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** Format: date */
+            starts_on: string;
+            /** Format: date */
+            ends_on: string;
+        };
+        ReviewWriteRequest: {
+            /** Format: uuid */
+            term: string;
+            text: string;
+            version?: number | null;
+            /** @default  */
+            reason: string;
+        };
+        Reviews: {
+            term: components["schemas"]["ReviewTerm"];
+            editable: boolean;
+            needs_reason: boolean;
+            locked: string | null;
+            /** Format: date */
+            closes_on: string;
+            max_length: number;
+            rows: components["schemas"]["ReviewRow"][];
+        };
         /**
          * @description * `admin` - администратор
          *     * `teacher` - преподаватель
@@ -3872,6 +3945,7 @@ export interface components {
             /** Format: decimal */
             low_below: string;
             courses: components["schemas"]["CourseGrades"][];
+            reviews: components["schemas"]["StudentReview"][];
         };
         StudentHome: {
             /** Format: date */
@@ -3957,6 +4031,14 @@ export interface components {
             target: string;
             target_score: number | null;
         };
+        StudentReview: {
+            subject_name: string;
+            teacher_name: string;
+            term_name: string;
+            text: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
         StudentSubjectExams: {
             /** Format: uuid */
             subject: string;
@@ -3974,6 +4056,7 @@ export interface components {
             last: string;
             subjects: components["schemas"]["SummarySubject"][];
             exams: components["schemas"]["SummaryExam"][];
+            reviews: components["schemas"]["SummaryReview"][];
         };
         Subject: {
             /** Format: uuid */
@@ -4025,6 +4108,12 @@ export interface components {
             percent: string | null;
             was_absent: boolean;
             target_percent: number | null;
+        };
+        SummaryReview: {
+            subject_name: string;
+            teacher_name: string;
+            term_name: string;
+            text: string;
         };
         SummaryStudent: {
             /** Format: uuid */
@@ -7225,6 +7314,55 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Grid"];
+                };
+            };
+        };
+    };
+    journal_courses_reviews_retrieve: {
+        parameters: {
+            query?: {
+                term?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Reviews"];
+                };
+            };
+        };
+    };
+    journal_courses_reviews_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                student_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewWriteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewRow"];
                 };
             };
         };
