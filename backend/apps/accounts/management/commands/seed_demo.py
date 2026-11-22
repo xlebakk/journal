@@ -10,6 +10,9 @@ Stage 9: teachers' reviews for the last finished term (a few students per course
 Stage 12: monthly prices of groups, two discounts, charges since September and payments;
 every fourth student owes for the current month, one owes for two months.
 Stage 14: three parents — one of them with two children.
+Stage 16: the super admin and an ordinary administrator (head of studies) with three sections.
+Stage 17: a full week for every group (two or three pairs a day), 17 courses, varied homework;
+--password gives every demo user one password.
 """
 
 import os
@@ -35,7 +38,14 @@ from apps.academics.models import (
     WorkType,
 )
 from apps.accounts import credentials
-from apps.accounts.models import ParentLink, Role, StudentProfile, TeacherProfile, User
+from apps.accounts.models import (
+    AdminSection,
+    ParentLink,
+    Role,
+    StudentProfile,
+    TeacherProfile,
+    User,
+)
 from apps.announcements.models import Announcement, Audience
 from apps.exams.models import Exam, ExamResult, ExamSection, ExamSectionScore, StudentTarget
 from apps.journal.models import Attendance, AttendanceStatus, Grade, TeacherReview
@@ -70,26 +80,44 @@ ROOMS = [("101", 16), ("102", 16), ("201", 24), ("202", 12), ("Актовый з
 TEACHER_SUBJECTS = [["Мат"], ["Физ"], ["Англ"], ["Рус"], ["Хим"], ["Био"]]
 Slot = tuple[int, time, time, str]
 T = time
+# Pairs of the day: morning A 09:00–10:30, B 10:45–12:15, C 12:30–14:00; evening A 16:00–17:30,
+# B 17:45–19:15; weekend from 10:00. Every group studies every day of its week, and every teacher
+# teaches every weekday (found by a small search: 35 pairs a week, 5–7 per teacher).
+MA, MB, MC = (T(9), T(10, 30)), (T(10, 45), T(12, 15)), (T(12, 30), T(14))
+EA, EB = (T(16), T(17, 30)), (T(17, 45), T(19, 15))
+W1, W2, W3 = (T(10), T(11, 30)), (T(11, 45), T(13, 15)), (T(13, 30), T(15))
+
+
+def slots(room: str, *pairs: tuple[int, tuple[time, time]]) -> list[Slot]:
+    return [(day, begins, ends, room) for day, (begins, ends) in pairs]
+
+
 # group → (level, [(subject, teacher index, [slots])]); the test checks it is conflict-free.
 GROUPS: dict[str, tuple[str, list[tuple[str, int, list[Slot]]]]] = {
     "11-М вечерняя": ("11 класс", [
-        ("Мат", 0, [(1, T(16), T(17, 30), "101"), (4, T(16), T(17, 30), "101")]),
-        ("Физ", 1, [(1, T(17, 45), T(19, 15), "101"), (3, T(16), T(17, 30), "101")]),
-        ("Англ", 2, [(2, T(16), T(17, 30), "101"), (5, T(16), T(17, 30), "101")]),
+        ("Мат", 0, slots("101", (2, EA), (3, EA), (4, EA))),
+        ("Физ", 1, slots("101", (1, EA), (3, EB), (5, EB))),
+        ("Англ", 2, slots("101", (1, EB), (2, EB))),
+        ("Хим", 4, slots("101", (4, EB), (5, EA))),
     ]),
     "11-Б утренняя": ("11 класс", [
-        ("Био", 5, [(1, T(9), T(10, 30), "201"), (3, T(9), T(10, 30), "201")]),
-        ("Хим", 4, [(2, T(9), T(10, 30), "201"), (4, T(9), T(10, 30), "201")]),
-        ("Рус", 3, [(1, T(10, 45), T(12, 15), "201"), (5, T(9), T(10, 30), "201")]),
+        ("Био", 5, slots("201", (1, MC), (4, MC), (5, MA))),
+        ("Рус", 3, slots("201", (1, MB), (2, MC), (4, MA))),
+        ("Хим", 4, slots("201", (1, MA), (2, MB), (3, MC))),
+        ("Мат", 0, slots("201", (3, MB), (5, MC))),
+        ("Англ", 2, slots("201", (3, MA), (5, MB))),
+        ("Физ", 1, slots("201", (2, MA), (4, MB))),
     ]),
     "10-М выходного дня": ("10 класс", [
-        ("Мат", 0, [(6, T(10), T(11, 30), "102"), (6, T(11, 45), T(13, 15), "102")]),
-        ("Англ", 2, [(6, T(13, 30), T(15), "102"), (3, T(18), T(19, 30), "202")]),
+        ("Мат", 0, slots("201", (6, W1), (7, W2))),
+        ("Англ", 2, slots("201", (6, W2), (7, W1))),
+        ("Физ", 1, slots("201", (6, W3))),
     ]),
     "11-Г вечерняя": ("11 класс", [
-        ("Рус", 3, [(2, T(16), T(17, 30), "102"), (4, T(17, 45), T(19, 15), "102")]),
-        ("Англ", 2, [(1, T(16), T(17, 30), "102"), (4, T(16), T(17, 30), "102")]),
-        ("Мат", 0, [(2, T(17, 45), T(19, 15), "202"), (5, T(17, 45), T(19, 15), "202")]),
+        ("Рус", 3, slots("102", (3, EA), (4, EB), (5, EB))),
+        ("Англ", 2, slots("102", (1, EA), (4, EA), (5, EA))),
+        ("Мат", 0, slots("102", (1, EB), (2, EB))),
+        ("Био", 5, slots("102", (2, EA), (3, EB))),
     ]),
 }  # fmt: skip
 
@@ -99,8 +127,13 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser: Any) -> None:
         parser.add_argument("--seed", type=int, default=2026, help="random seed for names")
+        parser.add_argument(
+            "--password",
+            default="",
+            help="one password for every demo user (handy for a demo); random ones by default",
+        )
 
-    def handle(self, *args: Any, seed: int, **options: Any) -> None:
+    def handle(self, *args: Any, seed: int, password: str, **options: Any) -> None:
         module = os.environ.get("DJANGO_SETTINGS_MODULE", "")
         if not settings.DEBUG or module.endswith(".prod"):
             raise CommandError("seed_demo refuses to run outside development (DEBUG=False).")
@@ -109,6 +142,7 @@ class Command(BaseCommand):
 
         # Demo names only, not security.
         self.rng = random.Random(seed)  # noqa: S311  # nosec B311
+        self.password = password
         self.rows: list[tuple[str, str, str, str]] = []
         with transaction.atomic():
             teachers, students = self._people()
@@ -121,15 +155,19 @@ class Command(BaseCommand):
         last = self.rng.choice(LAST_NAMES)[1 if female else 0]
         return last, self.rng.choice(FEMALE if female else MALE)
 
-    def _make(self, roles: list[str], last: str, first: str) -> User:
-        password = credentials.generate_temporary_password()
+    def _make(
+        self, roles: list[str], last: str, first: str, sections: list[str] | None = None
+    ) -> User:
+        password = self.password or credentials.generate_temporary_password()
         user = User.objects.create_user(
             login=credentials.generate_login(last, first),
             password=password,
             last_name=last,
             first_name=first,
             roles=roles,
-            is_superadmin=Role.ADMIN in roles,
+            # An administrator with sections is an ordinary one; without them — the super admin.
+            is_superadmin=Role.ADMIN in roles and sections is None,
+            admin_sections=sections or [],
             # Demo convenience: skip the forced change; 2FA is each user's choice.
             must_change_password=False,
         )
@@ -137,7 +175,14 @@ class Command(BaseCommand):
         return user
 
     def _people(self) -> tuple[list[User], list[User]]:
-        self._make([Role.ADMIN], "Администратор", "Демо")
+        self.admin = self._make([Role.ADMIN], "Администратор", "Демо")
+        # Stage 16: an ordinary administrator — the head of studies with three sections.
+        self._make(
+            [Role.ADMIN],
+            "Завуч",
+            "Демо",
+            sections=[AdminSection.SCHEDULE, AdminSection.JOURNAL, AdminSection.REPORTS],
+        )
         teachers = []
         for i in range(6):
             user = self._make([Role.TEACHER], *self._person(female=i % 2 == 1))
@@ -264,27 +309,27 @@ class Command(BaseCommand):
         Lesson.objects.create(
             course=maths,
             date=sunday,
-            start_time=time(10),
-            end_time=time(11, 30),
+            start_time=time(14),
+            end_time=time(15, 30),
             room=hall,
             teacher=maths.teacher,
             lesson_type=LessonType.objects.filter(short="Конс").first(),
             is_extra=True,
             planned_date=sunday,
-            planned_start_time=time(10),
-            planned_end_time=time(11, 30),
+            planned_start_time=time(14),
+            planned_end_time=time(15, 30),
             planned_room=hall,
         )
         morning = groups["11-Б утренняя"]
-        if lesson := self._lesson(morning, subjects["Био"], week + timedelta(days=2)):
+        if lesson := self._lesson(morning, subjects["Био"], week + timedelta(days=3)):
             ScheduleRequest.objects.create(
                 lesson=lesson,
                 author=teachers[5],
                 kind=ScheduleRequest.Kind.MOVE,
-                proposed_date=week + timedelta(days=3),
-                proposed_start_time=time(10, 45),
-                proposed_end_time=time(12, 15),
-                proposed_room=rooms["201"],
+                proposed_date=week + timedelta(days=4),
+                proposed_start_time=time(14, 15),
+                proposed_end_time=time(15, 45),
+                proposed_room=rooms["202"],
                 reason="Лабораторная в университете",
             )
 
@@ -303,6 +348,13 @@ class Command(BaseCommand):
                 "Органика: алканы", "Растворы"],
         "Био": ["Клетка", "Генетика", "Эволюция", "Экосистемы", "Физиология человека"],
     }  # fmt: skip
+
+    HOMEWORK: ClassVar[list[str]] = [
+        "Повторить тему, задачи № {a}–{b}",
+        "Конспект параграфа и упражнения № {a}–{b}",
+        "Решить вариант пробного теста, задания {a}–{b}",
+        "Выучить определения, письменно № {a} и {b}",
+    ]
 
     def _journal(self, today: date, groups: dict[str, Group], students: list[User]) -> None:
         work = {w.name: w for w in WorkType.objects.all()}
@@ -332,7 +384,7 @@ class Command(BaseCommand):
             n = seen[lesson.course_id] = seen.get(lesson.course_id, 0) + 1
             topics = self.TOPICS[lesson.course.subject.short_name]
             lesson.topic = topics[(n - 1) % len(topics)]
-            lesson.homework = f"Повторить тему, задачи № {n * 3}–{n * 3 + 4}"
+            lesson.homework = self.HOMEWORK[n % len(self.HOMEWORK)].format(a=n * 3, b=n * 3 + 4)
             if n % 6 == 0:
                 lesson.lesson_type = test_type
             lesson.status = LessonStatus.CONDUCTED
@@ -365,7 +417,7 @@ class Command(BaseCommand):
                 )
                 if status not in (AttendanceStatus.PRESENT, AttendanceStatus.LATE):
                     continue
-                if not is_test and self.rng.random() > 0.35:
+                if not is_test and self.rng.random() > 0.6:  # a grade on most lessons
                     continue
                 value = max(0, min(100, round(self.rng.gauss(74, 14))))
                 if sid == weak_grades.pk and lesson.course.subject.short_name == "Хим":
@@ -430,7 +482,7 @@ class Command(BaseCommand):
 
     def _payments(self, today: date, groups: dict[str, Group], students: list[User]) -> None:
         """Stage 12: September to the current month billed; most of it paid."""
-        admin = User.objects.with_role(Role.ADMIN).first()
+        admin = self.admin
         for name, amount in self.FEES.items():
             GroupFee.objects.create(group=groups[name], monthly_amount=amount)
         discounts = {students[5].pk: 10, students[30].pk: 20}
@@ -505,7 +557,7 @@ class Command(BaseCommand):
     # --- Stage 5: mock exams and announcements ---------------------------------------------
 
     def _exams(self, today: date, groups: dict[str, Group], subjects: dict[str, Subject]) -> None:
-        admin = User.objects.with_role(Role.ADMIN).get()
+        admin = self.admin
         evening = [groups["11-М вечерняя"], groups["11-Г вечерняя"]]
         maths = list(Course.objects.filter(group__in=evening, subject=subjects["Мат"]))
         english = list(
@@ -573,7 +625,7 @@ class Command(BaseCommand):
             StudentTarget.objects.create(student_id=sid, subject=subjects["Англ"], percent=75)
 
     def _announcements(self, groups: dict[str, Group]) -> None:
-        admin = User.objects.with_role(Role.ADMIN).get()
+        admin = self.admin
         now = timezone.now()
         Announcement.objects.create(
             author=admin,
@@ -619,7 +671,7 @@ class Command(BaseCommand):
             self.stdout.write(f"{roles:<8}  {name:<{width}}  {login:<14}  {password}")
         self.stdout.write(
             self.style.SUCCESS(
-                f"\nСоздано: 1 администратор, 6 преподавателей, 60 учеников, 3 родителя, "
+                f"\nСоздано: суперадмин и завуч, 6 преподавателей, 60 учеников, 3 родителя, "
                 f"{Group.objects.count()} группы, {Course.objects.count()} курсов, "
                 f"{Lesson.objects.count()} занятий (4 недели назад и 4 вперёд), "
                 f"{Attendance.objects.count()} отметок, {Grade.objects.count()} оценок, "

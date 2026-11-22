@@ -16,7 +16,7 @@ if (/runtimeCaching|NetworkFirst|StaleWhileRevalidate|CacheFirst/.test(sw)) {
 }
 
 const manifest = JSON.parse(readFileSync("dist/manifest.webmanifest", "utf8"));
-if (manifest.theme_color !== "#f4f1e8") fail("theme_color must be --paper");
+if (manifest.theme_color !== "#ffffff") fail("theme_color must be --paper");
 for (const icon of manifest.icons) {
   if (!existsSync(`dist${icon.src}`)) fail(`missing icon ${icon.src}`);
 }

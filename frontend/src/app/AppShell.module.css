@@ -1,5 +1,5 @@
-/* Stage 16 «Тихий журнал»: a white header — the center on the left, sections in capitals with
-   a blue underline under the open one, the person on a pale-blue block on the right. */
+/* Stage 16 «Тихий журнал»: a white header — the product on the left, sections in capitals with
+   a blue underline under the open one in the middle (stage 17), the person on the right. */
 .shell {
   min-height: 100vh;
   background: var(--paper);
@@ -9,7 +9,8 @@
   position: sticky;
   top: 0;
   z-index: 20;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: stretch;
   gap: var(--space-4);
   min-height: var(--header-height);
@@ -19,18 +20,13 @@
 }
 
 .brand {
-  display: inline-flex;
-  align-items: center;
-  color: var(--accent);
-  font-family: var(--font-display);
-  font-size: 1.375rem;
-  font-weight: 600;
-  white-space: nowrap;
+  justify-self: start;
 }
 
 .tabs {
   display: flex;
-  gap: var(--space-3);
+  justify-content: center;
+  gap: var(--space-4);
 }
 
 .tab,
@@ -67,14 +63,23 @@
   background: var(--accent);
 }
 
-.spacer {
-  flex: 1;
-}
-
 .aside {
   display: flex;
+  justify-self: end;
   align-items: center;
   gap: var(--space-2);
+}
+
+/* Tablets: the sections take the room between the logo and the person and scroll if needed. */
+@media (max-width: 1023px) {
+  .header {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .tabs {
+    overflow-x: auto;
+    gap: var(--space-3);
+  }
 }
 
 .body {
@@ -167,10 +172,6 @@
   .header {
     gap: var(--space-2);
     padding-left: var(--space-2);
-  }
-
-  .brand {
-    font-size: var(--text-16);
   }
 
   .body {

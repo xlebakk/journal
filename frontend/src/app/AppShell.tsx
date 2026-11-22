@@ -22,10 +22,9 @@ import {
 import { NavLink, Outlet } from "react-router";
 
 import type { Me, Role } from "@/features/auth/api";
-import { useBranding } from "@/features/auth/api";
 import { t, type MessageKey } from "@/shared/i18n";
 
-import { EmptyState } from "@/shared/ui";
+import { EmptyState, Logo } from "@/shared/ui";
 import { OfflineBar } from "@/features/journal/OfflineBar";
 import { ChildSwitcher } from "@/features/parent/ChildSwitcher";
 import { useHasChildren } from "@/features/parent/children";
@@ -114,9 +113,8 @@ function Links({
   );
 }
 
-/** Header: center name, text tabs, stamp. Administrators get a narrow left column (SPEC §8). */
+/** Header: the product, the sections in the middle, the person. Administrators get a left column. */
 export function AppShell({ me }: { me: Me }) {
-  const branding = useBranding();
   const role = me.active_role ?? "student";
   // An administrator sees only the sections the super administrator granted (stage 16).
   const items = NAV[role].filter(
@@ -132,8 +130,10 @@ export function AppShell({ me }: { me: Me }) {
   return (
     <div className={bottomBar ? `${styles.shell} ${styles.withBottomNav}` : styles.shell}>
       <header className={styles.header}>
-        <span className={styles.brand}>{branding.data?.center_name || t("app.centerName")}</span>
-        {!isAdmin && (
+        <Logo className={styles.brand} />
+        {isAdmin ? (
+          <span />
+        ) : (
           <nav
             className={bottomBar ? `${styles.tabs} ${styles.studentTabs}` : styles.tabs}
             aria-label={t("nav.sections")}
@@ -141,7 +141,6 @@ export function AppShell({ me }: { me: Me }) {
             <Links items={items} className={styles.tab} />
           </nav>
         )}
-        <span className={styles.spacer} />
         <div className={styles.aside}>
           {isParent && <ChildSwitcher />}
           <InitialsMenu me={me} />

@@ -7,7 +7,7 @@ import { defineConfig } from "vitest/config";
 
 const apiTarget = process.env.VITE_API_PROXY ?? "http://localhost:8000";
 // --paper: the browser bar and the splash match the page (SPEC §13).
-const PAPER = "#f4f1e8";
+const PAPER = "#ffffff";
 
 /**
  * The security headers of production, read from the Caddy config itself (one source):
@@ -39,8 +39,8 @@ export default defineConfig(({ mode, isPreview }) => {
         injectRegister: false,
         registerType: "autoUpdate",
         manifest: {
-          name: "Электронный журнал",
-          short_name: "Журнал",
+          name: "Daftar — электронный журнал",
+          short_name: "Daftar",
           description: "Расписание, оценки, посещаемость и пробные тесты учебного центра.",
           lang: "ru",
           start_url: "/",

@@ -12,6 +12,7 @@ import { shouldShowIosInstallHint } from "@/shared/lib/userAgent";
 import { Button } from "@/shared/ui/Button";
 import { Checkbox } from "@/shared/ui/Checkbox";
 import { LanguageSwitch } from "@/shared/ui/LanguageSwitch";
+import { Logo } from "@/shared/ui/Logo";
 import { PasswordField } from "@/shared/ui/PasswordField";
 import { TextField } from "@/shared/ui/TextField";
 
@@ -30,9 +31,9 @@ export function AuthColumn({ children }: { children: React.ReactNode }) {
   return (
     <div className={styles.screen}>
       <section className={styles.panel}>
+        <Logo size="lg" tagline className={styles.logo} />
         <div className={styles.panelTop}>
           <h1 className={styles.center}>{branding.data?.center_name || t("app.centerName")}</h1>
-          <p className={styles.subtitle}>{t("login.subtitle")}</p>
           <p className={styles.year}>{t("login.forWhom")}</p>
         </div>
         <div className={styles.panelFoot}>

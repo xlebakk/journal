@@ -25,6 +25,7 @@ import {
   TextField,
   ThemeSwitch,
   LanguageSwitch,
+  Logo,
   type AttendanceMark,
   ScheduleIssues,
   WeekSchedule,
@@ -248,6 +249,19 @@ export default function StyleguidePage() {
         <p className={styles.lead}>
           «Журнал, а не дэшборд». Экраны собираются только из этих компонентов.
         </p>
+
+        <section className={styles.section} aria-labelledby="sg-logo">
+          <h2 id="sg-logo">Логотип</h2>
+          <p>
+            Daftar — «тетрадь, журнал»: название программы, не центра. Страница журнала с полем,
+            линейками и красной закладкой; цвета из токенов. В шапке — обычный размер, на входе —
+            крупный с подписью. Иконки приложения рисует mobile/scripts/make_icons.py.
+          </p>
+          <div className={styles.row}>
+            <Logo />
+            <Logo size="lg" tagline />
+          </div>
+        </section>
 
         <section className={styles.section} aria-labelledby="sg-colors">
           <h2 id="sg-colors">Цвета</h2>

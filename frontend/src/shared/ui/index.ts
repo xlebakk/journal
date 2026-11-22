@@ -3,6 +3,7 @@ export { Checkbox } from "./Checkbox";
 export { Dialog, DialogActions } from "./Dialog";
 export { EmptyState } from "./EmptyState";
 export { InitialsStamp } from "./InitialsStamp";
+export { Logo } from "./Logo";
 export { initialsOf, stampInk } from "./stamp";
 export { JournalCell, type AttendanceMark } from "./JournalCell";
 export { PasswordField } from "./PasswordField";

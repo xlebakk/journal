@@ -7,7 +7,7 @@ const dev = process.env.JOURNAL_DEV_SERVER === "1";
 const config: CapacitorConfig = {
   // The Play listing is tied to this id: change it only before the first distribution.
   appId: "uz.journal.center",
-  appName: "Журнал",
+  appName: "Daftar",
   // The frontend built with `--mode mobile`: the app loads its own files, not a remote URL.
   webDir: "../frontend/dist-mobile",
   server: {

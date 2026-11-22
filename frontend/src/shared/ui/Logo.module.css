@@ -1,0 +1,79 @@
+/* The Daftar mark and name (stage 17): a journal page with a red bookmark, the name in the
+   serif of the interface. No gradients, no glow — the same flat colours as the rest. */
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--accent-strong);
+  white-space: nowrap;
+}
+
+.mark {
+  flex: none;
+  width: 32px;
+  height: 32px;
+}
+
+.page {
+  fill: var(--sheet);
+  stroke: var(--accent);
+  stroke-width: 1.6;
+}
+
+.margin {
+  stroke: var(--accent);
+  stroke-width: 1.2;
+}
+
+.rule {
+  stroke: var(--accent-tint);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.bookmark {
+  fill: var(--red-pen);
+}
+
+.words {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.tagline {
+  color: var(--ink-2);
+  font-size: var(--text-14);
+  line-height: 1.2;
+}
+
+.lg {
+  gap: 14px;
+}
+
+.lg .mark {
+  width: 48px;
+  height: 48px;
+}
+
+.lg .name {
+  font-size: 2rem;
+}
+
+@media (max-width: 599px) {
+  .md .mark {
+    width: 26px;
+    height: 26px;
+  }
+
+  .md .name {
+    font-size: 1.25rem;
+  }
+}
