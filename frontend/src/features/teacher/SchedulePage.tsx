@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
+import { useSearchParams } from "react-router";
 
 import {
   useInvalidateSchedule,
@@ -15,7 +16,7 @@ import { api } from "@/shared/api/client";
 import { requestSummary } from "./requestSummary";
 import { errorMessage, fieldError } from "@/shared/api/errors";
 import { t, type MessageKey } from "@/shared/i18n";
-import { formatDayLong, hhmm, startOfWeek } from "@/shared/lib/week";
+import { formatDayLong, hhmm } from "@/shared/lib/week";
 import {
   Button,
   Dialog,
@@ -26,8 +27,9 @@ import {
   SelectField,
   Table,
   TextField,
-  WeekNav,
   DaySchedule,
+  PeriodBar,
+  Segmented,
 } from "@/shared/ui";
 
 function LessonFacts({ lesson }: { lesson: Lesson }) {
@@ -179,7 +181,9 @@ function MyRequests() {
   const items = requests.data ?? [];
   return (
     <section className={styles.section} aria-labelledby="my-requests">
-      <h2 id="my-requests">{t("schedule.myRequests")}</h2>
+      <h2 id="my-requests" className="visually-hidden">
+        {t("schedule.myRequests")}
+      </h2>
       {items.length === 0 ? (
         <EmptyState text={t("schedule.requestsEmpty")} />
       ) : (
@@ -231,36 +235,58 @@ export function SchedulePage() {
   const [selected, setSelected] = useState<Lesson | null>(null);
   const [sent, setSent] = useState(false);
   const lessons = schedule.data ?? [];
+  const [params, setParams] = useSearchParams();
+  const view = params.get("view") === "requests" ? "requests" : "week";
+  const pending = useTeacherRequests().data?.filter((r) => r.status === "pending").length ?? 0;
+  const setView = (next: "week" | "requests") => {
+    const changed = new URLSearchParams(params);
+    if (next === "requests") changed.set("view", next);
+    else changed.delete("view");
+    setParams(changed, { replace: true });
+  };
 
   return (
     <section className={styles.page}>
-      <div className={styles.titleRow}>
-        <h1>{t("schedule.title")}</h1>
-        <WeekNav
-          monday={monday}
-          onChange={setMonday}
-          onToday={() => setMonday(startOfWeek(today))}
-        />
-      </div>
-      {sent && (
-        <p className={styles.success} role="status">
-          {t("schedule.requestSent")}
-        </p>
-      )}
-      {schedule.isPending ? (
-        <RuledSkeleton rows={6} />
-      ) : schedule.error ? (
-        <p className={styles.error}>{errorMessage(schedule.error)}</p>
+      <h1 className="visually-hidden">{t("schedule.title")}</h1>
+      <Segmented
+        label={t("schedule.title")}
+        value={view}
+        onChange={setView}
+        options={[
+          { value: "week", label: t("schedule.mySchedule") },
+          {
+            value: "requests",
+            label: pending
+              ? t("schedule.myRequestsCount", { count: pending })
+              : t("schedule.myRequests"),
+          },
+        ]}
+      />
+      {view === "requests" ? (
+        <MyRequests />
       ) : (
-        <DaySchedule
-          monday={monday}
-          today={today}
-          lessons={lessons}
-          showGroup
-          onSelect={(item) => setSelected(lessons.find((l) => l.id === item.id) ?? null)}
-        />
+        <>
+          <PeriodBar monday={monday} today={today} onChange={setMonday} />
+          {sent && (
+            <p className={styles.success} role="status">
+              {t("schedule.requestSent")}
+            </p>
+          )}
+          {schedule.isPending ? (
+            <RuledSkeleton rows={6} />
+          ) : schedule.error ? (
+            <p className={styles.error}>{errorMessage(schedule.error)}</p>
+          ) : (
+            <DaySchedule
+              monday={monday}
+              today={today}
+              lessons={lessons}
+              showGroup
+              onSelect={(item) => setSelected(lessons.find((l) => l.id === item.id) ?? null)}
+            />
+          )}
+        </>
       )}
-      <MyRequests />
       <Dialog
         open={selected !== null}
         onOpenChange={(open) => !open && setSelected(null)}

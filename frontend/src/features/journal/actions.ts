@@ -134,6 +134,7 @@ export function addGradeAction(
   reason: string,
   workType?: string,
   who = "",
+  comment = "",
 ): Action {
   // The same key goes with every resend: the server creates the grade once (stage 13).
   const clientKey = crypto.randomUUID();
@@ -144,6 +145,7 @@ export function addGradeAction(
         student: studentId,
         value,
         work_type: workType ?? null,
+        ...(comment ? { comment } : {}),
         reason,
         client_key: clientKey,
       }),
@@ -172,6 +174,24 @@ export function deleteGradeAction(grade: Grade, reason: string): Action {
     run: () => journalApi.deleteGrade(grade.id, { version: grade.version, reason }),
     undo: (result) => () =>
       journalApi.restoreGrade(grade.id, { version: (result as Grade).version, reason }),
+  };
+}
+
+/** A new value or remark of one's own grade (the cell window, stage 18); needs the network. */
+export function updateGradeAction(
+  grade: Grade,
+  changes: { value: number; comment: string },
+  reason: string,
+): Action {
+  return {
+    run: () => journalApi.updateGrade(grade.id, { version: grade.version, ...changes, reason }),
+    undo: (result) => () =>
+      journalApi.updateGrade(grade.id, {
+        version: (result as Grade).version,
+        value: grade.value,
+        comment: grade.comment,
+        reason,
+      }),
   };
 }
 

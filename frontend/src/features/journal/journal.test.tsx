@@ -230,6 +230,100 @@ describe("JournalPage", () => {
   });
 });
 
+describe("the cell window (stage 18)", () => {
+  const routes = [{ path: "/teacher/journal", element: <JournalPage /> }];
+  const COURSES = {
+    body: [
+      { id: "c1", group_name: "11-М", subject_name: "Математика", teacher_name: "Ю", year: "y" },
+    ],
+  };
+  beforeEach(resetQueue);
+
+  it("gives points with a remark: why the grade is low", async () => {
+    const { calls } = mockApi({
+      "GET /me": { body: ME_TEACHER },
+      "GET /journal/courses": COURSES,
+      "GET /journal/courses/c1/terms": { body: [] },
+      "GET /journal/courses/c1": { body: grid() },
+      "POST /journal/lessons/l1/grades": { status: 201, body: { id: "g1", version: 1 } },
+    });
+    renderRoutes(routes, "/teacher/journal");
+    const table = await screen.findByRole("grid");
+    // Head: the month, the vertical summary columns; a dot in an empty cell.
+    expect(within(table).getByText("ноябрь")).toBeInTheDocument();
+    expect(within(table).getByText("Средний балл")).toBeInTheDocument();
+    await userEvent.click(document.getElementById("cell-0-1")!);
+    const dialog = await screen.findByRole("dialog", { name: "Алиев Фарход" });
+    await userEvent.type(within(dialog).getByLabelText(/Баллы/), "35");
+    await userEvent.type(within(dialog).getByLabelText("Замечание"), "Не решил задачи 3–5");
+    await userEvent.click(within(dialog).getByRole("button", { name: "сохранить" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(calls.find((c) => c.method === "POST")?.body).toEqual({
+      student: "s1",
+      value: 35,
+      work_type: null,
+      comment: "Не решил задачи 3–5",
+      reason: "",
+      client_key: expect.any(String),
+    });
+  });
+
+  it("marks «н» with a remark; the student's own grade goes first", async () => {
+    const { calls } = mockApi({
+      "GET /me": { body: ME_TEACHER },
+      "GET /journal/courses": COURSES,
+      "GET /journal/courses/c1/terms": { body: [] },
+      "GET /journal/courses/c1": {
+        body: grid({
+          grades: [
+            { id: "g1", lesson: "l1", student: "s1", value: 70, work_type: "w", weight: "1.00",
+              comment: "", position: 1, mine: true, author_name: "Ю", version: 2 },
+          ],
+        }),
+      }, // prettier-ignore
+      "POST /journal/grades/g1/delete": { body: { id: "g1", version: 3 } },
+      "PUT /journal/lessons/l1/attendance/s1": {
+        body: { id: "a1", lesson: "l1", student: "s1", status: "absent", late_minutes: null, comment: "Болел", version: 1 },
+      }, // prettier-ignore
+    });
+    renderRoutes(routes, "/teacher/journal");
+    await screen.findByRole("grid");
+    await userEvent.click(document.getElementById("cell-0-1")!);
+    const dialog = await screen.findByRole("dialog", { name: "Алиев Фарход" });
+    expect(within(dialog).getByLabelText(/Баллы/)).toHaveValue("70");
+    await userEvent.click(within(dialog).getByRole("button", { name: "Отсутствовал («н»)" }));
+    expect(within(dialog).getByLabelText(/Баллы/)).toBeDisabled();
+    await userEvent.type(within(dialog).getByLabelText("Замечание"), "Болел");
+    await userEvent.click(within(dialog).getByRole("button", { name: "сохранить" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    const writes = calls.filter((c) => c.method !== "GET");
+    expect(writes.map((c) => c.path)).toEqual([
+      "/journal/grades/g1/delete",
+      "/journal/lessons/l1/attendance/s1",
+    ]);
+    expect(writes[1]?.body).toEqual({
+      status: "absent",
+      comment: "Болел",
+      version: null,
+      reason: "",
+    });
+  });
+
+  it("does not open on a locked column and says why", async () => {
+    mockApi({
+      "GET /me": { body: ME_TEACHER },
+      "GET /journal/courses": COURSES,
+      "GET /journal/courses/c1/terms": { body: [] },
+      "GET /journal/courses/c1": { body: grid() },
+    });
+    renderRoutes(routes, "/teacher/journal");
+    await screen.findByRole("grid");
+    await userEvent.click(document.getElementById("cell-0-0")!);
+    expect(await screen.findByText("Изменить может администратор")).toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+});
+
 describe("ReviewsTab", () => {
   const routes = [{ path: "/teacher/journal", element: <JournalPage /> }];
   const term = { id: "t2", name: "Модуль 2", starts_on: "2026-11-01", ends_on: "2026-12-31" };

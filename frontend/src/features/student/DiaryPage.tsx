@@ -3,8 +3,8 @@ import { useRef } from "react";
 import { useWeekParam } from "@/features/schedule/api";
 import { errorMessage } from "@/shared/api/errors";
 import { t, type MessageKey } from "@/shared/i18n";
-import { formatDayLong, hhmm, startOfWeek, weekDays } from "@/shared/lib/week";
-import { lessonMarks, RuledSkeleton, WeekNav } from "@/shared/ui";
+import { formatDayLong, hhmm, weekDays } from "@/shared/lib/week";
+import { lessonMarks, PeriodBar, RuledSkeleton } from "@/shared/ui";
 
 import { useDiary, type DiaryLesson } from "./api";
 import styles from "./Student.module.css";
@@ -116,14 +116,8 @@ export function DiaryPage() {
 
   return (
     <section className={styles.page}>
-      <div className={styles.titleRow}>
-        <h1>{t("student.diary")}</h1>
-        <WeekNav
-          monday={monday}
-          onChange={setMonday}
-          onToday={() => setMonday(startOfWeek(today))}
-        />
-      </div>
+      <h1 className="visually-hidden">{t("student.diary")}</h1>
+      <PeriodBar monday={monday} today={today} onChange={setMonday} />
       {diary.isPending ? (
         <RuledSkeleton rows={10} />
       ) : diary.error ? (

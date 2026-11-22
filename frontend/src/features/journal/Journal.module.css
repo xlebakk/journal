@@ -32,30 +32,57 @@
   font-weight: 400;
 }
 
-/* The groups, like the class strip of the eDonish journal. */
-.strip {
-  display: flex;
-  gap: 4px;
-  overflow-x: auto;
-  padding: 6px;
+/* The groups, like the class strip of the eDonish journal: one white pill with arrows at the
+   ends; the chosen group is pale blue. */
+.stripFrame {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  align-items: stretch;
+  min-height: 64px;
   border-radius: var(--radius-lg);
   background: var(--sheet);
   box-shadow: var(--shadow-pill);
-  scrollbar-width: thin;
+}
+
+.stripArrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.stripArrow:hover {
+  background: var(--sheet-2);
+  color: var(--ink);
+}
+
+.strip {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.strip::-webkit-scrollbar {
+  display: none;
 }
 
 .stripItem {
   flex: none;
-  min-width: 72px;
-  min-height: 44px;
-  padding: 0 18px;
+  min-width: 88px;
+  padding: 0 20px;
   border: 0;
   border-radius: var(--radius);
   background: transparent;
   color: var(--ink);
   font: inherit;
   font-size: var(--text-16);
+  white-space: nowrap;
   cursor: pointer;
+  transition: background-color var(--duration) var(--easing);
 }
 
 .stripItem:hover {
@@ -67,9 +94,9 @@
   color: var(--accent-strong);
 }
 
-/* Subject and period: pills with a soft shadow; the label is for screen readers. */
+/* Subject and period: white pills with a soft shadow; the label is for screen readers. */
 .pillSelect {
-  min-width: 220px;
+  min-width: 260px;
 }
 
 .pillSelect > label {
@@ -83,40 +110,44 @@
 
 .pillSelect select {
   min-height: 44px;
-  padding: 0 20px;
+  padding: 0 44px 0 28px;
   border: 0;
+  border-bottom: var(--line) solid var(--rule);
   border-radius: var(--radius-pill);
+  background-color: var(--sheet);
   box-shadow: var(--shadow-pill);
+  text-align: center;
+  text-align-last: center;
+}
+
+.teacherRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  margin-top: var(--space-1);
 }
 
 .teacherLine {
   margin: 0;
-  color: var(--ink-2);
-}
-
-.keys {
-  font-size: var(--text-14);
-  color: var(--ink-2);
-}
-
-.keys > summary {
-  width: max-content;
-  cursor: pointer;
+  color: var(--ink);
 }
 
 .tabs {
   display: flex;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
 .tab {
-  min-height: 36px;
+  min-height: 32px;
   padding: 0;
   border: 0;
   border-bottom: 2px solid transparent;
   background: transparent;
-  color: var(--ink);
+  color: var(--ink-2);
   font: inherit;
+  font-size: var(--text-14);
   cursor: pointer;
 }
 
@@ -133,7 +164,6 @@
 }
 
 .hint {
-  min-height: 1.45em;
   margin: 0;
   color: var(--pencil);
   font-size: var(--text-14);
@@ -358,19 +388,39 @@
   color: var(--ink-2);
 }
 
-/* --- Grid ----------------------------------------------------------------------------- */
+/* --- Grid (stage 18, after the eDonish journal) -------------------------------------------
+   A pale-blue head of four rows (month, day, weekday, lesson link), №, the name and three
+   vertical summary columns fixed on the left, a dot in every empty cell, today's column
+   tinted. Four head rows of 30 px stick to the top while the class scrolls. */
 
 .scroller {
+  --head-row: 30px;
+  --w-num: 40px;
+  --w-name: 240px;
+  --w-sum: 40px;
+
   max-width: 100%;
-  max-height: 70vh;
+  max-height: 72vh;
   overflow: auto;
-  border: var(--line) solid var(--rule);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   background: var(--sheet);
   box-shadow: var(--shadow-card);
+  scrollbar-color: color-mix(in srgb, var(--accent) 45%, var(--sheet)) transparent;
+  scrollbar-width: thin;
+}
+
+.scroller::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scroller::-webkit-scrollbar-thumb {
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--accent) 45%, var(--sheet));
 }
 
 .grid {
+  min-width: 100%;
   border-collapse: separate;
   border-spacing: 0;
   font-variant-numeric: tabular-nums;
@@ -383,82 +433,200 @@
 
 .grid th,
 .grid td {
-  height: var(--row-height);
-  padding: 0 8px;
+  padding: 0 6px;
   border-right: var(--line) solid var(--rule);
   border-bottom: var(--line) solid var(--rule);
   background: var(--sheet);
   white-space: nowrap;
 }
 
+.grid td {
+  height: 32px;
+}
+
 .grid thead th {
   position: sticky;
-  top: 0;
   z-index: 1;
-  background: color-mix(in srgb, var(--accent-soft) 60%, var(--sheet));
+  height: var(--head-row);
+  border-right-color: color-mix(in srgb, var(--sheet) 55%, var(--accent-tint));
+  border-bottom-color: color-mix(in srgb, var(--sheet) 55%, var(--accent-tint));
+  background: var(--accent-tint);
+  color: var(--ink);
+  font-size: var(--text-14);
+  font-weight: 400;
+  text-align: center;
+}
+
+.headMonth th {
+  top: 0;
+}
+
+.headDay th {
+  top: var(--head-row);
+}
+
+.headWeekday th {
+  top: calc(var(--head-row) * 2);
+}
+
+.headTopic th {
+  top: calc(var(--head-row) * 3);
+}
+
+.monthHead {
+  text-transform: capitalize;
+}
+
+.grid thead .weekdayHead {
+  font-size: var(--text-12);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.topicLink,
+.topicLinkEmpty {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: var(--radius);
+  color: var(--accent);
+}
+
+.topicLinkEmpty {
+  color: color-mix(in srgb, var(--accent) 45%, var(--accent-tint));
+}
+
+.topicLink:hover,
+.topicLinkEmpty:hover {
+  background: var(--sheet);
 }
 
 .grid tbody tr:hover > * {
   background: linear-gradient(var(--accent-soft), var(--accent-soft)), var(--sheet);
 }
 
-.grid .nameCell {
+/* The left block: №, name, average, attendance, absences — fixed while dates scroll. */
+.numCell,
+.nameCell,
+.sumAverage,
+.sumAttendance,
+.sumAbsences {
   position: sticky;
-  left: 0;
   z-index: 2;
-  min-width: 170px;
+}
+
+.grid thead .numCell,
+.grid thead .nameCell,
+.grid thead .sumAverage,
+.grid thead .sumAttendance,
+.grid thead .sumAbsences {
+  top: 0;
+  z-index: 3;
+  font-weight: 600;
+}
+
+.numCell {
+  left: 0;
+  width: var(--w-num);
+  min-width: var(--w-num);
+  color: var(--ink-2);
+  font-size: var(--text-14);
+  text-align: center;
+}
+
+.grid .nameCell {
+  left: var(--w-num);
+  width: var(--w-name);
+  min-width: var(--w-name);
+  max-width: var(--w-name);
+  overflow: hidden;
+  padding-left: 12px;
+  font-size: var(--text-14);
+  font-weight: 400;
   text-align: left;
-  font-weight: 500;
-  border-right: var(--line-strong) solid var(--rule);
-  box-shadow: 6px 0 12px -10px var(--ink-2);
+  text-overflow: ellipsis;
 }
 
 .grid thead .nameCell {
-  z-index: 3;
-  font-size: var(--text-12);
-  color: var(--ink-2);
-}
-
-.dateHead {
-  min-width: 58px;
-  font-family: var(--font-mono);
-  font-size: var(--text-12);
-  font-weight: 500;
   text-align: center;
 }
 
-.dateHead a {
-  display: block;
-  color: var(--ink);
-  text-decoration: none;
+.grid .summary {
+  width: var(--w-sum);
+  min-width: var(--w-sum);
+  font-size: var(--text-14);
+  text-align: center;
 }
 
-.dateType {
-  display: block;
+.sumAverage {
+  left: calc(var(--w-num) + var(--w-name));
+}
+
+.sumAttendance {
+  left: calc(var(--w-num) + var(--w-name) + var(--w-sum));
+}
+
+.grid .sumAbsences {
+  left: calc(var(--w-num) + var(--w-name) + var(--w-sum) * 2);
+  border-right: var(--line-strong) solid color-mix(in srgb, var(--accent) 35%, var(--rule));
+  box-shadow: 6px 0 10px -8px color-mix(in srgb, var(--ink) 35%, transparent);
+}
+
+.grid tbody .sumAverage,
+.grid tbody .sumAttendance {
+  min-width: 52px;
+}
+
+.grid .sumAttendance,
+.grid .sumAbsences {
   color: var(--ink-2);
+}
+
+/* Vertical headings of the summary columns, read from the bottom up. */
+.vertical {
+  display: inline-block;
+  max-height: calc(var(--head-row) * 4 - 12px);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: var(--text-12);
+  font-weight: 400;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.dateHead,
+.weekdayHead,
+.topicHead {
+  min-width: 40px;
 }
 
 .grid .todayHead {
-  background: linear-gradient(var(--marker), var(--marker)), var(--sheet);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
 }
 
 .grid .weekStart {
-  border-left: 2px solid color-mix(in srgb, var(--accent) 35%, var(--rule));
+  border-left: 2px solid color-mix(in srgb, var(--accent) 30%, var(--rule));
 }
 
 .cell {
-  min-width: 58px;
+  position: relative;
+  min-width: 40px;
   text-align: center;
-  cursor: cell;
+  cursor: pointer;
 }
 
 .grid .todayCell {
-  background: linear-gradient(var(--marker-soft), var(--marker-soft)), var(--sheet);
+  background: var(--marker-soft);
 }
 
 .grid .outside {
   color: var(--ink-2);
   background: var(--paper);
+  cursor: default;
+}
+
+.grid .locked {
+  cursor: default;
 }
 
 .grid .selected {
@@ -466,13 +634,34 @@
   outline-offset: -2px;
 }
 
+/* A remark in the cell: a small blue corner, the text in the tooltip. */
+.hasRemark::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-top: 7px solid var(--accent);
+  border-left: 7px solid transparent;
+}
+
 .cellContent {
   display: inline-flex;
   gap: 4px;
   justify-content: center;
-  font-family: var(--font-mono);
   font-size: var(--text-15);
-  font-weight: 700;
+  font-weight: 600;
+}
+
+.dot {
+  color: var(--ink-2);
+}
+
+.cellAbsent {
+  color: var(--red-pen);
+}
+
+.cellExcused {
+  color: var(--ink-2);
 }
 
 .grade {
@@ -488,10 +677,110 @@
   text-decoration: underline;
 }
 
-.grid .summary {
-  min-width: 64px;
-  font-family: var(--font-mono);
-  text-align: right;
+/* --- The cell window: points or «н», a remark ---------------------------------------- */
+
+.cellForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cellEntry {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+.scoreField {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scoreInput {
+  width: 100%;
+  min-height: 56px;
+  padding: 0 16px;
+  border: var(--line) solid var(--rule);
+  border-radius: var(--radius-lg);
+  background: var(--sheet);
+  color: var(--ink);
+  font-size: var(--text-28);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.scoreInput:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  outline: none;
+}
+
+.scoreInput:disabled {
+  background: var(--sheet-2);
+  color: var(--ink-2);
+}
+
+.scoreInput[aria-invalid="true"] {
+  border-color: var(--red-pen);
+  color: var(--red-pen);
+}
+
+.cellOr {
+  padding-bottom: 18px;
+  color: var(--ink-2);
+  font-size: var(--text-14);
+}
+
+.absentToggle {
+  width: 56px;
+  height: 56px;
+  flex: none;
+  border: var(--line) solid var(--rule);
+  border-radius: 50%;
+  background: var(--sheet);
+  box-shadow: var(--shadow-pill);
+  color: var(--red-pen);
+  font: inherit;
+  font-size: var(--text-20);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.absentToggle[aria-pressed="true"] {
+  border-color: var(--red-pen);
+  background: var(--red-pen);
+  color: var(--on-accent);
+}
+
+/* Phones: only the name stays fixed; №, the summaries and the dates scroll under it. */
+@media (max-width: 599px) {
+  .scroller {
+    --w-name: 140px;
+  }
+
+  .grid .numCell,
+  .grid .sumAverage,
+  .grid .sumAttendance,
+  .grid .sumAbsences {
+    left: auto;
+  }
+
+  .grid .sumAbsences {
+    box-shadow: none;
+  }
+
+  .grid .nameCell {
+    left: 0;
+    z-index: 3;
+    box-shadow: 6px 0 10px -8px color-mix(in srgb, var(--ink) 35%, transparent);
+  }
+
+  .grid thead .nameCell {
+    z-index: 4;
+  }
 }
 
 .topics {
@@ -535,6 +824,11 @@
 
   .toolbar > * {
     min-width: 100%;
+  }
+
+  .stripFrame {
+    grid-template-columns: 36px minmax(0, 1fr) 36px;
+    min-height: 52px;
   }
 }
 

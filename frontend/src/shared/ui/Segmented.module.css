@@ -1,0 +1,46 @@
+/* A pill switch of views (stage 18, after the eDonish schedule). */
+.segmented {
+  display: inline-flex;
+  align-self: flex-start;
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-pill);
+  background: var(--sheet);
+  box-shadow: var(--shadow-pill);
+  scrollbar-width: none;
+}
+
+.segment {
+  flex: none;
+  min-height: 52px;
+  padding: 0 32px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-16);
+  cursor: pointer;
+  transition: background-color var(--duration) var(--easing);
+}
+
+.segment:hover {
+  background: var(--sheet-2);
+}
+
+.segment[aria-selected="true"] {
+  background: var(--accent-soft);
+  box-shadow: var(--shadow-pill);
+}
+
+@media (max-width: 599px) {
+  .segmented {
+    display: flex;
+  }
+
+  .segment {
+    flex: 1;
+    min-height: 44px;
+    padding: 0 16px;
+  }
+}

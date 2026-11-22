@@ -1,10 +1,11 @@
+import { ChevronLeft, ChevronRight, MessageSquare } from "lucide-react";
 import { memo, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { Link, useSearchParams } from "react-router";
 
 import { useMe } from "@/features/auth/api";
 import { errorMessage } from "@/shared/api/errors";
 import { t } from "@/shared/i18n";
-import { addDays, formatDate, isoWeekday } from "@/shared/lib/week";
+import { addDays, formatDate, isoWeekday, monthName, weekdayShort } from "@/shared/lib/week";
 import {
   Button,
   Dialog,
@@ -27,6 +28,7 @@ import {
   type GridLesson,
   type RowStudent,
 } from "./api";
+import { CellDialog } from "./CellDialog";
 import styles from "./Journal.module.css";
 import { journalBase } from "./paths";
 import {
@@ -36,7 +38,6 @@ import {
   mark,
   statusFromKey,
 } from "./actions";
-import { StudentEditor } from "./StudentEditor";
 import { SaveStatus } from "./SaveStatus";
 import { useSave } from "./useSave";
 import { ReviewsTab } from "./ReviewsTab";
@@ -61,6 +62,26 @@ function buildMaps(grid: Grid): Maps {
   for (const a of grid.attendance) cell(a.lesson, a.student).attendance = a;
   for (const g of grid.grades) cell(g.lesson, g.student).grades.push(g);
   return maps;
+}
+
+/** Runs of lessons in one month: «Ноябрь» over its columns. */
+function monthRuns(lessons: GridLesson[]): { month: string; count: number }[] {
+  const runs: { month: string; count: number }[] = [];
+  for (const lesson of lessons) {
+    const month = lesson.date.slice(0, 7);
+    const last = runs.at(-1);
+    if (last && last.month === month) last.count += 1;
+    else runs.push({ month, count: 1 });
+  }
+  return runs;
+}
+
+/** The remark of a cell: the grade's «why» or the comment of an absence. */
+function remarkOf(cell: Cell | undefined): string {
+  if (!cell) return "";
+  return [cell.attendance?.comment, ...cell.grades.map((g) => g.comment)]
+    .filter(Boolean)
+    .join(" · ");
 }
 
 type RowProps = {
@@ -90,19 +111,41 @@ const GridRow = memo(function GridRow({
   const average = stats.average === null ? null : Number(stats.average);
   return (
     <tr>
-      <th scope="row" className={styles.nameCell}>
-        {student.short_name}
+      <td className={styles.numCell}>{row + 1}</td>
+      <th scope="row" className={styles.nameCell} title={student.full_name}>
+        {student.full_name}
       </th>
+      <td
+        className={`${styles.summary} ${styles.sumAverage} ${average !== null && average < Number(grid.rules.low_below) ? styles.low : ""}`}
+      >
+        {stats.average ?? "·"}
+      </td>
+      <td className={`${styles.summary} ${styles.sumAttendance}`}>
+        {stats.attendance_percent === null
+          ? "·"
+          : `${Math.round(Number(stats.attendance_percent))}%`}
+      </td>
+      <td
+        className={`${styles.summary} ${styles.sumAbsences}`}
+        title={stats.excused ? `${t("attendance.excused")}: ${stats.excused}` : undefined}
+      >
+        {stats.absent + stats.excused}
+      </td>
       {lessons.map((lesson, col) => {
         const member = memberOn(student, lesson.date);
         const cell = maps.get(key(lesson.id, student.id));
         const selected = col === selectedCol;
+        const remark = member ? remarkOf(cell) : "";
+        const status = cell?.attendance?.status;
+        const marked = status === "absent" || status === "excused";
+        const empty = !marked && !cell?.grades.length && !(selected && buffer);
         const classes = [
           styles.cell,
           weekStarts.has(col) && styles.weekStart,
           lesson.date === grid.today && styles.todayCell,
           !member && styles.outside,
           (!lesson.editable || !member) && styles.locked,
+          remark && styles.hasRemark,
           selected && styles.selected,
         ]
           .filter(Boolean)
@@ -117,17 +160,23 @@ const GridRow = memo(function GridRow({
             title={
               !member
                 ? t("journal.notMember")
-                : lesson.locked === "window"
-                  ? t("journal.lockedHint")
-                  : undefined
+                : remark ||
+                  (status === "late"
+                    ? t("journal.lateTitle", { minutes: cell?.attendance?.late_minutes ?? "?" })
+                    : "") ||
+                  (lesson.locked === "window"
+                    ? t("journal.lockedHint")
+                    : lesson.locked === "future"
+                      ? t("journal.futureHint")
+                      : undefined)
             }
             onClick={() => onSelect(row, col)}
           >
-            {member ? (
+            {member && !empty ? (
               <span className={styles.cellContent}>
-                {cell?.attendance && cell.attendance.status !== "present" && (
-                  <span className={styles[`mark_${cell.attendance.status}`]}>
-                    {mark(cell.attendance.status)}
+                {marked && status && (
+                  <span className={status === "absent" ? styles.cellAbsent : styles.cellExcused}>
+                    {mark(status)}
                   </span>
                 )}
                 {cell?.grades.map((g) => (
@@ -141,27 +190,13 @@ const GridRow = memo(function GridRow({
                 {selected && buffer && <span className={styles.buffer}>{buffer}</span>}
               </span>
             ) : (
-              <span aria-hidden="true">·</span>
+              <span className={styles.dot} aria-hidden="true">
+                ·
+              </span>
             )}
           </td>
         );
       })}
-      <td
-        className={`${styles.summary} ${average !== null && average < Number(grid.rules.low_below) ? styles.low : ""}`}
-      >
-        {stats.average ?? "—"}
-      </td>
-      <td className={styles.summary}>
-        {stats.attendance_percent === null
-          ? "—"
-          : `${Math.round(Number(stats.attendance_percent))}%`}
-      </td>
-      <td
-        className={styles.summary}
-        title={stats.excused ? `${t("attendance.excused")}: ${stats.excused}` : undefined}
-      >
-        {stats.absent + stats.excused}
-      </td>
     </tr>
   );
 });
@@ -199,7 +234,58 @@ const TAB_LABELS = {
   reviews: "journal.tabReviews",
 } as const;
 
-/** «Журнал»: students × lessons with keyboard input (SPEC §7.3). */
+/** The groups as one pill strip with arrows at the ends, like the eDonish class strip. */
+function GroupStrip({
+  groups,
+  chosen,
+  onPick,
+}: {
+  groups: string[];
+  chosen: string | undefined;
+  onPick: (name: string) => void;
+}) {
+  const strip = useRef<HTMLDivElement>(null);
+  const scroll = (direction: number) =>
+    strip.current?.scrollBy?.({
+      left: direction * strip.current.clientWidth * 0.8,
+      behavior: "smooth",
+    });
+  return (
+    <div className={styles.stripFrame}>
+      <button
+        type="button"
+        className={styles.stripArrow}
+        aria-label={t("journal.groupsBack")}
+        onClick={() => scroll(-1)}
+      >
+        <ChevronLeft size={20} strokeWidth={1.5} aria-hidden="true" />
+      </button>
+      <div ref={strip} className={styles.strip} role="group" aria-label={t("journal.group")}>
+        {groups.map((name) => (
+          <button
+            key={name}
+            type="button"
+            className={styles.stripItem}
+            aria-pressed={chosen === name}
+            onClick={() => onPick(name)}
+          >
+            {name}
+          </button>
+        ))}
+      </div>
+      <button
+        type="button"
+        className={styles.stripArrow}
+        aria-label={t("journal.groupsForward")}
+        onClick={() => scroll(1)}
+      >
+        <ChevronRight size={20} strokeWidth={1.5} aria-hidden="true" />
+      </button>
+    </div>
+  );
+}
+
+/** «Журнал»: students × lessons, after the eDonish journal (SPEC §7.3; stage 18). */
 export function JournalPage() {
   const me = useMe();
   const isAdmin = me.data?.active_role === "admin";
@@ -212,14 +298,14 @@ export function JournalPage() {
   const tab = rawTab === "topics" || rawTab === "reviews" ? rawTab : "grades";
   const terms = useTerms(course);
   const grid = useGrid(course, term);
-  const { state, perform, retry, undo, busy } = useSave();
+  const { state, perform, retry, undo } = useSave();
   const [picked, setPicked] = useState<{ grid: string; row: number; col: number } | null>(null);
   const [buffer, setBuffer] = useState("");
   const [hint, setHint] = useState("");
   const [reason, setReason] = useState("");
   const [askReason, setAskReason] = useState<((why: string) => void) | null>(null);
   const [reasonDraft, setReasonDraft] = useState("");
-  const [details, setDetails] = useState<{ lesson: GridLesson; student: RowStudent } | null>(null);
+  const [editing, setEditing] = useState<{ lesson: GridLesson; student: RowStudent } | null>(null);
   const tableRef = useRef<HTMLTableElement>(null);
 
   const data = grid.data;
@@ -249,6 +335,7 @@ export function JournalPage() {
     });
     return set;
   }, [data]);
+  const months = useMemo(() => monthRuns(data?.lessons ?? []), [data]);
 
   const setParam = (name: string, value: string) => {
     const next = new URLSearchParams(params);
@@ -263,23 +350,40 @@ export function JournalPage() {
 
   const lessons = data?.lessons ?? [];
   const students = data?.students ?? [];
-  const current = () => {
-    const lesson = lessons[sel.col];
-    const student = students[sel.row];
+  const at = (row: number, col: number) => {
+    const lesson = lessons[col];
+    const student = students[row];
     if (!lesson || !student) return null;
     return { lesson, student, cell: maps.get(key(lesson.id, student.id)) as Cell | undefined };
+  };
+  const current = () => at(sel.row, sel.col);
+
+  /** Says why a cell cannot be changed; empty when it can. */
+  const lockOf = (lesson: GridLesson, student: RowStudent) =>
+    !memberOn(student, lesson.date)
+      ? t("journal.notMember")
+      : lesson.editable
+        ? ""
+        : lesson.locked === "future"
+          ? t("journal.futureHint")
+          : t("journal.lockedHint");
+
+  /** The cell window: points or «н» and a remark. */
+  const openCell = (row: number, col: number) => {
+    const target = at(row, col);
+    if (!target) return;
+    const locked = lockOf(target.lesson, target.student);
+    if (locked) return setHint(locked);
+    setHint("");
+    setEditing({ lesson: target.lesson, student: target.student });
   };
 
   /** Runs `fn` if the cell may be edited; asks for a reason when the window is closed. */
   const guarded = (fn: (reasonText: string) => void) => {
     const target = current();
     if (!target) return;
-    if (!memberOn(target.student, target.lesson.date)) return setHint(t("journal.notMember"));
-    if (!target.lesson.editable) {
-      return setHint(
-        target.lesson.locked === "future" ? t("journal.futureHint") : t("journal.lockedHint"),
-      );
-    }
+    const locked = lockOf(target.lesson, target.student);
+    if (locked) return setHint(locked);
     if (target.lesson.needs_reason && !reason.trim()) {
       setReasonDraft("");
       // The action runs with the reason typed into the dialog, not the one at this moment.
@@ -313,7 +417,7 @@ export function JournalPage() {
     if (!target) return;
     if (event.key === "Enter") {
       event.preventDefault();
-      if (!buffer) return setDetails({ lesson: target.lesson, student: target.student });
+      if (!buffer) return openCell(sel.row, sel.col);
       const value = Number(buffer);
       const [min, max] = SCALE_RANGE[data.rules.scale] ?? [0, 100];
       setBuffer("");
@@ -385,13 +489,12 @@ export function JournalPage() {
   }));
   const termOptions = [
     { value: "", label: t("journal.period") },
-    ...(terms.data ?? []).map((x) => ({
-      value: x.id,
-      label: `${x.name} (${formatDate(x.starts_on)}–${formatDate(x.ends_on)})`,
-    })),
+    ...(terms.data ?? []).map((x) => ({ value: x.id, label: x.name })),
     { value: "year", label: t("journal.wholeYear") },
   ];
-  const detailCell = details ? maps.get(key(details.lesson.id, details.student.id)) : undefined;
+  const shownTerm =
+    term ?? terms.data?.find((x) => data && x.starts_on === data.period_from)?.id ?? "";
+  const editCell = editing ? maps.get(key(editing.lesson.id, editing.student.id)) : undefined;
 
   return (
     <section className={styles.page}>
@@ -400,19 +503,7 @@ export function JournalPage() {
         <SaveStatus state={state} retry={retry} undo={undo} />
       </div>
       {groups.length > 0 && (
-        <div className={styles.strip} role="group" aria-label={t("journal.group")}>
-          {groups.map((name) => (
-            <button
-              key={name}
-              type="button"
-              className={styles.stripItem}
-              aria-pressed={chosen?.group_name === name}
-              onClick={() => pickGroup(name)}
-            >
-              {name}
-            </button>
-          ))}
-        </div>
+        <GroupStrip groups={groups} chosen={chosen?.group_name} onPick={pickGroup} />
       )}
       <div className={styles.toolbar}>
         <SelectField
@@ -425,11 +516,17 @@ export function JournalPage() {
         <SelectField
           className={styles.pillSelect}
           label={t("journal.period")}
-          value={term ?? ""}
+          value={shownTerm}
           onChange={(e) => setParam("term", e.target.value)}
           options={termOptions}
         />
-        <span className={styles.toolbarSpacer} />
+      </div>
+      <div className={styles.teacherRow}>
+        {chosen && (
+          <p className={styles.teacherLine}>
+            {t("journal.teacherLine", { name: chosen.teacher_name })}
+          </p>
+        )}
         <div className={styles.tabs} role="tablist">
           {(["grades", "topics", "reviews"] as const).map((value) => (
             <button
@@ -445,11 +542,6 @@ export function JournalPage() {
           ))}
         </div>
       </div>
-      {chosen && (
-        <p className={styles.teacherLine}>
-          {t("journal.teacherLine", { name: chosen.teacher_name })}
-        </p>
-      )}
 
       {tab === "reviews" && course ? (
         <ReviewsTab course={course} term={term} />
@@ -463,12 +555,11 @@ export function JournalPage() {
         <TopicsTab grid={data} base={base} />
       ) : (
         <>
-          <details className={styles.keys}>
-            <summary>{t("journal.keys")}</summary>
-            <p className={styles.note}>{t("journal.keyboardHint")}</p>
-          </details>
           <p className={styles.hint} role="status" aria-live="polite">
             {hint}
+          </p>
+          <p id="journal-keys" className="visually-hidden">
+            {t("journal.keyboardHint")}
           </p>
           <div className={styles.scroller}>
             <table
@@ -479,19 +570,47 @@ export function JournalPage() {
               role="grid"
               tabIndex={0}
               aria-label={`${data.course.group_name} · ${data.course.subject_name}`}
+              aria-describedby="journal-keys"
               aria-activedescendant={`cell-${sel.row}-${sel.col}`}
               onKeyDown={onKey}
             >
               <thead>
-                <tr>
-                  <th scope="col" className={styles.nameCell}>
-                    {t("journal.student")}
+                <tr className={styles.headMonth}>
+                  <th scope="col" rowSpan={4} className={styles.numCell}>
+                    №
                   </th>
+                  <th scope="col" rowSpan={4} className={styles.nameCell}>
+                    {t("journal.studentName")}
+                  </th>
+                  <th scope="col" rowSpan={4} className={`${styles.summary} ${styles.sumAverage}`}>
+                    <span className={styles.vertical}>{t("journal.averageLong")}</span>
+                  </th>
+                  <th
+                    scope="col"
+                    rowSpan={4}
+                    className={`${styles.summary} ${styles.sumAttendance}`}
+                  >
+                    <span className={styles.vertical}>{t("journal.attendanceLong")}</span>
+                  </th>
+                  <th scope="col" rowSpan={4} className={`${styles.summary} ${styles.sumAbsences}`}>
+                    <span className={styles.vertical}>{t("journal.absences")}</span>
+                  </th>
+                  {months.map((m) => (
+                    <th
+                      key={m.month}
+                      scope="colgroup"
+                      colSpan={m.count}
+                      className={styles.monthHead}
+                    >
+                      {monthName(`${m.month}-01`)}
+                    </th>
+                  ))}
+                </tr>
+                <tr className={styles.headDay}>
                   {lessons.map((lesson, col) => (
                     <th
                       key={lesson.id}
                       scope="col"
-                      title={lesson.topic || undefined}
                       className={[
                         styles.dateHead,
                         weekStarts.has(col) && styles.weekStart,
@@ -500,21 +619,51 @@ export function JournalPage() {
                         .filter(Boolean)
                         .join(" ")}
                     >
-                      <Link to={`${base}/lessons/${lesson.id}`} tabIndex={-1}>
-                        {lesson.date.slice(8, 10)}.{lesson.date.slice(5, 7)}
-                      </Link>
-                      <span className={styles.dateType}>{lesson.lesson_type_short ?? ""}</span>
+                      {Number(lesson.date.slice(8, 10))}
                     </th>
                   ))}
-                  <th scope="col" className={styles.summary}>
-                    {t("journal.average")}
-                  </th>
-                  <th scope="col" className={styles.summary}>
-                    {t("journal.attendance")}
-                  </th>
-                  <th scope="col" className={styles.summary}>
-                    {t("journal.absences")}
-                  </th>
+                </tr>
+                <tr className={styles.headWeekday}>
+                  {lessons.map((lesson, col) => (
+                    <th
+                      key={lesson.id}
+                      scope="col"
+                      className={[
+                        styles.weekdayHead,
+                        weekStarts.has(col) && styles.weekStart,
+                        lesson.date === data.today && styles.todayHead,
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                    >
+                      {weekdayShort(lesson.date)}
+                    </th>
+                  ))}
+                </tr>
+                <tr className={styles.headTopic}>
+                  {lessons.map((lesson, col) => (
+                    <th
+                      key={lesson.id}
+                      scope="col"
+                      className={[
+                        styles.topicHead,
+                        weekStarts.has(col) && styles.weekStart,
+                        lesson.date === data.today && styles.todayHead,
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                    >
+                      <Link
+                        to={`${base}/lessons/${lesson.id}`}
+                        tabIndex={-1}
+                        className={lesson.topic ? styles.topicLink : styles.topicLinkEmpty}
+                        title={lesson.topic || t("journal.noTopicYet")}
+                        aria-label={t("journal.lessonOn", { date: formatDate(lesson.date) })}
+                      >
+                        <MessageSquare size={15} strokeWidth={1.5} aria-hidden="true" />
+                      </Link>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -532,8 +681,8 @@ export function JournalPage() {
                     onSelect={(r, c) => {
                       setSel(() => ({ row: r, col: c }));
                       setBuffer("");
-                      setHint("");
                       tableRef.current?.focus();
+                      openCell(r, c);
                     }}
                   />
                 ))}
@@ -543,39 +692,26 @@ export function JournalPage() {
         </>
       )}
 
-      <Dialog
-        open={details !== null}
-        onOpenChange={(o) => !o && setDetails(null)}
-        title={details ? `${details.student.full_name} · ${formatDate(details.lesson.date)}` : ""}
-      >
-        {details && data && (
-          <div className={styles.form}>
-            <StudentEditor
-              lesson={details.lesson}
-              rules={data.rules}
-              workTypes={data.work_types}
-              student={details.student}
-              attendance={detailCell?.attendance}
-              grades={detailCell?.grades ?? []}
-              reason={reason}
-              isAdmin={isAdmin}
-              busy={busy}
-              perform={perform}
-            />
-            {details.lesson.needs_reason && (
-              <TextField
-                label={t("journal.reasonField")}
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-              />
-            )}
-            <DialogActions>
-              <Link to={`${base}/lessons/${details.lesson.id}`}>{t("journal.openLesson")}</Link>
-              <Button onClick={() => setDetails(null)}>{t("common.close")}</Button>
-            </DialogActions>
-          </div>
-        )}
-      </Dialog>
+      {editing && data && (
+        <CellDialog
+          key={`${editing.lesson.id}:${editing.student.id}`}
+          lesson={editing.lesson}
+          student={editing.student}
+          subject={data.course.subject_name}
+          attendance={editCell?.attendance}
+          grades={editCell?.grades ?? []}
+          rules={data.rules}
+          isAdmin={isAdmin}
+          reason={reason}
+          onReason={setReason}
+          perform={perform}
+          state={state}
+          onClose={() => {
+            setEditing(null);
+            tableRef.current?.focus();
+          }}
+        />
+      )}
 
       <Dialog
         open={askReason !== null}

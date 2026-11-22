@@ -122,3 +122,13 @@ export function minutes(time: string): number {
 export function weekdayNames(): string[] {
   return weekDays("2026-11-16").map((day) => format(day, { weekday: "long" }));
 }
+
+/** «ноябрь» / «noyabr»: the month over the columns of the journal. */
+export function monthName(iso: string): string {
+  return names("dates.months")[Number(iso.slice(5, 7)) - 1] ?? "";
+}
+
+/** «пн» … «вс» / «du» … «ya»: the weekday under a date in the journal. */
+export function weekdayShort(iso: string): string {
+  return names("dates.weekdaysShort")[isoWeekday(iso) - 1] ?? "";
+}

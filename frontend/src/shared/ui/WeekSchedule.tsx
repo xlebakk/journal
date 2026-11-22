@@ -11,6 +11,7 @@ import {
   formatWeekRange,
   hhmm,
   isoWeekday,
+  startOfWeek,
   weekDays,
   weekdayNames,
 } from "@/shared/lib/week";
@@ -231,7 +232,7 @@ export function DaySchedule({ monday, today, lessons, onSelect, ...options }: We
           );
         })}
       </div>
-      <div role="tabpanel" aria-label={formatDayLong(day)}>
+      <div role="tabpanel" className={styles.dayPanel} aria-label={formatDayLong(day)}>
         {items.length === 0 ? (
           <p className={styles.emptyDay}>{t("schedule.emptyDay")}</p>
         ) : (
@@ -306,6 +307,50 @@ export function WeekNav({ monday, onChange, onToday }: WeekNavProps) {
         <ChevronRight size={18} strokeWidth={1.5} aria-hidden="true" />
       </Button>
       <Button onClick={onToday}>{t("schedule.today")}</Button>
+    </div>
+  );
+}
+
+/**
+ * «Выбор периода» of the eDonish schedule: one wide pill with arrows at the ends and the week
+ * in the middle; «сегодня» appears only away from the current week.
+ */
+export function PeriodBar({
+  monday,
+  today,
+  onChange,
+}: {
+  monday: string;
+  today: string;
+  onChange: (monday: string) => void;
+}) {
+  const current = startOfWeek(today);
+  return (
+    <div className={styles.periodBar}>
+      <button
+        type="button"
+        className={styles.periodArrow}
+        aria-label={t("schedule.previousWeek")}
+        onClick={() => onChange(addDays(monday, -7))}
+      >
+        <ChevronLeft size={20} strokeWidth={1.5} aria-hidden="true" />
+      </button>
+      <span className={styles.periodText}>
+        <span aria-live="polite">{formatWeekRange(monday)}</span>
+        {monday !== current && (
+          <button type="button" className={styles.periodToday} onClick={() => onChange(current)}>
+            {t("schedule.today")}
+          </button>
+        )}
+      </span>
+      <button
+        type="button"
+        className={styles.periodArrow}
+        aria-label={t("schedule.nextWeek")}
+        onClick={() => onChange(addDays(monday, 7))}
+      >
+        <ChevronRight size={20} strokeWidth={1.5} aria-hidden="true" />
+      </button>
     </div>
   );
 }

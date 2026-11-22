@@ -1,8 +1,7 @@
 import { useStudentSchedule, useWeekParam } from "@/features/schedule/api";
 import { errorMessage } from "@/shared/api/errors";
 import { t } from "@/shared/i18n";
-import { startOfWeek } from "@/shared/lib/week";
-import { RuledSkeleton, WeekNav, DaySchedule } from "@/shared/ui";
+import { DaySchedule, PeriodBar, RuledSkeleton } from "@/shared/ui";
 
 import styles from "@/features/schedule/SchedulePage.module.css";
 
@@ -12,14 +11,8 @@ export function SchedulePage() {
   const schedule = useStudentSchedule(monday);
   return (
     <section className={styles.page}>
-      <div className={styles.titleRow}>
-        <h1>{t("schedule.title")}</h1>
-        <WeekNav
-          monday={monday}
-          onChange={setMonday}
-          onToday={() => setMonday(startOfWeek(today))}
-        />
-      </div>
+      <h1 className="visually-hidden">{t("schedule.title")}</h1>
+      <PeriodBar monday={monday} today={today} onChange={setMonday} />
       {schedule.isPending ? (
         <RuledSkeleton rows={6} />
       ) : schedule.error ? (

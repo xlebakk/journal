@@ -29,6 +29,9 @@ import {
   type AttendanceMark,
   ScheduleIssues,
   WeekSchedule,
+  DaySchedule,
+  PeriodBar,
+  Segmented,
   type ScheduleItem,
 } from "@/shared/ui";
 import grid from "@/shared/ui/JournalGrid.module.css";
@@ -233,6 +236,8 @@ export default function StyleguidePage() {
   const [theme, setTheme] = useTheme();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [password, setPassword] = useState("зелёный чай");
+  const [view, setView] = useState<"week" | "requests">("week");
+  const [periodMonday, setPeriodMonday] = useState("2026-11-16");
   const now = new Date();
 
   return (
@@ -422,6 +427,25 @@ export default function StyleguidePage() {
             ]}
             warnings={[{ kind: "students", date: "2026-11-21", students: ["Алиев Ф.", "Ким М."] }]}
           />
+        </section>
+
+        <section className={styles.section} aria-labelledby="sg-days">
+          <h2 id="sg-days">Расписание по дням</h2>
+          <p className={styles.caption}>
+            Как в eDonish: переключатель видов, «выбор периода» — широкая таблетка со стрелками,
+            плитки дней; выбранная темнее и подчёркнута, её уроки — на белой панели под ней.
+          </p>
+          <Segmented
+            label="Вид"
+            value={view}
+            onChange={setView}
+            options={[
+              { value: "week", label: "Моё расписание" },
+              { value: "requests", label: "Мои запросы (1)" },
+            ]}
+          />
+          <PeriodBar monday={periodMonday} today="2026-11-21" onChange={setPeriodMonday} />
+          <DaySchedule monday="2026-11-16" today="2026-11-21" lessons={WEEK} showGroup />
         </section>
 
         <section className={styles.section} aria-labelledby="sg-charts">

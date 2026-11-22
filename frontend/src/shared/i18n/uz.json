@@ -447,7 +447,9 @@
     "printTitle": "{group} guruhining dars jadvali",
     "openJournal": "jurnalda ochish",
     "lessonsCount": "darslar: {count}",
-    "subject": "Fan"
+    "subject": "Fan",
+    "mySchedule": "Mening jadvalim",
+    "myRequestsCount": "Soʻrovlarim ({count})"
   },
   "catalogs": {
     "title": "Maʼlumotnomalar",
@@ -529,7 +531,7 @@
     "lockedHint": "Administrator oʻzgartira oladi",
     "futureHint": "Dars hali oʻtmagan",
     "notMember": "bu kuni guruhda emas",
-    "keyboardHint": "Strelkalar — kataklar boʻyicha, raqam + Enter — baho, «y» — kelmadi, «k» — kechikdi, «s» — sababli, Delete — oʻz bahongizni oʻchirish, Enter — batafsil, Esc — chiqish.",
+    "keyboardHint": "Strelkalar — kataklar boʻyicha, son va Enter — baho, «y» — kelmadi, Delete — oʻz bahoingizni oʻchirish, Enter yoki bosish — katak oynasi, Esc — chiqish.",
     "openLesson": "darsni ochish",
     "date": "Sana",
     "type": "Turi",
@@ -569,7 +571,22 @@
     "group": "Guruh",
     "subject": "Fan",
     "teacherLine": "Oʻqituvchi: {name}",
-    "keys": "Klavishlar"
+    "studentName": "Familiya Ism",
+    "averageLong": "Oʻrtacha ball",
+    "attendanceLong": "Davomat",
+    "groupsBack": "oldingi guruhlar",
+    "groupsForward": "keyingi guruhlar",
+    "noTopicYet": "Mavzu hali yozilmagan",
+    "lessonOn": "{date} darsi: mavzu va uy vazifasi",
+    "points": "Ball ({min} dan {max} gacha)",
+    "or": "yoki",
+    "markAbsent": "Kelmadi («y»)",
+    "otherGrades": "Boshqa baholar: {grades}",
+    "remark": "Izoh",
+    "remarkHint": "Masalan: past baho — 3–5-masalalarni yechmadi, mavzuga tayyorlanmadi",
+    "remarkAbsentHint": "Masalan: kasal edi, ota-onasi ogohlantirdi",
+    "reasonShort": "Tuzatish muddati tugagan — sabab auditga yoziladi",
+    "lateTitle": "Kechikdi: {minutes} daq"
   },
   "today": {
     "lessons": "Bugungi darslar",

@@ -14,7 +14,10 @@ test("admin adds a parent from the student's card; the parent reads the child's 
 
   await page.getByRole("link", { name: "Пользователи" }).first().click();
   await page.getByLabel("Поиск по ФИО или логину").fill("e2e.student");
+  // The list refreshes after the search: click once it shows only the student.
+  await expect(page.getByText("Показано 1 из 1")).toBeVisible();
   await page.getByRole("link", { name: "Алиев Фарход" }).click();
+  await expect(page.getByRole("heading", { name: "Алиев Фарход" })).toBeVisible();
   const parents = page.getByRole("region", { name: "Родители" });
   await parents.getByLabel("Фамилия").fill("Алиева");
   await parents.getByLabel("Имя").fill("Гульнора");
