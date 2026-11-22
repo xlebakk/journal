@@ -51,6 +51,8 @@ def make_user(db: None) -> MakeUser:
         global _counter
         _counter += 1
         roles = roles or (Role.STUDENT,)
+        # Administrators in tests are super administrators unless a test says otherwise.
+        fields.setdefault("is_superadmin", Role.ADMIN in roles)
         user = User.objects.create_user(
             login=login or f"user{_counter}",
             password=password,

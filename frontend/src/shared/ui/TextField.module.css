@@ -6,14 +6,13 @@
 
 .label {
   font-size: var(--text-14);
-  font-weight: 500;
   color: var(--ink-2);
 }
 
 .input,
 .select,
 .withAction {
-  min-height: 42px;
+  min-height: 40px;
   border: var(--line) solid var(--rule);
   border-radius: var(--radius);
   background: var(--sheet);
@@ -24,7 +23,7 @@
 
 .input,
 .select {
-  padding: 8px 12px;
+  padding: 7px 12px;
   outline: none;
 }
 
@@ -35,7 +34,7 @@
 .input:hover,
 .select:hover,
 .withAction:hover {
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--rule));
+  border-color: var(--accent-tint);
 }
 
 .input:focus,
@@ -52,7 +51,7 @@
 
 .input:disabled,
 .select:disabled {
-  background: var(--paper);
+  background: var(--sheet-2);
   color: var(--ink-2);
 }
 
@@ -79,19 +78,19 @@
 .withAction .input {
   flex: 1;
   min-width: 0;
-  min-height: 40px;
+  min-height: 38px;
   border: 0;
   border-radius: 0;
   box-shadow: none;
 }
 
 .action {
-  padding: 0 14px;
+  padding: 0 12px;
   border: 0;
   background: transparent;
   color: var(--accent);
+  font-family: var(--font-ui);
   font-size: var(--text-14);
-  font-weight: 500;
   cursor: pointer;
 }
 
@@ -114,7 +113,7 @@
 }
 
 .file {
-  min-height: 42px;
+  min-height: 40px;
   padding: 6px 0;
   font: inherit;
   font-size: var(--text-14);
@@ -122,9 +121,9 @@
 
 .file::file-selector-button {
   margin-right: var(--space-1);
-  padding: 8px 16px;
+  padding: 7px 14px;
   border: var(--line) solid var(--rule);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius);
   background: var(--sheet);
   color: var(--ink);
   font: inherit;
@@ -132,9 +131,7 @@
 }
 
 .file::file-selector-button:hover {
-  border-color: var(--accent);
   background: var(--accent-soft);
-  color: var(--accent);
 }
 
 .file:focus-visible {

@@ -12,6 +12,7 @@ from apps.academics.serializers import current_groups_of
 from . import credentials, lockout
 from .middleware import totp_setup_required
 from .models import (
+    AdminSection,
     LoginEvent,
     Role,
     StudentProfile,
@@ -58,11 +59,33 @@ class PasswordChangeSerializer(serializers.Serializer[Any]):
         user: User = self.context["request"].user
         if attrs["new_password"] == attrs["current_password"]:
             raise serializers.ValidationError({"new_password": ["same_as_current"]})
-        try:
-            validate_password(attrs["new_password"], user)
-        except DjangoValidationError as exc:
-            raise serializers.ValidationError({"new_password": list(exc.messages)}) from exc
+        if problems := password_problems(attrs["new_password"], user):
+            raise serializers.ValidationError({"new_password": problems})
         return attrs
+
+
+def password_problems(password: str, user: User | None = None) -> list[str]:
+    """Machine codes of the password rules: password_too_short, password_too_common,
+    password_too_similar (translated in the frontend)."""
+    try:
+        validate_password(password, user)
+    except DjangoValidationError as exc:
+        return [str(e.code) for e in exc.error_list]
+    return []
+
+
+class AdminPasswordSerializer(serializers.Serializer[Any]):
+    """The administrator types the password (stage 16); nothing is generated."""
+
+    password = serializers.CharField(
+        max_length=256, trim_whitespace=False, write_only=True, allow_blank=True
+    )
+    must_change_password = serializers.BooleanField(required=False, default=False)
+
+    def validate_password(self, value: str) -> str:
+        if not value:
+            raise serializers.ValidationError("required")
+        return value
 
 
 class PasswordSerializer(serializers.Serializer[Any]):
@@ -95,6 +118,8 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "must_change_password",
             "totp_enabled",
             "totp_setup_required",
+            "is_superadmin",
+            "admin_sections",
             "groups",
         )
         read_only_fields = fields
@@ -197,6 +222,8 @@ class AdminUserListSerializer(serializers.ModelSerializer[User]):
             "totp_enabled",
             "last_login",
             "created_at",
+            "is_superadmin",
+            "admin_sections",
         )
         read_only_fields = fields
 
@@ -244,6 +271,16 @@ class AdminUserWriteSerializer(serializers.Serializer[Any]):
     roles = serializers.ListField(child=serializers.CharField(max_length=16))
     student_profile = StudentProfileSerializer(required=False)
     teacher_profile = TeacherProfileSerializer(required=False)
+    # Create only: the administrator sets the first password (stage 16).
+    password = serializers.CharField(
+        max_length=256, trim_whitespace=False, write_only=True, required=False, allow_blank=True
+    )
+    must_change_password = serializers.BooleanField(required=False, default=False)
+    # Stage 16: written only by the super administrator.
+    is_superadmin = serializers.BooleanField(required=False)
+    admin_sections = serializers.ListField(
+        child=serializers.ChoiceField(choices=AdminSection.choices), required=False
+    )
 
     def validate_roles(self, roles: list[str]) -> list[str]:
         return validate_roles(roles)

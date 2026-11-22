@@ -22,6 +22,21 @@ class Role(models.TextChoices):
 ROLE_SENIORITY: tuple[str, ...] = (Role.ADMIN, Role.TEACHER, Role.PARENT, Role.STUDENT)
 
 
+class AdminSection(models.TextChoices):
+    """What a super administrator can grant to another administrator (stage 16)."""
+
+    USERS = "users", "пользователи, импорт, родители"
+    STRUCTURE = "structure", "группы и справочники"
+    SCHEDULE = "schedule", "расписание и запросы"
+    JOURNAL = "journal", "журнал"
+    EXAMS = "exams", "пробные тесты"
+    REPORTS = "reports", "отчёты"
+    PAYMENTS = "payments", "оплаты"
+    ANNOUNCEMENTS = "announcements", "объявления"
+    AUDIT = "audit", "аудит"
+    SETTINGS = "settings", "настройки центра"
+
+
 def senior_role(roles: list[str]) -> str:
     return min(roles, key=ROLE_SENIORITY.index)
 
@@ -86,6 +101,12 @@ class User(AbstractBaseUser):
     totp_last_counter = models.BigIntegerField(null=True, blank=True)
     archived_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    # Stage 16: a super administrator has every section and manages other administrators;
+    # an ordinary administrator has only the sections granted here.
+    is_superadmin = models.BooleanField(default=False)
+    admin_sections = ArrayField(
+        models.CharField(max_length=16, choices=AdminSection.choices), default=list, blank=True
+    )
 
     USERNAME_FIELD = "login"
     REQUIRED_FIELDS: ClassVar[list[str]] = ["last_name", "first_name"]
@@ -103,6 +124,10 @@ class User(AbstractBaseUser):
             models.CheckConstraint(
                 condition=Q(roles__contained_by=[r.value for r in Role]),
                 name="accounts_user_known_roles",
+            ),
+            models.CheckConstraint(
+                condition=Q(admin_sections__contained_by=[s.value for s in AdminSection]),
+                name="accounts_user_known_admin_sections",
             ),
             # A student account never combines with another role (SPEC §4).
             models.CheckConstraint(
@@ -135,6 +160,10 @@ class User(AbstractBaseUser):
     @property
     def is_admin(self) -> bool:
         return Role.ADMIN in self.roles
+
+    def may_open(self, section: str) -> bool:
+        """An administration section, for this administrator."""
+        return self.is_admin and (self.is_superadmin or section in self.admin_sections)
 
     @property
     def is_archived(self) -> bool:

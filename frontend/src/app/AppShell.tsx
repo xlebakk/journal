@@ -5,7 +5,6 @@ import {
   ChartColumn,
   ClipboardList,
   FileCheck,
-  GraduationCap,
   House,
   Inbox,
   LayoutDashboard,
@@ -33,7 +32,14 @@ import { useHasChildren } from "@/features/parent/children";
 import styles from "./AppShell.module.css";
 import { InitialsMenu } from "./InitialsMenu";
 
-type NavItem = { to: string; label: MessageKey; end?: boolean; icon?: LucideIcon };
+type NavItem = {
+  to: string;
+  label: MessageKey;
+  end?: boolean;
+  icon?: LucideIcon;
+  /** The administration section it belongs to (stage 16); none — every administrator. */
+  section?: string;
+};
 
 const STUDENT_NAV: NavItem[] = [
   { to: "/student", label: "nav.home", end: true, icon: House },
@@ -46,19 +52,24 @@ const STUDENT_NAV: NavItem[] = [
 const NAV: Record<Role, NavItem[]> = {
   admin: [
     { to: "/admin", label: "nav.overview", end: true, icon: LayoutDashboard },
-    { to: "/admin/users", label: "nav.users", icon: Users },
-    { to: "/admin/import", label: "nav.import", icon: Upload },
-    { to: "/admin/groups", label: "nav.groups", icon: UsersRound },
-    { to: "/admin/catalogs", label: "nav.catalogs", icon: BookMarked },
-    { to: "/admin/schedule", label: "nav.schedule", icon: CalendarDays },
-    { to: "/admin/requests", label: "nav.requests", icon: Inbox },
-    { to: "/admin/journal", label: "nav.journal", icon: NotebookPen },
-    { to: "/admin/exams", label: "nav.exams", icon: FileCheck },
-    { to: "/admin/reports", label: "nav.reports", icon: ChartColumn },
-    { to: "/admin/payments", label: "nav.payments", icon: Wallet },
-    { to: "/admin/announcements", label: "nav.announcements", icon: Megaphone },
-    { to: "/admin/audit", label: "nav.audit", icon: ShieldCheck },
-    { to: "/admin/settings", label: "nav.settings", icon: Settings },
+    { to: "/admin/users", label: "nav.users", icon: Users, section: "users" },
+    { to: "/admin/import", label: "nav.import", icon: Upload, section: "users" },
+    { to: "/admin/groups", label: "nav.groups", icon: UsersRound, section: "structure" },
+    { to: "/admin/catalogs", label: "nav.catalogs", icon: BookMarked, section: "structure" },
+    { to: "/admin/schedule", label: "nav.schedule", icon: CalendarDays, section: "schedule" },
+    { to: "/admin/requests", label: "nav.requests", icon: Inbox, section: "schedule" },
+    { to: "/admin/journal", label: "nav.journal", icon: NotebookPen, section: "journal" },
+    { to: "/admin/exams", label: "nav.exams", icon: FileCheck, section: "exams" },
+    { to: "/admin/reports", label: "nav.reports", icon: ChartColumn, section: "reports" },
+    { to: "/admin/payments", label: "nav.payments", icon: Wallet, section: "payments" },
+    {
+      to: "/admin/announcements",
+      label: "nav.announcements",
+      icon: Megaphone,
+      section: "announcements",
+    },
+    { to: "/admin/audit", label: "nav.audit", icon: ShieldCheck, section: "audit" },
+    { to: "/admin/settings", label: "nav.settings", icon: Settings, section: "settings" },
   ],
   teacher: [
     { to: "/teacher", label: "nav.today", end: true, icon: Sun },
@@ -107,7 +118,11 @@ function Links({
 export function AppShell({ me }: { me: Me }) {
   const branding = useBranding();
   const role = me.active_role ?? "student";
-  const items = NAV[role];
+  // An administrator sees only the sections the super administrator granted (stage 16).
+  const items = NAV[role].filter(
+    (item) =>
+      !item.section || me.is_superadmin || me.admin_sections.includes(item.section as never),
+  );
   const isAdmin = role === "admin";
   const isParent = role === "parent";
   const studentLike = role === "student" || isParent;
@@ -117,12 +132,7 @@ export function AppShell({ me }: { me: Me }) {
   return (
     <div className={bottomBar ? `${styles.shell} ${styles.withBottomNav}` : styles.shell}>
       <header className={styles.header}>
-        <span className={styles.brand}>
-          <span className={styles.brandMark} aria-hidden="true">
-            <GraduationCap size={20} strokeWidth={2} />
-          </span>
-          {branding.data?.center_name || t("app.centerName")}
-        </span>
+        <span className={styles.brand}>{branding.data?.center_name || t("app.centerName")}</span>
         {!isAdmin && (
           <nav
             className={bottomBar ? `${styles.tabs} ${styles.studentTabs}` : styles.tabs}
@@ -132,8 +142,10 @@ export function AppShell({ me }: { me: Me }) {
           </nav>
         )}
         <span className={styles.spacer} />
-        {isParent && <ChildSwitcher />}
-        <InitialsMenu me={me} />
+        <div className={styles.aside}>
+          {isParent && <ChildSwitcher />}
+          <InitialsMenu me={me} />
+        </div>
       </header>
       <div className={isAdmin ? styles.withSidebar : styles.body}>
         {isAdmin && (

@@ -1,11 +1,12 @@
 import * as Menu from "@radix-ui/react-dropdown-menu";
+import { ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router";
 
 import { homePath, logout, useSwitchRole, type Me, type Role } from "@/features/auth/api";
 import { queueSnapshot } from "@/features/journal/offlineQueue";
 import { t } from "@/shared/i18n";
 import { useTheme, type ThemePreference } from "@/shared/lib/theme";
-import { InitialsStamp } from "@/shared/ui";
+import { initialsOf } from "@/shared/ui";
 
 import styles from "./InitialsMenu.module.css";
 
@@ -27,8 +28,24 @@ export function InitialsMenu({ me }: { me: Me }) {
   const studentLike = me.active_role === "student" || me.active_role === "parent";
   return (
     <Menu.Root modal={false}>
-      <Menu.Trigger asChild>
-        <InitialsStamp userId={me.id} firstName={me.first_name} lastName={me.last_name} />
+      <Menu.Trigger
+        className={styles.profile}
+        aria-label={t("stamp.menu", { name: `${me.first_name} ${me.last_name}` })}
+      >
+        <span className={styles.avatar} aria-hidden="true">
+          {initialsOf(me.first_name, me.last_name)}
+        </span>
+        <span className={styles.profileText}>
+          <span className={styles.profileName}>{me.full_name}</span>
+          {me.active_role && (
+            <span className={styles.profileRole}>
+              {me.is_superadmin && me.active_role === "admin"
+                ? t("roles.superadmin")
+                : t(`roles.${me.active_role}`)}
+            </span>
+          )}
+        </span>
+        <ChevronDown size={16} strokeWidth={1.75} aria-hidden="true" className={styles.chevron} />
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Content className={styles.content} align="end" sideOffset={8}>

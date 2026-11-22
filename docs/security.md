@@ -303,6 +303,17 @@
 | `GET /parent/children` | 401 | 403 | 200 | 403 | 403 |
 | `GET, POST /admin/users/{ученик}/parents`, `DELETE .../parents/{родитель}`, `GET /admin/users/{родитель}/children` | 401 | 403 | 403 | 403 | 200 / 201 / 204 |
 
+## Этап 16: суперадмин и разделы администраторов
+
+| Мера | Тест |
+| --- | --- |
+| Обычный администратор открывает только выданные разделы; «Обзор» — всем администраторам | `test_an_admin_opens_only_the_granted_sections` |
+| Любой адрес с `IsAdmin` принадлежит разделу; новый, не внесённый в `ADMIN_PATHS`, доступен только суперадмину | `test_every_admin_route_belongs_to_a_section`, `test_unlisted_admin_paths_are_super_admin_only` |
+| Создавать администраторов и выдавать права — только суперадмину (403 `superadmin_required`) | `test_only_the_super_admin_creates_and_grants` |
+| Пароль, блокировка, изменения, сеансы администратора — только суперадмину | `test_an_ordinary_admin_cannot_touch_another_admin` |
+| Последний суперадмин остаётся | `test_the_last_super_admin_stays` |
+| Пароль задаёт администратор; правила сложности — машинными кодами; пароль не попадает ни в ответ, ни в аудит | `test_student_with_generated_login_and_the_admins_password`, `test_the_admin_types_a_good_password` |
+
 ## Модель угроз (кратко)
 
 1. **IDOR (подмена ID).** Объекты выбираются только из `for_user()`-queryset; чужое → 404; UUID-ключи. Начиная с этапа 2 каждая новая сущность добавляет строки в матрицу.

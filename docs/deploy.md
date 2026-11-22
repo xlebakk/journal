@@ -71,13 +71,14 @@ docker compose -f infra/docker-compose.prod.yml --env-file .env.prod ps
 
 При каждом `up` сначала выполняется задача `migrate`: миграции, выдача прав роли приложения (`db_grants`) и проверка, что прав не больше нужного. API стартует, только если всё прошло. Сертификат Caddy получает сам за минуту, пока домен указывает на сервер.
 
-Первый администратор:
+Первый администратор — суперадмин: он выдаёт другим администраторам права на разделы:
 
 ```sh
 docker compose -f infra/docker-compose.prod.yml --env-file .env.prod exec api python manage.py shell -c "
 from apps.accounts.models import User
 User.objects.create_user(login='admin', password='<временный пароль>', last_name='Фамилия',
-                         first_name='Имя', roles=['admin'], must_change_password=True)"
+                         first_name='Имя', roles=['admin'], is_superadmin=True,
+                         must_change_password=True)"
 ```
 
 При первом входе он сменит пароль; 2FA включается в профиле (или становится обязательной флажком в «Настройках»). Дальше пользователи заводятся через интерфейс; как начать учебный год — в [admin-guide.md](admin-guide.md).

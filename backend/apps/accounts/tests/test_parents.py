@@ -44,14 +44,19 @@ class TestAdminLinks:
     def test_new_parent_from_the_student_card(self, student: User, admin_client: APIClient) -> None:
         response = admin_client.post(
             parents_url(student),
-            {"last_name": "Алиева", "first_name": "Гульнора", "middle_name": ""},
+            {
+                "last_name": "Алиева",
+                "first_name": "Гульнора",
+                "middle_name": "",
+                "password": "мамин пароль для журнала",
+            },
             format="json",
         )
         assert response.status_code == 201
         body = response.json()
-        assert body["temporary_password"]
         parent = User.objects.get(pk=body["parent"]["id"])
-        assert (parent.roles, parent.must_change_password) == (["parent"], True)
+        assert (parent.roles, parent.must_change_password) == (["parent"], False)
+        assert parent.check_password("мамин пароль для журнала")
         assert ParentLink.objects.filter(parent=parent, student=student).exists()
         actions = set(AuditLog.objects.values_list("action", flat=True))
         assert {"user.create", "parent.link"} <= actions
@@ -67,7 +72,7 @@ class TestAdminLinks:
             response = admin_client.post(
                 parents_url(child), {"existing": str(parent.pk)}, format="json"
             )
-            assert response.json()["temporary_password"] is None
+            assert response.status_code == 201
         again = admin_client.post(parents_url(student), {"existing": str(parent.pk)}, format="json")
         assert again.json() == {"existing": ["already_linked"]}
         children = admin_client.get(f"/api/v1/admin/users/{parent.pk}/children").json()

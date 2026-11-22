@@ -56,6 +56,7 @@ class Command(BaseCommand):
                     first_name=first,
                     roles=roles,
                     must_change_password=extra.pop("must_change_password", False),
+                    is_superadmin=Role.ADMIN in roles,
                     **extra,
                 )
 

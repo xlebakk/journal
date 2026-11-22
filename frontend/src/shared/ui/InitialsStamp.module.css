@@ -3,17 +3,16 @@
 
   display: inline-grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   padding: 0;
-  border: 2px solid var(--sheet);
+  border: var(--line-strong) solid color-mix(in srgb, var(--stamp) 40%, var(--sheet));
   border-radius: 50%;
-  background: color-mix(in srgb, var(--stamp) 14%, var(--sheet));
-  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--stamp) 45%, transparent);
+  background: var(--sheet);
   color: var(--stamp);
   font-family: var(--font-ui);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.02em;
   cursor: pointer;
   transition: box-shadow var(--duration) var(--easing);
@@ -57,5 +56,5 @@
 }
 
 .stamp:hover {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--stamp) 35%, transparent);
+  border-color: var(--stamp);
 }

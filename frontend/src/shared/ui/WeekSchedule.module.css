@@ -193,3 +193,158 @@ button.lesson:hover {
     min-width: 0;
   }
 }
+
+/* --- Day view (teacher, student): day cards and the chosen day's table ------------------ */
+
+.days {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.dayCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 4px;
+}
+
+.dayCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 112px;
+  padding: 14px 16px;
+  border: var(--line) solid transparent;
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--duration) var(--easing);
+}
+
+.dayCard:hover {
+  background: var(--accent-tint);
+}
+
+.dayCard[aria-selected="true"] {
+  border-color: var(--accent);
+  background: var(--sheet);
+  box-shadow: var(--shadow-pill);
+}
+
+.dayCardDate {
+  font-size: var(--text-16);
+  font-weight: 600;
+}
+
+.dayCardToday .dayCardDate {
+  color: var(--accent-strong);
+}
+
+.dayCardWeekday {
+  text-transform: capitalize;
+}
+
+.dayCardMeta {
+  font-size: var(--text-14);
+  color: var(--ink-2);
+}
+
+.dayTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.dayTable th {
+  padding: 8px 12px;
+  border-bottom: var(--line) solid var(--rule);
+  color: var(--accent);
+  font-weight: 400;
+  text-align: left;
+}
+
+.dayTable td {
+  height: 52px;
+  padding: 6px 12px;
+  border-bottom: var(--line) solid var(--rule);
+}
+
+.dayRowCancelled td {
+  color: var(--ink-2);
+  text-decoration: line-through;
+}
+
+.dayRowCancelled td:last-child {
+  text-decoration: none;
+}
+
+.dayLink {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+.dayLink:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 599px) {
+  .dayCards {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .dayCard {
+    flex: none;
+    width: 128px;
+    min-height: 96px;
+  }
+
+  .dayTable thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .dayTable tr {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 10px;
+    padding: 12px 0;
+    border-bottom: var(--line) solid var(--rule);
+  }
+
+  .dayTable td {
+    height: auto;
+    padding: 0;
+    border: 0;
+  }
+
+  .dayTable td:nth-child(2) {
+    color: var(--ink-2);
+  }
+
+  .dayTable td:nth-child(3) {
+    flex-basis: 100%;
+    font-size: var(--text-16);
+  }
+
+  .dayTable td:nth-child(n + 4) {
+    color: var(--ink-2);
+    font-size: var(--text-14);
+  }
+
+  .dayTable td:nth-child(n + 5):not(:empty)::before {
+    content: "· ";
+  }
+}

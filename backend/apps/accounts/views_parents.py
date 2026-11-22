@@ -18,6 +18,7 @@ from apps.audit import services as audit
 from . import credentials
 from .models import ParentLink, Role, User
 from .permissions import IsAdmin, IsParent, children_of, current_user
+from .serializers import password_problems
 
 
 class FamilyMemberSerializer(serializers.Serializer[Any]):
@@ -35,6 +36,10 @@ class ParentAddSerializer(serializers.Serializer[Any]):
     first_name = serializers.CharField(max_length=100, required=False)
     middle_name = serializers.CharField(max_length=100, required=False, allow_blank=True)
     login = serializers.CharField(max_length=64, required=False, allow_blank=True)
+    password = serializers.CharField(
+        max_length=256, trim_whitespace=False, write_only=True, required=False, allow_blank=True
+    )
+    must_change_password = serializers.BooleanField(required=False, default=False)
 
     def validate(self, data: dict[str, Any]) -> dict[str, Any]:
         if data.get("existing"):
@@ -44,12 +49,17 @@ class ParentAddSerializer(serializers.Serializer[Any]):
         login = data.get("login", "").strip()
         if login and not credentials.is_valid_login(login):
             raise serializers.ValidationError({"login": ["invalid_login"]})
+        password = data.get("password") or ""
+        if not password:
+            raise serializers.ValidationError({"password": ["required"]})
+        candidate = User(login=login, last_name=data["last_name"], first_name=data["first_name"])
+        if problems := password_problems(password, candidate):
+            raise serializers.ValidationError({"password": problems})
         return data
 
 
 class ParentAddedSerializer(serializers.Serializer[Any]):
     parent = FamilyMemberSerializer()
-    temporary_password = serializers.CharField(allow_null=True)
 
 
 class ChildSerializer(serializers.Serializer[Any]):
@@ -86,8 +96,8 @@ def _link(request: Request, parent: User, student: User) -> None:
     )
 
 
-def _new_parent(request: Request, data: dict[str, Any]) -> tuple[User, str]:
-    password = credentials.generate_temporary_password()
+def _new_parent(request: Request, data: dict[str, Any]) -> User:
+    password = data["password"]
     for _attempt in range(3):
         login = data.get("login") or credentials.generate_login(
             data["last_name"], data["first_name"]
@@ -101,7 +111,7 @@ def _new_parent(request: Request, data: dict[str, Any]) -> tuple[User, str]:
                     first_name=data["first_name"].strip(),
                     middle_name=data.get("middle_name", "").strip(),
                     roles=[Role.PARENT],
-                    must_change_password=True,
+                    must_change_password=data["must_change_password"],
                 )
             break
         except IntegrityError as exc:
@@ -115,7 +125,7 @@ def _new_parent(request: Request, data: dict[str, Any]) -> tuple[User, str]:
         entity=parent,
         after={"login": parent.login, "roles": parent.roles, "full_name": parent.full_name},
     )
-    return parent, password
+    return parent
 
 
 class StudentParentsView(APIView):
@@ -137,14 +147,13 @@ class StudentParentsView(APIView):
         form = ParentAddSerializer(data=request.data)
         form.is_valid(raise_exception=True)
         data = form.validated_data
-        password: str | None = None
         with transaction.atomic():
             if data.get("existing"):
                 parent = get_object_or_404(User.objects.with_role(Role.PARENT), pk=data["existing"])
             else:
-                parent, password = _new_parent(request, data)
+                parent = _new_parent(request, data)
             _link(request, parent, student)
-        body = {"parent": family_row(parent), "temporary_password": password}
+        body = {"parent": family_row(parent)}
         return Response(ParentAddedSerializer(body).data, status=status.HTTP_201_CREATED)
 
 

@@ -42,7 +42,8 @@
     "admin": "administrator",
     "teacher": "oʻqituvchi",
     "student": "oʻquvchi",
-    "parent": "ota-ona"
+    "parent": "ota-ona",
+    "superadmin": "superadministrator"
   },
   "common": {
     "save": "saqlash",
@@ -78,10 +79,7 @@
     "totpSubmit": "tasdiqlash",
     "totpBack": "boshqa foydalanuvchi",
     "signIn": "Jurnalga kirish",
-    "heroText": "Baholar, davomat, dars jadvali va uy vazifalari — oʻquvchilar, ota-onalar va oʻqituvchilar uchun bir joyda.",
-    "feature1": "Baholar va davomat real vaqtda",
-    "feature2": "Dars jadvali, koʻchirishlar va oʻrinbosarlar",
-    "feature3": "Oʻquvchi, ota-ona va oʻqituvchi kabinetlari"
+    "forWhom": "Markaz oʻquvchilari, ota-onalari va oʻqituvchilari uchun."
   },
   "password": {
     "title": "Parolni almashtirish",
@@ -213,7 +211,12 @@
     "adminNote": "Administrator qaydi",
     "adminOnly": "Faqat administrator koʻradi",
     "create": "yaratish",
-    "save": "oʻzgarishlarni saqlash"
+    "save": "oʻzgarishlarni saqlash",
+    "password": "Parol",
+    "mustChange": "Birinchi kirishda parolni almashtirishni soʻrash",
+    "adminRights": "Administrator huquqlari",
+    "superadmin": "Superadministrator: barcha boʻlimlar va administratorlarni boshqarish",
+    "sectionsHint": "Bu administratorga ochiladigan boʻlimlar:"
   },
   "userActions": {
     "title": "Amallar",
@@ -226,7 +229,11 @@
     "lockedFor": "Notoʻgʻri urinishlardan soʻng kirish yana {minutes} daqiqaga bloklangan.",
     "reset2fa": "2FA ni bekor qilish",
     "sessionsTitle": "Foydalanuvchi seanslari",
-    "endAll": "barcha seanslarni yakunlash"
+    "endAll": "barcha seanslarni yakunlash",
+    "setPassword": "yangi parol oʻrnatish",
+    "setPasswordTitle": "Yangi parol",
+    "setPasswordNote": "{login} uchun parol. Foydalanuvchining barcha seanslari yakunlanadi.",
+    "adminsOnlySuper": "Administrator hisoblarini superadministrator boshqaradi."
   },
   "tempPassword": {
     "title": "Vaqtinchalik parol",
@@ -350,7 +357,12 @@
     "paid_in_future": "Toʻlov sanasi kelajakda boʻlishi mumkin emas.",
     "already_voided": "Yozuv allaqachon bekor qilingan.",
     "discount_range": "Chegirma — 0 dan 100% gacha.",
-    "already_linked": "Bu ota-ona allaqachon biriktirilgan."
+    "already_linked": "Bu ota-ona allaqachon biriktirilgan.",
+    "password_too_short": "Parol kamida 10 ta belgidan iborat boʻlsin",
+    "password_too_common": "Parol juda oddiy",
+    "password_too_similar": "Parol ism yoki loginga oʻxshash",
+    "superadmin_required": "Buni faqat superadministrator qila oladi",
+    "last_superadmin": "Bu oxirgi superadministrator"
   },
   "schedule": {
     "title": "Dars jadvali",
@@ -433,7 +445,9 @@
     "requestRejected": "rad etildi",
     "requestWithdrawn": "qaytarib olindi",
     "printTitle": "{group} guruhining dars jadvali",
-    "openJournal": "jurnalda ochish"
+    "openJournal": "jurnalda ochish",
+    "lessonsCount": "darslar: {count}",
+    "subject": "Fan"
   },
   "catalogs": {
     "title": "Maʼlumotnomalar",
@@ -551,7 +565,11 @@
     "statusCycle": "Davomat: {status}. Oʻzgartirish uchun bosing",
     "noStudents": "Bu sanada guruhda oʻquvchilar yoʻq.",
     "topicSuggestions": "Kursning oldingi mavzulari",
-    "tabReviews": "Fikrlar"
+    "tabReviews": "Fikrlar",
+    "group": "Guruh",
+    "subject": "Fan",
+    "teacherLine": "Oʻqituvchi: {name}",
+    "keys": "Klavishlar"
   },
   "today": {
     "lessons": "Bugungi darslar",
@@ -930,7 +948,8 @@
     "newDevices": "Bir haftada administratorlarning yangi qurilmalardan kirishlari",
     "noNewDevices": "Yangi qurilmalar boʻlmadi.",
     "newDevicesHint": "Agar kirish sizniki boʻlmasa — «Faol seanslar»da seansni yakunlang, parolni almashtiring va 2FA ni bekor qiling.",
-    "sessions": "seanslar"
+    "sessions": "seanslar",
+    "allCalm": "Hammasi joyida: jurnallar toʻldirilgan, qarzlar va xavotirli kirishlar yoʻq."
   },
   "auditActions": {
     "academic_year": "oʻquv yili",
@@ -1144,5 +1163,17 @@
     "unlink": "ajratish",
     "children": "Farzandlar",
     "noChildren": "Farzandlar biriktirilmagan — oʻquvchi kartochkasidan biriktirish mumkin."
+  },
+  "sections": {
+    "users": "Foydalanuvchilar, import, ota-onalar",
+    "structure": "Guruhlar va maʼlumotnomalar",
+    "schedule": "Dars jadvali va soʻrovlar",
+    "journal": "Jurnal",
+    "exams": "Sinov testlari",
+    "reports": "Hisobotlar",
+    "payments": "Toʻlovlar",
+    "announcements": "Eʼlonlar",
+    "audit": "Audit",
+    "settings": "Markaz sozlamalari"
   }
 }

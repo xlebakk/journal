@@ -6,7 +6,7 @@ test("student lands on the student home and cannot open the admin section", asyn
   await login(page, "e2e.student");
   await expect(page).toHaveURL(/\/student$/);
   await expect(page.getByRole("heading", { name: "Новые оценки за 7 дней" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Меню пользователя Фарход Алиев" })).toHaveText(
+  await expect(page.getByRole("button", { name: "Меню пользователя Фарход Алиев" })).toContainText(
     "ФА",
   );
 
@@ -45,17 +45,15 @@ test("admin passes 2FA, creates a student; the student must change the temporary
   await page.getByLabel("Фамилия").fill("Рахимова");
   await page.getByLabel("Имя").fill("Севара");
   await page.getByLabel("ученик").check();
+  // The administrator types the first password and asks to change it at the first login.
+  const temporary = "пароль от администратора";
+  await page.getByLabel("Пароль", { exact: true }).fill(temporary);
+  await page.getByLabel("Попросить сменить пароль при первом входе").check();
   await page.getByRole("button", { name: "создать" }).click();
 
-  const dialog = page.getByRole("dialog", { name: "Временный пароль" });
-  await expect(dialog).toBeVisible();
-  const values = dialog.locator("dd");
-  const newLogin = (await values.nth(0).textContent())!.trim();
-  const temporary = (await values.nth(1).textContent())!.trim();
-  expect(newLogin).toBe("rakhimova.s");
-  expect(temporary).toHaveLength(12);
-  await dialog.getByRole("button", { name: "готово" }).click();
   await expect(page.getByRole("heading", { name: "Рахимова Севара" })).toBeVisible();
+  const newLogin = "rakhimova.s";
+  await expect(page.getByText(newLogin, { exact: true })).toBeVisible();
   await logout(page);
 
   await login(page, newLogin, temporary);

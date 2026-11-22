@@ -11,7 +11,7 @@ from rest_framework.request import Request
 from apps.core.params import uuid_param
 
 from . import sessions
-from .models import Role, User, UserQuerySet
+from .models import AdminSection, Role, User, UserQuerySet
 
 
 def current_user(request: Request) -> User:
@@ -37,8 +37,75 @@ class _HasActiveRole(BasePermission):
         return active_role(request) == self.role
 
 
+# Stage 16: which administration section a request belongs to, by its path. The longest
+# prefix wins; "" — every administrator (the overview, the announcement feed); a path that
+# is not listed — only the super administrator (deny by default).
+ADMIN_PATHS: tuple[tuple[str, str], ...] = (
+    ("/api/v1/admin/overview", ""),
+    ("/api/v1/announcements", ""),
+    ("/api/v1/admin/users", AdminSection.USERS),
+    ("/api/v1/admin/import", AdminSection.USERS),
+    ("/api/v1/admin/access-cards", AdminSection.USERS),
+    ("/api/v1/admin/years", AdminSection.STRUCTURE),
+    ("/api/v1/admin/terms", AdminSection.STRUCTURE),
+    ("/api/v1/admin/subjects", AdminSection.STRUCTURE),
+    ("/api/v1/admin/rooms", AdminSection.STRUCTURE),
+    ("/api/v1/admin/work-types", AdminSection.STRUCTURE),
+    ("/api/v1/admin/lesson-types", AdminSection.STRUCTURE),
+    ("/api/v1/admin/holidays", AdminSection.STRUCTURE),
+    ("/api/v1/admin/groups", AdminSection.STRUCTURE),
+    ("/api/v1/admin/courses", AdminSection.STRUCTURE),
+    ("/api/v1/admin/memberships", AdminSection.STRUCTURE),
+    ("/api/v1/admin/teachers", AdminSection.STRUCTURE),
+    ("/api/v1/admin/slots", AdminSection.SCHEDULE),
+    ("/api/v1/admin/lessons", AdminSection.SCHEDULE),
+    ("/api/v1/admin/schedule-requests", AdminSection.SCHEDULE),
+    ("/api/v1/rooms", AdminSection.SCHEDULE),
+    ("/api/v1/journal", AdminSection.JOURNAL),
+    ("/api/v1/exams", AdminSection.EXAMS),
+    ("/api/v1/admin/reports", AdminSection.REPORTS),
+    ("/api/v1/reports", AdminSection.REPORTS),
+    ("/api/v1/admin/payments", AdminSection.PAYMENTS),
+    ("/api/v1/admin/announcements", AdminSection.ANNOUNCEMENTS),
+    ("/api/v1/admin/audit", AdminSection.AUDIT),
+    ("/api/v1/admin/login-events", AdminSection.AUDIT),
+    ("/api/v1/admin/settings", AdminSection.SETTINGS),
+)
+
+
+def admin_section(path: str) -> str | None:
+    """The section of an API path, "" for every administrator, None — super admin only."""
+    best: tuple[int, str | None] = (-1, None)
+    for prefix, section in ADMIN_PATHS:
+        if (path == prefix or path.startswith(prefix + "/")) and len(prefix) > best[0]:
+            best = (len(prefix), str(section))
+    return best[1]
+
+
 class IsAdmin(_HasActiveRole):
+    """The active role is admin and the administrator has this path's section."""
+
     role = Role.ADMIN
+
+    def has_permission(self, request: Request, view: Any) -> bool:
+        if not super().has_permission(request, view):
+            return False
+        user = current_user(request)
+        if user.is_superadmin:
+            return True
+        section = admin_section(request.path)
+        return section == "" or (section is not None and section in user.admin_sections)
+
+
+class SuperadminRequired(PermissionDenied):
+    default_detail = "superadmin_required"
+    default_code = "superadmin_required"
+
+
+def require_superadmin(request: Request) -> None:
+    """Administrators are managed only by the super administrator (stage 16)."""
+    if not current_user(request).is_superadmin:
+        raise SuperadminRequired()
 
 
 class IsTeacher(_HasActiveRole):

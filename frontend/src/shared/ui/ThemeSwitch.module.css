@@ -1,4 +1,4 @@
-/* A pill segmented control (theme, language). */
+/* A segmented pill, like «Моё расписание | Расписание класса». */
 .switch {
   display: inline-flex;
   flex-wrap: wrap;
@@ -13,13 +13,8 @@
   float: left;
   margin-right: var(--space-1);
   font-size: var(--text-14);
-  font-weight: 500;
   color: var(--ink-2);
   line-height: 40px;
-}
-
-.options {
-  display: inline-flex;
 }
 
 .option {
@@ -27,15 +22,11 @@
   display: inline-flex;
   align-items: center;
   min-height: 38px;
-  padding: 0 16px;
-  border: var(--line) solid var(--rule);
+  padding: 0 18px;
   background: var(--sheet);
-  color: var(--ink-2);
-  font-weight: 500;
+  color: var(--ink);
   cursor: pointer;
-  transition:
-    background-color var(--duration) var(--easing),
-    color var(--duration) var(--easing);
+  transition: background-color var(--duration) var(--easing);
 }
 
 .option:first-of-type {
@@ -46,8 +37,13 @@
   border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
 }
 
+.switch:has(.option) {
+  isolation: isolate;
+}
+
+.option:first-of-type,
 .option + .option {
-  border-left: 0;
+  box-shadow: var(--shadow-pill);
 }
 
 .option input {
@@ -59,13 +55,12 @@
 }
 
 .option:hover {
-  color: var(--accent);
+  background: var(--sheet-2);
 }
 
 .option:has(input:checked) {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--on-accent);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
 }
 
 .option:has(input:focus-visible) {

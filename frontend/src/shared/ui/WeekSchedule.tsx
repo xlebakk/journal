@@ -1,15 +1,18 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { t } from "@/shared/i18n";
 import { useMediaQuery } from "@/shared/lib/useMediaQuery";
 import {
   addDays,
   formatDayLong,
+  formatDayMonth,
   formatDayShort,
   formatWeekRange,
   hhmm,
+  isoWeekday,
   weekDays,
+  weekdayNames,
 } from "@/shared/lib/week";
 
 import { Button } from "./Button";
@@ -168,6 +171,124 @@ export function WeekSchedule({ monday, today, lessons, onSelect, ...options }: W
           )}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+/**
+ * The eDonish way for a teacher or a student: the week as a row of day cards, the chosen
+ * day's lessons as a plain table underneath. One day at a time — less to read at once.
+ */
+export function DaySchedule({ monday, today, lessons, onSelect, ...options }: WeekScheduleProps) {
+  const days = useMemo(() => weekDays(monday), [monday]);
+  const byDay = (day: string) =>
+    lessons
+      .filter((lesson) => lesson.date === day)
+      .sort((a, b) => a.start_time.localeCompare(b.start_time));
+  const shown = days.filter((day, i) => i < 6 || byDay(day).length > 0);
+  const initial = shown.includes(today)
+    ? today
+    : (shown.find((day) => byDay(day).length > 0) ?? shown[0] ?? monday);
+  const [picked, setPicked] = useState<string | null>(null);
+  const day = picked && shown.includes(picked) ? picked : initial;
+  const items = byDay(day);
+  const strip = useRef<HTMLDivElement>(null);
+  // On a phone the strip scrolls: keep the chosen day in sight.
+  useEffect(() => {
+    strip.current
+      ?.querySelector('[aria-selected="true"]')
+      ?.scrollIntoView?.({ block: "nearest", inline: "center" });
+  }, [day, monday]);
+  return (
+    <div className={styles.days}>
+      <div
+        ref={strip}
+        className={styles.dayCards}
+        role="tablist"
+        aria-label={formatWeekRange(monday)}
+      >
+        {shown.map((d) => {
+          const list = byDay(d);
+          const last = list.at(-1);
+          return (
+            <button
+              key={d}
+              type="button"
+              role="tab"
+              aria-selected={d === day}
+              className={d === today ? `${styles.dayCard} ${styles.dayCardToday}` : styles.dayCard}
+              onClick={() => setPicked(d)}
+            >
+              <span className={styles.dayCardDate}>{formatDayMonth(d)}</span>
+              <span className={styles.dayCardWeekday}>{weekdayNames()[isoWeekday(d) - 1]}</span>
+              <span className={styles.dayCardMeta}>
+                {list.length > 0
+                  ? t("schedule.lessonsCount", { count: list.length })
+                  : t("schedule.emptyDay")}
+              </span>
+              {last && <span className={styles.dayCardMeta}>{hhmm(last.end_time)}</span>}
+            </button>
+          );
+        })}
+      </div>
+      <div role="tabpanel" aria-label={formatDayLong(day)}>
+        {items.length === 0 ? (
+          <p className={styles.emptyDay}>{t("schedule.emptyDay")}</p>
+        ) : (
+          <table className={styles.dayTable}>
+            <thead>
+              <tr>
+                <th scope="col">{t("schedule.start")}</th>
+                <th scope="col">{t("schedule.end")}</th>
+                <th scope="col">{t("schedule.subject")}</th>
+                {options.showGroup && <th scope="col">{t("schedule.group")}</th>}
+                <th scope="col">{t("schedule.roomFilter")}</th>
+                {options.showTeacher && <th scope="col">{t("schedule.teacher")}</th>}
+                <th scope="col">
+                  <span className="visually-hidden">{t("schedule.status")}</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr
+                  key={item.id}
+                  className={item.status === "cancelled" ? styles.dayRowCancelled : undefined}
+                >
+                  <td className="mono">{hhmm(item.start_time)}</td>
+                  <td className="mono">{hhmm(item.end_time)}</td>
+                  <td>
+                    {onSelect ? (
+                      <button
+                        type="button"
+                        className={styles.dayLink}
+                        onClick={() => onSelect(item)}
+                      >
+                        {item.subject_name}
+                      </button>
+                    ) : (
+                      item.subject_name
+                    )}
+                    {item.lesson_type_short && (
+                      <span className={styles.type}> · {item.lesson_type_short}</span>
+                    )}
+                  </td>
+                  {options.showGroup && <td>{item.group_name}</td>}
+                  <td>{item.room_name ?? "—"}</td>
+                  {options.showTeacher && <td>{item.teacher_name}</td>}
+                  <td>
+                    {lessonMarks(item).map((mark) => (
+                      <span key={mark.text} className={styles[mark.tone]}>
+                        {mark.text}{" "}
+                      </span>
+                    ))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }

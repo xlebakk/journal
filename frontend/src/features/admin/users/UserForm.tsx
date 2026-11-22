@@ -5,10 +5,11 @@ import { useForm, useWatch } from "react-hook-form";
 import { ApiError } from "@/shared/api/client";
 import { errorMessage, fieldError } from "@/shared/api/errors";
 import { t } from "@/shared/i18n";
-import { Button, Checkbox, SelectField, TextField } from "@/shared/ui";
+import { useMe } from "@/features/auth/api";
+import { Button, Checkbox, PasswordField, SelectField, TextField } from "@/shared/ui";
 
 import type { UserDetail, UserWrite } from "./api";
-import { defaults, ROLES, schema, toPayload, type UserFormValues } from "./userPayload";
+import { defaults, ROLES, schema, SECTIONS, toPayload, type UserFormValues } from "./userPayload";
 import styles from "./Users.module.css";
 
 type UserFormProps = {
@@ -24,15 +25,33 @@ export function UserForm({ user, submitLabel, onSubmit }: UserFormProps) {
   });
   const { errors, isSubmitting } = form.formState;
   const roles = useWatch({ control: form.control, name: "roles" });
+  const superadminFlag = useWatch({ control: form.control, name: "is_superadmin" });
+  const me = useMe().data;
+  // Administrators are created and given rights only by the super administrator (stage 16).
+  const superadmin = Boolean(me?.is_superadmin);
+  const roleChoices = ROLES.filter(
+    (role) => role !== "admin" || superadmin || roles.includes(role),
+  );
 
   useEffect(() => form.reset(defaults(user)), [user, form]);
 
   const submit = form.handleSubmit(async (values) => {
+    if (!user && values.password.length < 10) {
+      form.setError("password", { message: t("password.tooShort") });
+      return;
+    }
     try {
-      await onSubmit(toPayload(values));
+      await onSubmit(toPayload(values, superadmin));
     } catch (error) {
       if (error instanceof ApiError && Object.keys(error.fields).length) {
-        for (const name of ["last_name", "first_name", "middle_name", "login", "roles"] as const) {
+        for (const name of [
+          "last_name",
+          "first_name",
+          "middle_name",
+          "login",
+          "roles",
+          "password",
+        ] as const) {
           const message = fieldError(error, name);
           if (message) form.setError(name, { message });
         }
@@ -72,10 +91,23 @@ export function UserForm({ user, submitLabel, onSubmit }: UserFormProps) {
         />
       </div>
 
+      {!user && (
+        <div className={styles.grid}>
+          <PasswordField
+            label={t("userForm.password")}
+            hint={t("password.hint")}
+            autoComplete="new-password"
+            error={errors.password?.message}
+            {...form.register("password")}
+          />
+          <Checkbox label={t("userForm.mustChange")} {...form.register("must_change_password")} />
+        </div>
+      )}
+
       <fieldset className={styles.fieldset}>
         <legend>{t("userForm.roles")}</legend>
         <div className={styles.roles}>
-          {ROLES.map((role) => (
+          {roleChoices.map((role) => (
             <Checkbox
               key={role}
               label={t(`roles.${role}`)}
@@ -119,6 +151,28 @@ export function UserForm({ user, submitLabel, onSubmit }: UserFormProps) {
             />
             <TextField label={t("userForm.adminNote")} {...form.register("student.admin_note")} />
           </div>
+        </fieldset>
+      )}
+
+      {roles.includes("admin") && superadmin && (
+        <fieldset className={styles.fieldset}>
+          <legend>{t("userForm.adminRights")}</legend>
+          <Checkbox label={t("userForm.superadmin")} {...form.register("is_superadmin")} />
+          {!superadminFlag && (
+            <>
+              <p className={styles.note}>{t("userForm.sectionsHint")}</p>
+              <div className={styles.roles}>
+                {SECTIONS.map((section) => (
+                  <Checkbox
+                    key={section}
+                    label={t(`sections.${section}`)}
+                    value={section}
+                    {...form.register("admin_sections")}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </fieldset>
       )}
 

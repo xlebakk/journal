@@ -2452,7 +2452,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TemporaryPassword'
+                $ref: '#/components/schemas/AdminUserDetail'
           description: ''
   /api/v1/admin/users/{id}:
     get:
@@ -2677,7 +2677,8 @@ paths:
   /api/v1/admin/users/{id}/reset-password:
     post:
       operationId: admin_users_reset_password_create
-      description: New temporary password; all the user's sessions end (SPEC §4).
+      description: The administrator sets a new password; all the user's sessions
+        end (SPEC §4).
       parameters:
       - in: path
         name: id
@@ -2687,6 +2688,12 @@ paths:
         required: true
       tags:
       - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminPasswordRequest'
+        required: true
       security:
       - appBearer: []
       - sessionCookie: []
@@ -2695,7 +2702,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TemporaryPassword'
+                $ref: '#/components/schemas/AdminUserDetail'
           description: ''
   /api/v1/admin/users/{id}/sessions:
     get:
@@ -4852,6 +4859,43 @@ components:
       - login
       - paid
       - student
+    AdminPasswordRequest:
+      type: object
+      description: The administrator types the password (stage 16); nothing is generated.
+      properties:
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 256
+        must_change_password:
+          type: boolean
+          default: false
+      required:
+      - password
+    AdminSectionsEnum:
+      enum:
+      - users
+      - structure
+      - schedule
+      - journal
+      - exams
+      - reports
+      - payments
+      - announcements
+      - audit
+      - settings
+      type: string
+      description: |-
+        * `users` - пользователи, импорт, родители
+        * `structure` - группы и справочники
+        * `schedule` - расписание и запросы
+        * `journal` - журнал
+        * `exams` - пробные тесты
+        * `reports` - отчёты
+        * `payments` - оплаты
+        * `announcements` - объявления
+        * `audit` - аудит
+        * `settings` - настройки центра
     AdminUserDetail:
       type: object
       properties:
@@ -4895,6 +4939,14 @@ components:
           type: string
           format: date-time
           readOnly: true
+        is_superadmin:
+          type: boolean
+          readOnly: true
+        admin_sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminSectionsEnum'
+          readOnly: true
         must_change_password:
           type: boolean
           readOnly: true
@@ -4922,11 +4974,13 @@ components:
           type: integer
           readOnly: true
       required:
+      - admin_sections
       - archived_at
       - created_at
       - first_name
       - full_name
       - id
+      - is_superadmin
       - last_login
       - last_name
       - login
@@ -4982,11 +5036,21 @@ components:
           type: string
           format: date-time
           readOnly: true
+        is_superadmin:
+          type: boolean
+          readOnly: true
+        admin_sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminSectionsEnum'
+          readOnly: true
       required:
+      - admin_sections
       - created_at
       - first_name
       - full_name
       - id
+      - is_superadmin
       - last_login
       - last_name
       - login
@@ -5023,6 +5087,19 @@ components:
           $ref: '#/components/schemas/StudentProfileRequest'
         teacher_profile:
           $ref: '#/components/schemas/TeacherProfileRequest'
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 256
+        must_change_password:
+          type: boolean
+          default: false
+        is_superadmin:
+          type: boolean
+        admin_sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminSectionsEnum'
       required:
       - first_name
       - last_name
@@ -7321,6 +7398,14 @@ components:
         totp_setup_required:
           type: boolean
           readOnly: true
+        is_superadmin:
+          type: boolean
+          readOnly: true
+        admin_sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminSectionsEnum'
+          readOnly: true
         groups:
           type: array
           items:
@@ -7328,11 +7413,13 @@ components:
           readOnly: true
       required:
       - active_role
+      - admin_sections
       - first_name
       - full_name
       - groups
       - id
       - initials
+      - is_superadmin
       - last_name
       - login
       - middle_name
@@ -7671,17 +7758,20 @@ components:
         login:
           type: string
           maxLength: 64
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 256
+        must_change_password:
+          type: boolean
+          default: false
     ParentAdded:
       type: object
       properties:
         parent:
           $ref: '#/components/schemas/FamilyMember'
-        temporary_password:
-          type: string
-          nullable: true
       required:
       - parent
-      - temporary_password
     PasswordChangeRequest:
       type: object
       properties:
@@ -7751,6 +7841,19 @@ components:
           $ref: '#/components/schemas/StudentProfileRequest'
         teacher_profile:
           $ref: '#/components/schemas/TeacherProfileRequest'
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 256
+        must_change_password:
+          type: boolean
+          default: false
+        is_superadmin:
+          type: boolean
+        admin_sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminSectionsEnum'
     PatchedAnnouncementRequest:
       type: object
       description: The administrator's form. The author is the current user; the body
@@ -9877,16 +9980,6 @@ components:
           items:
             type: string
             format: uuid
-    TemporaryPassword:
-      type: object
-      properties:
-        user:
-          $ref: '#/components/schemas/AdminUserDetail'
-        temporary_password:
-          type: string
-      required:
-      - temporary_password
-      - user
     Term:
       type: object
       properties:

@@ -79,6 +79,11 @@ export function formatDayLong(iso: string): string {
   return format(iso, { weekday: "short", day: "numeric", month: "long" });
 }
 
+/** «16 ноября» / «16-noyabr» — a day card of the schedule. */
+export function formatDayMonth(iso: string): string {
+  return format(iso, { day: "numeric", month: "long" });
+}
+
 /** «пн 16.11» — compact column headers. */
 export function formatDayShort(iso: string): string {
   const weekday = format(iso, { weekday: "short" });

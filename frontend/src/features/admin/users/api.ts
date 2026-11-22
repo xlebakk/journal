@@ -5,7 +5,7 @@ import { api, type Schemas } from "@/shared/api/client";
 export type UserListItem = Schemas["AdminUserList"];
 export type UserDetail = Schemas["AdminUserDetail"];
 export type UserWrite = Schemas["AdminUserWriteRequest"];
-export type TemporaryPassword = Schemas["TemporaryPassword"];
+export type AdminSection = NonNullable<UserWrite["admin_sections"]>[number];
 export type UserStatus = "active" | "blocked" | "archived";
 
 export type UserFilters = { q: string; role: string; status: string; page: number };
@@ -43,13 +43,13 @@ export function useUserSessions(id: string) {
 }
 
 export const usersApi = {
-  create: (body: UserWrite) => api<TemporaryPassword>("/admin/users", { method: "POST", body }),
+  create: (body: UserWrite) => api<UserDetail>("/admin/users", { method: "POST", body }),
   update: (id: string, body: Partial<UserWrite>) =>
     api<UserDetail>(`/admin/users/${id}`, { method: "PATCH", body }),
   action: (id: string, action: string) =>
     api<UserDetail>(`/admin/users/${id}/${action}`, { method: "POST" }),
-  resetPassword: (id: string) =>
-    api<TemporaryPassword>(`/admin/users/${id}/reset-password`, { method: "POST" }),
+  setPassword: (id: string, body: { password: string; must_change_password: boolean }) =>
+    api<UserDetail>(`/admin/users/${id}/reset-password`, { method: "POST", body }),
   endSession: (id: string, sessionId: string) =>
     api<void>(`/admin/users/${id}/sessions/${sessionId}`, { method: "DELETE" }),
   endAllSessions: (id: string) =>

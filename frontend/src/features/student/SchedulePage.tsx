@@ -2,7 +2,7 @@ import { useStudentSchedule, useWeekParam } from "@/features/schedule/api";
 import { errorMessage } from "@/shared/api/errors";
 import { t } from "@/shared/i18n";
 import { startOfWeek } from "@/shared/lib/week";
-import { RuledSkeleton, WeekNav, WeekSchedule } from "@/shared/ui";
+import { RuledSkeleton, WeekNav, DaySchedule } from "@/shared/ui";
 
 import styles from "@/features/schedule/SchedulePage.module.css";
 
@@ -25,7 +25,7 @@ export function SchedulePage() {
       ) : schedule.error ? (
         <p className={styles.error}>{errorMessage(schedule.error)}</p>
       ) : (
-        <WeekSchedule monday={monday} today={today} lessons={schedule.data} showTeacher />
+        <DaySchedule monday={monday} today={today} lessons={schedule.data} showTeacher />
       )}
     </section>
   );

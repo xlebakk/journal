@@ -1,7 +1,6 @@
-@import "@fontsource/golos-text/400.css";
-@import "@fontsource/golos-text/500.css";
-@import "@fontsource/golos-text/600.css";
-@import "@fontsource/golos-text/700.css";
+@import "@fontsource/literata/400.css";
+@import "@fontsource/literata/500.css";
+@import "@fontsource/literata/600.css";
 @import "@fontsource/jetbrains-mono/500.css";
 @import "@fontsource/jetbrains-mono/700.css";
 @import "./tokens.css";
@@ -19,6 +18,7 @@ html {
 
 body {
   margin: 0;
+  font-variant-numeric: lining-nums;
   min-height: 100vh;
   background: var(--paper);
   color: var(--ink);
@@ -32,19 +32,17 @@ h1,
 h2,
 h3 {
   margin: 0;
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
+  font-weight: 600;
+  line-height: 1.25;
 }
 
 h1 {
   font-family: var(--font-display);
-  font-size: var(--text-28);
+  font-size: 1.5rem;
 }
 
 h2 {
-  font-size: var(--text-20);
-  font-weight: 600;
+  font-size: 1.125rem;
 }
 
 a {
@@ -76,7 +74,16 @@ textarea {
 
 .mono {
   font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Links inside tables read as names, not as buttons. */
+table a {
+  text-decoration: none;
+}
+
+table a:hover {
+  text-decoration: underline;
 }
 
 .visually-hidden {

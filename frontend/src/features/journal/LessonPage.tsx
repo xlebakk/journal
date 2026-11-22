@@ -112,20 +112,23 @@ function LessonFields({ data, reason, blocked, busy, perform, onDraft }: FieldsP
           }
         />
       </label>
-      <label className={styles.textareaField}>
-        <span className={styles.label}>{t("journal.comment")}</span>
-        <textarea
-          className={styles.textarea}
-          value={values.comment}
-          disabled={blocked}
-          rows={2}
-          onChange={(e) => change("comment", e.target.value)}
-          onBlur={() =>
-            values.comment !== data.comment &&
-            save({ comment: values.comment }, t("journal.comment"))
-          }
-        />
-      </label>
+      <details className={styles.more} open={Boolean(values.comment)}>
+        <summary>{t("journal.comment")}</summary>
+        <label className={styles.textareaField}>
+          <span className="visually-hidden">{t("journal.comment")}</span>
+          <textarea
+            className={styles.textarea}
+            value={values.comment}
+            disabled={blocked}
+            rows={2}
+            onChange={(e) => change("comment", e.target.value)}
+            onBlur={() =>
+              values.comment !== data.comment &&
+              save({ comment: values.comment }, t("journal.comment"))
+            }
+          />
+        </label>
+      </details>
     </div>
   );
 }

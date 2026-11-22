@@ -17,17 +17,96 @@
 .toolbar {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-end;
   gap: var(--space-2);
 }
 
-.toolbar > * {
-  min-width: 240px;
+.toolbarSpacer {
+  flex: 1;
+}
+
+/* «Журнал» as a quiet breadcrumb, not a headline. */
+.crumb {
+  color: var(--accent);
+  font-size: var(--text-16);
+  font-weight: 400;
+}
+
+/* The groups, like the class strip of the eDonish journal. */
+.strip {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 6px;
+  border-radius: var(--radius-lg);
+  background: var(--sheet);
+  box-shadow: var(--shadow-pill);
+  scrollbar-width: thin;
+}
+
+.stripItem {
+  flex: none;
+  min-width: 72px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-16);
+  cursor: pointer;
+}
+
+.stripItem:hover {
+  background: var(--sheet-2);
+}
+
+.stripItem[aria-pressed="true"] {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+/* Subject and period: pills with a soft shadow; the label is for screen readers. */
+.pillSelect {
+  min-width: 220px;
+}
+
+.pillSelect > label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.pillSelect select {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-pill);
+}
+
+.teacherLine {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+.keys {
+  font-size: var(--text-14);
+  color: var(--ink-2);
+}
+
+.keys > summary {
+  width: max-content;
+  cursor: pointer;
 }
 
 .tabs {
   display: flex;
   gap: var(--space-2);
-  border-bottom: var(--line) solid var(--rule);
 }
 
 .tab {
@@ -512,4 +591,16 @@
 .offlineLabels {
   color: var(--ink-2);
   font-size: var(--text-14);
+}
+
+/* Rarely used fields fold away (stage 16). */
+.more {
+  grid-column: 1 / -1;
+  color: var(--ink-2);
+}
+
+.more > summary {
+  width: max-content;
+  margin-bottom: var(--space-1);
+  cursor: pointer;
 }

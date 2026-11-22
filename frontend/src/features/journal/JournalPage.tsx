@@ -367,9 +367,21 @@ export function JournalPage() {
     }
   };
 
-  const courseOptions = (courses.data ?? []).map((c) => ({
+  // After the eDonish journal: first the group, then its subject, then the period.
+  const allCourses = courses.data ?? [];
+  const groups = [...new Set(allCourses.map((c) => c.group_name))];
+  const chosen = allCourses.find((c) => c.id === course);
+  const groupCourses = allCourses.filter((c) => c.group_name === chosen?.group_name);
+  const pickGroup = (name: string) => {
+    const same = allCourses.find(
+      (c) => c.group_name === name && c.subject_name === chosen?.subject_name,
+    );
+    const first = same ?? allCourses.find((c) => c.group_name === name);
+    if (first) setParam("course", first.id);
+  };
+  const subjectOptions = groupCourses.map((c) => ({
     value: c.id,
-    label: `${c.group_name} · ${c.subject_name}${isAdmin ? ` · ${c.teacher_name}` : ""}`,
+    label: `${c.subject_name}${isAdmin ? ` · ${c.teacher_name}` : ""}`,
   }));
   const termOptions = [
     { value: "", label: t("journal.period") },
@@ -384,37 +396,60 @@ export function JournalPage() {
   return (
     <section className={styles.page}>
       <div className={styles.titleRow}>
-        <h1>{t("journal.title")}</h1>
+        <h1 className={styles.crumb}>{t("journal.title")}</h1>
         <SaveStatus state={state} retry={retry} undo={undo} />
       </div>
+      {groups.length > 0 && (
+        <div className={styles.strip} role="group" aria-label={t("journal.group")}>
+          {groups.map((name) => (
+            <button
+              key={name}
+              type="button"
+              className={styles.stripItem}
+              aria-pressed={chosen?.group_name === name}
+              onClick={() => pickGroup(name)}
+            >
+              {name}
+            </button>
+          ))}
+        </div>
+      )}
       <div className={styles.toolbar}>
         <SelectField
-          label={t("journal.course")}
+          className={styles.pillSelect}
+          label={t("journal.subject")}
           value={course ?? ""}
           onChange={(e) => setParam("course", e.target.value)}
-          options={courseOptions}
+          options={subjectOptions}
         />
         <SelectField
+          className={styles.pillSelect}
           label={t("journal.period")}
           value={term ?? ""}
           onChange={(e) => setParam("term", e.target.value)}
           options={termOptions}
         />
+        <span className={styles.toolbarSpacer} />
+        <div className={styles.tabs} role="tablist">
+          {(["grades", "topics", "reviews"] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              role="tab"
+              aria-selected={tab === value}
+              className={styles.tab}
+              onClick={() => setParam("tab", value === "grades" ? "" : value)}
+            >
+              {t(TAB_LABELS[value])}
+            </button>
+          ))}
+        </div>
       </div>
-      <div className={styles.tabs} role="tablist">
-        {(["grades", "topics", "reviews"] as const).map((value) => (
-          <button
-            key={value}
-            type="button"
-            role="tab"
-            aria-selected={tab === value}
-            className={styles.tab}
-            onClick={() => setParam("tab", value === "grades" ? "" : value)}
-          >
-            {t(TAB_LABELS[value])}
-          </button>
-        ))}
-      </div>
+      {chosen && (
+        <p className={styles.teacherLine}>
+          {t("journal.teacherLine", { name: chosen.teacher_name })}
+        </p>
+      )}
 
       {tab === "reviews" && course ? (
         <ReviewsTab course={course} term={term} />
@@ -428,7 +463,10 @@ export function JournalPage() {
         <TopicsTab grid={data} base={base} />
       ) : (
         <>
-          <p className={styles.note}>{t("journal.keyboardHint")}</p>
+          <details className={styles.keys}>
+            <summary>{t("journal.keys")}</summary>
+            <p className={styles.note}>{t("journal.keyboardHint")}</p>
+          </details>
           <p className={styles.hint} role="status" aria-live="polite">
             {hint}
           </p>

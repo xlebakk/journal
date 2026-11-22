@@ -129,6 +129,7 @@ class Command(BaseCommand):
             last_name=last,
             first_name=first,
             roles=roles,
+            is_superadmin=Role.ADMIN in roles,
             # Demo convenience: skip the forced change; 2FA is each user's choice.
             must_change_password=False,
         )

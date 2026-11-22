@@ -1,35 +1,31 @@
 .skeleton {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: var(--space-2);
-  border-radius: var(--radius-lg);
-  background: var(--sheet);
-  box-shadow: var(--shadow-card);
+  gap: 12px;
+  padding: var(--space-2) 0;
 }
 
 .row {
-  height: 18px;
+  height: 14px;
   border-radius: var(--radius-pill);
-  background: linear-gradient(90deg, var(--rule), var(--paper), var(--rule));
-  background-size: 200% 100%;
-  animation: shimmer 1.4s ease-in-out infinite;
+  background: var(--sheet-2);
+  animation: breathe 1.2s ease-in-out infinite alternate;
 }
 
 .row:nth-child(3n + 2) {
-  width: 80%;
+  width: 82%;
 }
 
 .row:nth-child(3n) {
-  width: 60%;
+  width: 64%;
 }
 
-@keyframes shimmer {
+@keyframes breathe {
   from {
-    background-position: 100% 0;
+    opacity: 1;
   }
 
   to {
-    background-position: -100% 0;
+    opacity: 0.5;
   }
 }

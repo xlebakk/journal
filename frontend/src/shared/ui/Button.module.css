@@ -3,20 +3,19 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-1);
-  min-height: 40px;
-  padding: 0 18px;
+  min-height: 38px;
+  padding: 0 16px;
   border: var(--line) solid var(--rule);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius);
   background: var(--sheet);
   color: var(--ink);
-  font-weight: 500;
+  font-family: var(--font-ui);
   white-space: nowrap;
   cursor: pointer;
   transition:
     background-color var(--duration) var(--easing),
     border-color var(--duration) var(--easing),
-    box-shadow var(--duration) var(--easing),
-    transform var(--duration) var(--easing);
+    color var(--duration) var(--easing);
 }
 
 .button:disabled {
@@ -24,16 +23,10 @@
   opacity: 0.5;
 }
 
-.button:active:not(:disabled) {
-  transform: translateY(1px);
-}
-
 .primary {
   border-color: var(--accent);
   background: var(--accent);
   color: var(--on-accent);
-  font-weight: 600;
-  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 28%, transparent);
 }
 
 .primary:hover:not(:disabled) {
@@ -42,18 +35,16 @@
 }
 
 .secondary:hover:not(:disabled) {
-  border-color: var(--accent);
+  border-color: var(--accent-tint);
   background: var(--accent-soft);
-  color: var(--accent);
 }
 
 .danger {
-  border-color: color-mix(in srgb, var(--red-pen) 40%, transparent);
   color: var(--red-pen);
 }
 
 .danger:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--red-pen) 8%, transparent);
+  border-color: color-mix(in srgb, var(--red-pen) 35%, var(--rule));
 }
 
 @media (max-width: 599px) {

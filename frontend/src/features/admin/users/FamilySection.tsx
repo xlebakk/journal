@@ -2,14 +2,20 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link } from "react-router";
 
-import { CardsSheet } from "@/features/admin/import/CardsSheet";
 import { api, type Schemas } from "@/shared/api/client";
 import { errorMessage, fieldError } from "@/shared/api/errors";
 import { t } from "@/shared/i18n";
-import { Button, EmptyState, SelectField, Table, TextField } from "@/shared/ui";
+import {
+  Button,
+  Checkbox,
+  EmptyState,
+  PasswordField,
+  SelectField,
+  Table,
+  TextField,
+} from "@/shared/ui";
 
 import { useUsers, type UserDetail } from "./api";
-import { TemporaryPasswordDialog } from "./TemporaryPasswordDialog";
 import styles from "./Users.module.css";
 
 type Member = Schemas["FamilyMember"];
@@ -76,8 +82,8 @@ export function ParentsSection({ student }: { student: UserDetail }) {
   });
   const [search, setSearch] = useState("");
   const [existing, setExisting] = useState("");
-  const [added, setAdded] = useState<Added | null>(null);
-  const [shown, setShown] = useState<Added | null>(null);
+  const [password, setPassword] = useState("");
+  const [mustChange, setMustChange] = useState(false);
   const candidates = useUsers({ q: search, role: "parent", status: "", page: 1 });
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
@@ -85,14 +91,14 @@ export function ParentsSection({ student }: { student: UserDetail }) {
     mutationFn: () =>
       api<Added>(`/admin/users/${student.id}/parents`, {
         method: "POST",
-        body: mode === "existing" ? { existing } : form,
+        body:
+          mode === "existing"
+            ? { existing }
+            : { ...form, password, must_change_password: mustChange },
       }),
-    onSuccess: async (result) => {
+    onSuccess: async () => {
       setExisting("");
-      if (result.temporary_password) {
-        setAdded(result);
-        setShown(result);
-      }
+      setPassword("");
       await refresh();
     },
   });
@@ -139,6 +145,19 @@ export function ParentsSection({ student }: { student: UserDetail }) {
               value={form.middle_name}
               onChange={(e) => setForm({ ...form, middle_name: e.target.value })}
             />
+            <PasswordField
+              label={t("userForm.password")}
+              hint={t("password.hint")}
+              autoComplete="new-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              error={fieldError(add.error, "password")}
+            />
+            <Checkbox
+              label={t("userForm.mustChange")}
+              checked={mustChange}
+              onChange={(e) => setMustChange(e.target.checked)}
+            />
           </div>
         ) : (
           <div className={styles.grid}>
@@ -165,7 +184,10 @@ export function ParentsSection({ student }: { student: UserDetail }) {
         <div className={styles.actions}>
           <Button
             variant="primary"
-            disabled={add.isPending || (mode === "existing" ? !existing : !form.last_name.trim())}
+            disabled={
+              add.isPending ||
+              (mode === "existing" ? !existing : !form.last_name.trim() || password.length < 10)
+            }
             onClick={() => add.mutate()}
           >
             {t("family.add")}
@@ -177,24 +199,6 @@ export function ParentsSection({ student }: { student: UserDetail }) {
           </p>
         )}
       </div>
-      {added && (
-        <CardsSheet
-          cards={[
-            {
-              id: added.parent.id,
-              full_name: added.parent.full_name,
-              login: added.parent.login,
-              temporary_password: added.temporary_password ?? "",
-            },
-          ]}
-        />
-      )}
-      <TemporaryPasswordDialog
-        credentials={
-          shown ? { login: shown.parent.login, password: shown.temporary_password ?? "" } : null
-        }
-        onClose={() => setShown(null)}
-      />
     </section>
   );
 }

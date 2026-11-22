@@ -1,7 +1,8 @@
 /*
- * Design tokens (SPEC §12, stage 15 «Школьный портал»). The only place where colours, fonts,
- * sizes, radii and shadows are defined. A light school portal: a pale blue-grey page, white
- * cards with soft shadows, one confident blue, rounded fields and pill buttons.
+ * Design tokens (SPEC §12; stage 16 «Тихий журнал»). The only place where colours, fonts,
+ * sizes, radii and shadows are defined. Calm and typographic, after the eDonish teacher
+ * cabinet: a white page, a serif, one quiet blue, pale-blue fills only where they give
+ * structure (table headers, the chosen group, day cards), shadows only on small pill controls.
  * Theme: light by default; dark by system preference unless data-theme="light";
  * explicit data-theme="dark" always wins. The two dark blocks must stay identical —
  * `npm run contrast` checks it together with WCAG AA contrast.
@@ -10,37 +11,37 @@
 :root {
   color-scheme: light;
 
-  /* Light «Портал» */
-  --paper: #f1f5fb;
+  /* Light */
+  --paper: #ffffff;
   --sheet: #ffffff;
-  --ink: #18233a;
-  --ink-2: #566377;
-  --rule: #e1e7f0;
-  --accent: #1a66d2;
-  --accent-strong: #134fa6;
-  --accent-soft: #e7f0fd;
+  --sheet-2: #f7fafd;
+  --ink: #1f2a37;
+  --ink-2: #5d6a7a;
+  --rule: #e4ebf3;
+  --accent: #2b67c6;
+  --accent-strong: #1f4f9c;
+  --accent-soft: #edf5fd;
+  --accent-tint: #d6e8fa;
   --on-accent: #ffffff;
-  --red-pen: #c42b2b;
-  --pencil: #9a4f08;
-  --green: #17723f;
-  --marker: #ffe08a;
-  --marker-soft: rgb(255 224 138 / 45%);
-  --hero-1: #1a66d2;
-  --hero-2: #3aa0f0;
-  --hero-3: #0b3f8f;
+  --red-pen: #c2362c;
+  --pencil: #9a560f;
+  --green: #2c7549;
+  --marker: #dcecfb;
+  --marker-soft: #f0f7fe;
 
   /* Avatar inks, picked by hash of user id */
-  --stamp-1: #1f55b8;
-  --stamp-2: #0f6b6b;
-  --stamp-3: #7a3a8f;
-  --stamp-4: #8a4b12;
-  --stamp-5: #3b5166;
-  --stamp-6: #a12d52;
+  --stamp-1: #2b5fae;
+  --stamp-2: #1f6b6b;
+  --stamp-3: #6f4189;
+  --stamp-4: #8a5220;
+  --stamp-5: #44586b;
+  --stamp-6: #9b3553;
 
-  /* Typography */
-  --font-display: "Golos Text", "Segoe UI", Roboto, sans-serif;
-  --font-ui: "Golos Text", "Segoe UI", Roboto, sans-serif;
-  --font-mono: "JetBrains Mono", Consolas, monospace;
+  /* Typography: a serif for everything, a monospace only for logins and codes */
+  --font-display: "Literata", Georgia, "Times New Roman", serif;
+  --font-ui: "Literata", Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-ui);
+  --font-code: "JetBrains Mono", Consolas, monospace;
   --text-12: 0.75rem;
   --text-14: 0.875rem;
   --text-15: 0.9375rem;
@@ -60,25 +61,22 @@
   --space-6: 48px;
 
   /* Shape */
-  --radius: 10px;
-  --radius-lg: 16px;
+  --radius: 8px;
+  --radius-lg: 12px;
   --radius-pill: 999px;
   --line: 1px;
   --line-strong: 1.5px;
-  --shadow-card: 0 1px 2px rgb(16 32 64 / 6%), 0 6px 20px rgb(16 32 64 / 6%);
-  --shadow-pop: 0 18px 48px rgb(16 32 64 / 22%);
+  --shadow-pill: 0 1px 4px rgb(31 42 55 / 14%);
+  --shadow-card: 0 1px 3px rgb(31 42 55 / 7%);
+  --shadow-pop: 0 12px 32px rgb(31 42 55 / 16%);
   --shadow-hard: var(--shadow-card);
-  --shadow-bar: 0 1px 12px rgb(16 32 64 / 6%);
-  --shadow-bar-up: 0 -4px 20px rgb(16 32 64 / 8%);
-  --overlay: rgb(10 20 40 / 45%);
-  /* Text on the blue login screen, in both themes. */
-  --on-hero: #ffffff;
-  --row-height: 40px;
+  --overlay: rgb(31 42 55 / 35%);
+  --row-height: 36px;
   --tap-target: 44px;
-  --header-height: 64px;
+  --header-height: 72px;
 
   /* Motion */
-  --duration: 160ms;
+  --duration: 140ms;
   --easing: cubic-bezier(0.2, 0, 0, 1);
 }
 
@@ -86,68 +84,66 @@
   :root:not([data-theme="light"]) {
     color-scheme: dark;
 
-    /* Dark «Ночной портал» */
-    --paper: #0d1424;
-    --sheet: #151f33;
-    --ink: #e7edf6;
-    --ink-2: #a0adc0;
-    --rule: #26324a;
-    --accent: #6fa8ff;
-    --accent-strong: #9cc3ff;
-    --accent-soft: rgb(111 168 255 / 14%);
-    --on-accent: #0d1424;
-    --red-pen: #ff7d74;
-    --pencil: #f1b45c;
-    --green: #5fd38f;
-    --marker: rgb(255 214 102 / 30%);
-    --marker-soft: rgb(255 214 102 / 12%);
-    --hero-1: #0f2f66;
-    --hero-2: #1c5fb0;
-    --hero-3: #07142e;
+    /* Dark */
+    --paper: #12171f;
+    --sheet: #171d27;
+    --sheet-2: #1c2330;
+    --ink: #e6e9ee;
+    --ink-2: #a3adbb;
+    --rule: #2a3342;
+    --accent: #7eaef0;
+    --accent-strong: #a9c9f6;
+    --accent-soft: #1c2840;
+    --accent-tint: #23324d;
+    --on-accent: #12171f;
+    --red-pen: #f08a80;
+    --pencil: #e3b06a;
+    --green: #7ccc9c;
+    --marker: #22314a;
+    --marker-soft: #1b2538;
 
-    --stamp-1: #9fbcff;
-    --stamp-2: #79d0cc;
-    --stamp-3: #d8a2ec;
-    --stamp-4: #f0b27a;
-    --stamp-5: #b3c5d6;
-    --stamp-6: #ff9fbd;
+    --stamp-1: #a3c0f2;
+    --stamp-2: #85cfcf;
+    --stamp-3: #cfa8e3;
+    --stamp-4: #e7b787;
+    --stamp-5: #b6c5d3;
+    --stamp-6: #f1a6bd;
   }
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  /* Dark «Ночной портал» */
-  --paper: #0d1424;
-  --sheet: #151f33;
-  --ink: #e7edf6;
-  --ink-2: #a0adc0;
-  --rule: #26324a;
-  --accent: #6fa8ff;
-  --accent-strong: #9cc3ff;
-  --accent-soft: rgb(111 168 255 / 14%);
-  --on-accent: #0d1424;
-  --red-pen: #ff7d74;
-  --pencil: #f1b45c;
-  --green: #5fd38f;
-  --marker: rgb(255 214 102 / 30%);
-  --marker-soft: rgb(255 214 102 / 12%);
-  --hero-1: #0f2f66;
-  --hero-2: #1c5fb0;
-  --hero-3: #07142e;
+  /* Dark */
+  --paper: #12171f;
+  --sheet: #171d27;
+  --sheet-2: #1c2330;
+  --ink: #e6e9ee;
+  --ink-2: #a3adbb;
+  --rule: #2a3342;
+  --accent: #7eaef0;
+  --accent-strong: #a9c9f6;
+  --accent-soft: #1c2840;
+  --accent-tint: #23324d;
+  --on-accent: #12171f;
+  --red-pen: #f08a80;
+  --pencil: #e3b06a;
+  --green: #7ccc9c;
+  --marker: #22314a;
+  --marker-soft: #1b2538;
 
-  --stamp-1: #9fbcff;
-  --stamp-2: #79d0cc;
-  --stamp-3: #d8a2ec;
-  --stamp-4: #f0b27a;
-  --stamp-5: #b3c5d6;
-  --stamp-6: #ff9fbd;
+  --stamp-1: #a3c0f2;
+  --stamp-2: #85cfcf;
+  --stamp-3: #cfa8e3;
+  --stamp-4: #e7b787;
+  --stamp-5: #b6c5d3;
+  --stamp-6: #f1a6bd;
 }
 
 @media (max-width: 599px) {
   :root {
     --text-base: var(--text-16);
     --row-height: 44px;
-    --header-height: 56px;
+    --header-height: 60px;
   }
 }

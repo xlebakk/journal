@@ -1,13 +1,12 @@
-/* A table is a card: white, rounded, a light header row, rows highlight on hover. */
+/* A plain table: a pale-blue header row, thin rules, nothing else. */
 .table {
   width: 100%;
   border: var(--line) solid var(--rule);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
   border-collapse: separate;
   border-spacing: 0;
   overflow: hidden;
   background: var(--sheet);
-  box-shadow: var(--shadow-card);
   font-variant-numeric: tabular-nums;
 }
 
@@ -26,18 +25,12 @@
 }
 
 .table thead th {
-  background: color-mix(in srgb, var(--accent-soft) 60%, var(--sheet));
-  font-size: var(--text-12);
+  background: var(--accent-tint);
+  font-size: var(--text-14);
   font-weight: 600;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  color: var(--ink-2);
-}
-
-.table tbody tr {
-  transition: background-color var(--duration) var(--easing);
+  color: var(--ink);
 }
 
 .table tbody tr:hover {
-  background: color-mix(in srgb, var(--accent-soft) 55%, transparent);
+  background: var(--marker-soft);
 }

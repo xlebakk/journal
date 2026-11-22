@@ -36,6 +36,14 @@ export function OverviewPage() {
         <span className={styles.status}>{formatDayLong(data.today)}</span>
       </div>
 
+      {data.unfilled.length === 0 &&
+        data.debt.debtors === 0 &&
+        data.low_attendance.length === 0 &&
+        data.blocked_logins.length === 0 &&
+        data.denied.length === 0 &&
+        data.admin_new_devices.length === 0 && (
+          <p className={styles.note}>{t("overview.allCalm")}</p>
+        )}
       <section className={styles.section} aria-labelledby="ov-today">
         <div className={styles.titleRow}>
           <h2 id="ov-today">{t("overview.today")}</h2>
@@ -55,171 +63,186 @@ export function OverviewPage() {
         </p>
       </section>
 
-      <section className={styles.section} aria-labelledby="ov-unfilled">
-        <h2 id="ov-unfilled">{t("overview.unfilled")}</h2>
-        {data.unfilled.length === 0 ? (
-          <EmptyState text={t("overview.noUnfilled")} />
-        ) : (
-          <Table>
-            <tbody>
-              {data.unfilled.map((teacher) => (
-                <tr key={teacher.teacher}>
-                  <th scope="row">
-                    {teacher.teacher_name}
-                    <span className={styles.status}>
-                      {" "}
-                      · {t("overview.lessons", { count: teacher.count })}
-                    </span>
-                  </th>
-                  <td>
-                    {teacher.lessons.map((lesson, i) => (
-                      <span key={lesson.id}>
-                        {i > 0 && ", "}
-                        <Link to={`/admin/journal/lessons/${lesson.id}`}>
-                          {formatDate(lesson.date)} {lesson.group_name} · {lesson.subject_name}
-                        </Link>
-                      </span>
-                    ))}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        )}
-      </section>
-
-      <section className={styles.section} aria-labelledby="ov-debt">
-        <div className={styles.titleRow}>
-          <h2 id="ov-debt">{t("payments.overviewTitle")}</h2>
-          <Link to="/admin/payments">{t("payments.title")}</Link>
-        </div>
-        <p className={data.debt.debtors ? styles.error : styles.note}>
-          {data.debt.debtors
-            ? t("payments.debtSummary", { count: data.debt.debtors, total: money(data.debt.total) })
-            : t("payments.noDebtors")}
-        </p>
-      </section>
-
-      <section className={styles.section} aria-labelledby="ov-attendance">
-        <h2 id="ov-attendance">
-          {t("overview.lowAttendance", {
-            percent: data.attendance_threshold,
-            days: data.attendance_window_days,
-          })}
-        </h2>
-        {data.low_attendance.length === 0 ? (
-          <EmptyState text={t("overview.noLowAttendance")} />
-        ) : (
-          <Table>
-            <tbody>
-              {data.low_attendance.map((row) => (
-                <tr key={`${row.student}-${row.course}`}>
-                  <th scope="row">
-                    <Link to={`/admin/users/${row.student}`}>{row.full_name}</Link>
-                  </th>
-                  <td>
-                    {row.group_name} · {row.subject_name}
-                  </td>
-                  <td className={`mono ${styles.error}`}>
-                    {Math.round(Number(row.attendance_percent))}%
-                  </td>
-                  <td>
-                    <Link to={`/admin/journal?course=${row.course}`}>
-                      {t("overview.openJournal")}
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        )}
-      </section>
-
-      <section className={styles.section} aria-labelledby="ov-blocked">
-        <h2 id="ov-blocked">{t("overview.blocked")}</h2>
-        <p className={styles.note}>
-          {t("overview.failed", { count: data.failed_logins_24h })} ·{" "}
-          <Link to="/admin/audit?tab=logins">{t("audit.tabLogins")}</Link>
-        </p>
-        {data.blocked_logins.length === 0 ? (
-          <EmptyState text={t("overview.noBlocked")} />
-        ) : (
-          <Table>
-            <tbody>
-              {data.blocked_logins.map((row) => (
-                <tr key={row.login}>
-                  <th scope="row" className="mono">
-                    {row.login}
-                  </th>
-                  <td>{t("overview.attempts", { count: row.attempts })}</td>
-                  <td>{formatDateTime(row.last_at)}</td>
-                  <td>
-                    <Link to={`/admin/users?q=${encodeURIComponent(row.login)}`}>
-                      {t("nav.users")}
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        )}
-      </section>
-
-      <section className={styles.section} aria-labelledby="ov-denied">
-        <h2 id="ov-denied">{t("overview.denied")}</h2>
-        {data.denied.length === 0 ? (
-          <EmptyState text={t("overview.noDenied")} />
-        ) : (
-          <>
-            <p className={styles.note}>{t("overview.deniedHint")}</p>
+      {data.unfilled.length > 0 && (
+        <section className={styles.section} aria-labelledby="ov-unfilled">
+          <h2 id="ov-unfilled">{t("overview.unfilled")}</h2>
+          {data.unfilled.length === 0 ? (
+            <EmptyState text={t("overview.noUnfilled")} />
+          ) : (
             <Table>
               <tbody>
-                {data.denied.map((row) => (
-                  <tr key={row.user}>
+                {data.unfilled.map((teacher) => (
+                  <tr key={teacher.teacher}>
                     <th scope="row">
-                      <Link to={`/admin/users/${row.user}`}>{row.full_name}</Link>
+                      {teacher.teacher_name}
+                      <span className={styles.status}>
+                        {" "}
+                        · {t("overview.lessons", { count: teacher.count })}
+                      </span>
                     </th>
-                    <td className="mono">
-                      {t("overview.deniedCount", { count: row.count, hour: row.last_hour })}
-                    </td>
-                    <td className={row.spike ? styles.error : styles.status}>
-                      {row.spike ? t("overview.spike") : formatDateTime(row.last_at)}
+                    <td>
+                      {teacher.lessons.map((lesson, i) => (
+                        <span key={lesson.id}>
+                          {i > 0 && ", "}
+                          <Link to={`/admin/journal/lessons/${lesson.id}`}>
+                            {formatDate(lesson.date)} {lesson.group_name} · {lesson.subject_name}
+                          </Link>
+                        </span>
+                      ))}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </Table>
-          </>
-        )}
-      </section>
+          )}
+        </section>
+      )}
 
-      <section className={styles.section} aria-labelledby="ov-devices">
-        <h2 id="ov-devices">{t("overview.newDevices")}</h2>
-        {data.admin_new_devices.length === 0 ? (
-          <EmptyState text={t("overview.noNewDevices")} />
-        ) : (
-          <>
-            <p className={styles.note}>{t("overview.newDevicesHint")}</p>
+      {data.debt.debtors > 0 && (
+        <section className={styles.section} aria-labelledby="ov-debt">
+          <div className={styles.titleRow}>
+            <h2 id="ov-debt">{t("payments.overviewTitle")}</h2>
+            <Link to="/admin/payments">{t("payments.title")}</Link>
+          </div>
+          <p className={data.debt.debtors ? styles.error : styles.note}>
+            {data.debt.debtors
+              ? t("payments.debtSummary", {
+                  count: data.debt.debtors,
+                  total: money(data.debt.total),
+                })
+              : t("payments.noDebtors")}
+          </p>
+        </section>
+      )}
+
+      {data.low_attendance.length > 0 && (
+        <section className={styles.section} aria-labelledby="ov-attendance">
+          <h2 id="ov-attendance">
+            {t("overview.lowAttendance", {
+              percent: data.attendance_threshold,
+              days: data.attendance_window_days,
+            })}
+          </h2>
+          {data.low_attendance.length === 0 ? (
+            <EmptyState text={t("overview.noLowAttendance")} />
+          ) : (
             <Table>
               <tbody>
-                {data.admin_new_devices.map((row) => (
-                  <tr key={`${row.user}-${row.at}`}>
-                    <th scope="row">{row.full_name}</th>
-                    <td>{formatDateTime(row.at)}</td>
+                {data.low_attendance.map((row) => (
+                  <tr key={`${row.student}-${row.course}`}>
+                    <th scope="row">
+                      <Link to={`/admin/users/${row.student}`}>{row.full_name}</Link>
+                    </th>
                     <td>
-                      {describeUserAgent(row.user_agent)}
-                      {row.ip && <span className={styles.status}> · {row.ip}</span>}
+                      {row.group_name} · {row.subject_name}
+                    </td>
+                    <td className={`mono ${styles.error}`}>
+                      {Math.round(Number(row.attendance_percent))}%
                     </td>
                     <td>
-                      <Link to={`/admin/users/${row.user}`}>{t("overview.sessions")}</Link>
+                      <Link to={`/admin/journal?course=${row.course}`}>
+                        {t("overview.openJournal")}
+                      </Link>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </Table>
-          </>
-        )}
-      </section>
+          )}
+        </section>
+      )}
+
+      {(data.blocked_logins.length > 0 || data.failed_logins_24h > 0) && (
+        <section className={styles.section} aria-labelledby="ov-blocked">
+          <h2 id="ov-blocked">{t("overview.blocked")}</h2>
+          <p className={styles.note}>
+            {t("overview.failed", { count: data.failed_logins_24h })} ·{" "}
+            <Link to="/admin/audit?tab=logins">{t("audit.tabLogins")}</Link>
+          </p>
+          {data.blocked_logins.length === 0 ? (
+            <EmptyState text={t("overview.noBlocked")} />
+          ) : (
+            <Table>
+              <tbody>
+                {data.blocked_logins.map((row) => (
+                  <tr key={row.login}>
+                    <th scope="row" className="mono">
+                      {row.login}
+                    </th>
+                    <td>{t("overview.attempts", { count: row.attempts })}</td>
+                    <td>{formatDateTime(row.last_at)}</td>
+                    <td>
+                      <Link to={`/admin/users?q=${encodeURIComponent(row.login)}`}>
+                        {t("nav.users")}
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          )}
+        </section>
+      )}
+
+      {data.denied.length > 0 && (
+        <section className={styles.section} aria-labelledby="ov-denied">
+          <h2 id="ov-denied">{t("overview.denied")}</h2>
+          {data.denied.length === 0 ? (
+            <EmptyState text={t("overview.noDenied")} />
+          ) : (
+            <>
+              <p className={styles.note}>{t("overview.deniedHint")}</p>
+              <Table>
+                <tbody>
+                  {data.denied.map((row) => (
+                    <tr key={row.user}>
+                      <th scope="row">
+                        <Link to={`/admin/users/${row.user}`}>{row.full_name}</Link>
+                      </th>
+                      <td className="mono">
+                        {t("overview.deniedCount", { count: row.count, hour: row.last_hour })}
+                      </td>
+                      <td className={row.spike ? styles.error : styles.status}>
+                        {row.spike ? t("overview.spike") : formatDateTime(row.last_at)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </>
+          )}
+        </section>
+      )}
+
+      {data.admin_new_devices.length > 0 && (
+        <section className={styles.section} aria-labelledby="ov-devices">
+          <h2 id="ov-devices">{t("overview.newDevices")}</h2>
+          {data.admin_new_devices.length === 0 ? (
+            <EmptyState text={t("overview.noNewDevices")} />
+          ) : (
+            <>
+              <p className={styles.note}>{t("overview.newDevicesHint")}</p>
+              <Table>
+                <tbody>
+                  {data.admin_new_devices.map((row) => (
+                    <tr key={`${row.user}-${row.at}`}>
+                      <th scope="row">{row.full_name}</th>
+                      <td>{formatDateTime(row.at)}</td>
+                      <td>
+                        {describeUserAgent(row.user_agent)}
+                        {row.ip && <span className={styles.status}> · {row.ip}</span>}
+                      </td>
+                      <td>
+                        <Link to={`/admin/users/${row.user}`}>{t("overview.sessions")}</Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </>
+          )}
+        </section>
+      )}
 
       <section className={styles.section} aria-labelledby="ov-audit">
         <div className={styles.titleRow}>

@@ -28,7 +28,7 @@ MATRIX: list[tuple[str, str, dict[str, int]]] = [
     (
         "post",
         "/api/v1/admin/users/{other}/reset-password",
-        {"admin": 200, "teacher": 403, "student": 403},
+        {"admin": 400, "teacher": 403, "student": 403},
     ),
     ("post", "/api/v1/admin/users/{other}/block", {"admin": 200, "teacher": 403, "student": 403}),
     ("post", "/api/v1/admin/users/{other}/archive", {"admin": 200, "teacher": 403, "student": 403}),

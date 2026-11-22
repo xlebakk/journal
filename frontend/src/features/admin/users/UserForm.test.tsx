@@ -30,6 +30,7 @@ describe("UserForm", () => {
     await user.type(screen.getByLabelText("Фамилия"), "Алиев");
     await user.type(screen.getByLabelText("Имя"), "Фарход");
     await user.click(screen.getByLabelText("ученик"));
+    await user.type(screen.getByLabelText("Пароль"), "долгий пароль 2026");
     await user.selectOptions(screen.getByLabelText("Класс"), "11");
     await user.type(screen.getByLabelText("Телефон родителя"), "+998901112233");
     await user.click(screen.getByRole("button", { name: "создать" }));
@@ -40,6 +41,20 @@ describe("UserForm", () => {
     expect(payload.student_profile.parent_phone).toBe("+998901112233");
     expect(payload.login).toBeUndefined();
     expect(payload.teacher_profile).toBeUndefined();
+    expect(payload.password).toBe("долгий пароль 2026");
+  });
+
+  it("asks for a password of 10 characters before creating", async () => {
+    const onSubmit = vi.fn();
+    withQuery(<UserForm submitLabel="создать" onSubmit={onSubmit} />);
+    const user = userEvent.setup();
+    await user.type(screen.getByLabelText("Фамилия"), "Алиев");
+    await user.type(screen.getByLabelText("Имя"), "Фарход");
+    await user.click(screen.getByLabelText("ученик"));
+    await user.type(screen.getByLabelText("Пароль"), "short");
+    await user.click(screen.getByRole("button", { name: "создать" }));
+    expect(await screen.findByText("Не короче 10 символов")).toBeInTheDocument();
+    expect(onSubmit).not.toHaveBeenCalled();
   });
 });
 
@@ -62,6 +77,10 @@ describe("toPayload", () => {
         admin_note: "",
       },
       teacher: { phone: "+998" },
+      password: "",
+      must_change_password: false,
+      is_superadmin: false,
+      admin_sections: [],
     });
     expect(payload).toEqual({
       last_name: "Ким",
@@ -69,6 +88,7 @@ describe("toPayload", () => {
       middle_name: "",
       login: "kim.s",
       roles: ["teacher"],
+      must_change_password: false,
       teacher_profile: { phone: "+998" },
     });
   });

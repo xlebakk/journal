@@ -3,7 +3,7 @@
   min-width: 260px;
   padding: 6px;
   border: var(--line) solid var(--rule);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
   background: var(--sheet);
   box-shadow: var(--shadow-pop);
   animation: appear var(--duration) var(--easing);
@@ -68,5 +68,79 @@
   from {
     opacity: 0;
     transform: translateY(-4px);
+  }
+}
+
+/* The pale-blue person block on the right of the header (after eDonish). */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  align-self: stretch;
+  min-width: 0;
+  max-width: 340px;
+  padding: 0 var(--space-3);
+  border: 0;
+  background: var(--accent-soft);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.profile:hover {
+  background: var(--accent-tint);
+}
+
+.profile:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -4px;
+}
+
+.avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: var(--line-strong) solid var(--accent);
+  border-radius: 50%;
+  background: var(--sheet);
+  color: var(--accent);
+  font-size: var(--text-14);
+  font-weight: 600;
+}
+
+.profileText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.profileName,
+.profileRole {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profileRole {
+  font-size: var(--text-14);
+  color: var(--ink-2);
+}
+
+.chevron {
+  flex: none;
+  color: var(--ink-2);
+}
+
+@media (max-width: 899px) {
+  .profile {
+    padding: 0 var(--space-2);
+  }
+
+  .profileText,
+  .chevron {
+    display: none;
   }
 }

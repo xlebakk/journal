@@ -1379,7 +1379,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description New temporary password; all the user's sessions end (SPEC §4). */
+        /** @description The administrator sets a new password; all the user's sessions end (SPEC §4). */
         post: operations["admin_users_reset_password_create"];
         delete?: never;
         options?: never;
@@ -2684,6 +2684,26 @@ export interface components {
             discount_percent: number;
             entries: components["schemas"]["AdminEntry"][];
         };
+        /** @description The administrator types the password (stage 16); nothing is generated. */
+        AdminPasswordRequest: {
+            password: string;
+            /** @default false */
+            must_change_password: boolean;
+        };
+        /**
+         * @description * `users` - пользователи, импорт, родители
+         *     * `structure` - группы и справочники
+         *     * `schedule` - расписание и запросы
+         *     * `journal` - журнал
+         *     * `exams` - пробные тесты
+         *     * `reports` - отчёты
+         *     * `payments` - оплаты
+         *     * `announcements` - объявления
+         *     * `audit` - аудит
+         *     * `settings` - настройки центра
+         * @enum {string}
+         */
+        AdminSectionsEnum: "users" | "structure" | "schedule" | "journal" | "exams" | "reports" | "payments" | "announcements" | "audit" | "settings";
         AdminUserDetail: {
             /** Format: uuid */
             readonly id: string;
@@ -2702,6 +2722,8 @@ export interface components {
             readonly last_login: string | null;
             /** Format: date-time */
             readonly created_at: string;
+            readonly is_superadmin: boolean;
+            readonly admin_sections: components["schemas"]["AdminSectionsEnum"][];
             readonly must_change_password: boolean;
             /** Format: date-time */
             readonly password_changed_at: string | null;
@@ -2729,6 +2751,8 @@ export interface components {
             readonly last_login: string | null;
             /** Format: date-time */
             readonly created_at: string;
+            readonly is_superadmin: boolean;
+            readonly admin_sections: components["schemas"]["AdminSectionsEnum"][];
         };
         /** @description Create and update. Profiles are created when the matching role is present. */
         AdminUserWriteRequest: {
@@ -2739,6 +2763,11 @@ export interface components {
             roles: string[];
             student_profile?: components["schemas"]["StudentProfileRequest"];
             teacher_profile?: components["schemas"]["TeacherProfileRequest"];
+            password?: string;
+            /** @default false */
+            must_change_password: boolean;
+            is_superadmin?: boolean;
+            admin_sections?: components["schemas"]["AdminSectionsEnum"][];
         };
         /** @description The administrator's form. The author is the current user; the body is plain text. */
         Announcement: {
@@ -3575,6 +3604,8 @@ export interface components {
             readonly must_change_password: boolean;
             readonly totp_enabled: boolean;
             readonly totp_setup_required: boolean;
+            readonly is_superadmin: boolean;
+            readonly admin_sections: components["schemas"]["AdminSectionsEnum"][];
             readonly groups: components["schemas"]["MeGroup"][];
         };
         MeGroup: {
@@ -3741,10 +3772,12 @@ export interface components {
             first_name?: string;
             middle_name?: string;
             login?: string;
+            password?: string;
+            /** @default false */
+            must_change_password: boolean;
         };
         ParentAdded: {
             parent: components["schemas"]["FamilyMember"];
-            temporary_password: string | null;
         };
         PasswordChangeRequest: {
             current_password: string;
@@ -3771,6 +3804,11 @@ export interface components {
             roles?: string[];
             student_profile?: components["schemas"]["StudentProfileRequest"];
             teacher_profile?: components["schemas"]["TeacherProfileRequest"];
+            password?: string;
+            /** @default false */
+            must_change_password: boolean;
+            is_superadmin?: boolean;
+            admin_sections?: components["schemas"]["AdminSectionsEnum"][];
         };
         /** @description The administrator's form. The author is the current user; the body is plain text. */
         PatchedAnnouncementRequest: {
@@ -4584,10 +4622,6 @@ export interface components {
         TeacherProfileRequest: {
             phone?: string;
             subjects?: string[];
-        };
-        TemporaryPassword: {
-            user: components["schemas"]["AdminUserDetail"];
-            temporary_password: string;
         };
         Term: {
             /** Format: uuid */
@@ -6754,7 +6788,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TemporaryPassword"];
+                    "application/json": components["schemas"]["AdminUserDetail"];
                 };
             };
         };
@@ -6965,14 +6999,18 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminPasswordRequest"];
+            };
+        };
         responses: {
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TemporaryPassword"];
+                    "application/json": components["schemas"]["AdminUserDetail"];
                 };
             };
         };

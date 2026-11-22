@@ -18,14 +18,17 @@ test("admin adds a parent from the student's card; the parent reads the child's 
   const parents = page.getByRole("region", { name: "Родители" });
   await parents.getByLabel("Фамилия").fill("Алиева");
   await parents.getByLabel("Имя").fill("Гульнора");
+  const temporary = "мамин пароль от центра";
+  await parents.getByLabel("Пароль", { exact: true }).fill(temporary);
+  await parents.getByLabel("Попросить сменить пароль при первом входе").check();
   await parents.getByRole("button", { name: "добавить родителя" }).click();
-
-  const dialog = page.getByRole("dialog", { name: "Временный пароль" });
-  const values = dialog.locator("dd");
-  const parentLogin = (await values.nth(0).textContent())!.trim();
-  const temporary = (await values.nth(1).textContent())!.trim();
-  await dialog.getByRole("button", { name: "готово" }).click();
   await expect(parents.getByRole("link", { name: "Алиева Гульнора" })).toBeVisible();
+  const parentLogin = (await parents
+    .getByRole("row")
+    .nth(1)
+    .locator("td")
+    .nth(1)
+    .textContent())!.trim();
   await logout(page);
 
   await login(page, parentLogin, temporary);

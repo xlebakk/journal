@@ -11,7 +11,7 @@ import { t } from "@/shared/i18n";
 import { Button, Dialog, DialogActions, EmptyState, RuledSkeleton } from "@/shared/ui";
 
 import { usersApi, useInvalidateUsers, useUser, useUserSessions, type UserDetail } from "./api";
-import { TemporaryPasswordDialog } from "./TemporaryPasswordDialog";
+import { SetPasswordDialog } from "./SetPasswordDialog";
 import { UserForm } from "./UserForm";
 import { statusLabel } from "./labels";
 import { ChildrenSection, ParentsSection } from "./FamilySection";
@@ -21,22 +21,15 @@ import styles from "./Users.module.css";
 function Actions({ user }: { user: UserDetail }) {
   const withReauth = useReauth();
   const invalidate = useInvalidateUsers();
-  const [password, setPassword] = useState<string | null>(null);
+  const [settingPassword, setSettingPassword] = useState(false);
   const [confirmArchive, setConfirmArchive] = useState(false);
 
   const run = useMutation({
     mutationFn: (action: string) => withReauth(() => usersApi.action(user.id, action)),
     onSuccess: () => invalidate(),
   });
-  const reset = useMutation({
-    mutationFn: () => usersApi.resetPassword(user.id),
-    onSuccess: async (data) => {
-      setPassword(data.temporary_password);
-      await invalidate();
-    },
-  });
-  const error = run.error ?? reset.error;
-  const busy = run.isPending || reset.isPending;
+  const error = run.error;
+  const busy = run.isPending;
 
   return (
     <section className={styles.page} aria-labelledby="user-actions">
@@ -47,7 +40,10 @@ function Actions({ user }: { user: UserDetail }) {
         </p>
       )}
       <div className={styles.actions}>
-        <Button onClick={() => reset.mutate()} disabled={busy || user.status === "archived"}>
+        <Button
+          onClick={() => setSettingPassword(true)}
+          disabled={busy || user.status === "archived"}
+        >
           {t("userActions.resetPassword")}
         </Button>
         {user.login_locked_minutes > 0 && (
@@ -82,9 +78,10 @@ function Actions({ user }: { user: UserDetail }) {
         </p>
       )}
 
-      <TemporaryPasswordDialog
-        credentials={password ? { login: user.login, password } : null}
-        onClose={() => setPassword(null)}
+      <SetPasswordDialog
+        user={user}
+        open={settingPassword}
+        onClose={() => setSettingPassword(false)}
       />
       <Dialog
         open={confirmArchive}

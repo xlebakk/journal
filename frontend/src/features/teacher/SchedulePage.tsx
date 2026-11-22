@@ -27,7 +27,7 @@ import {
   Table,
   TextField,
   WeekNav,
-  WeekSchedule,
+  DaySchedule,
 } from "@/shared/ui";
 
 function LessonFacts({ lesson }: { lesson: Lesson }) {
@@ -252,7 +252,7 @@ export function SchedulePage() {
       ) : schedule.error ? (
         <p className={styles.error}>{errorMessage(schedule.error)}</p>
       ) : (
-        <WeekSchedule
+        <DaySchedule
           monday={monday}
           today={today}
           lessons={lessons}

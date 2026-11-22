@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 from rest_framework.test import APIClient
 
-from apps.accounts import credentials, lockout, sessions
+from apps.accounts import lockout, sessions
 from apps.accounts.models import Role, User, UserSession
 from apps.audit.models import AuditLog
 from conftest import PASSWORD, MakeUser, api_login
@@ -16,8 +16,17 @@ ClientFor = Callable[..., APIClient]
 USERS = "/api/v1/admin/users"
 
 
+NEW_PASSWORD = "свежий ветер в горах 2026"
+
+
 def create(client: APIClient, **data: Any) -> Any:
-    payload = {"last_name": "Алиев", "first_name": "Фарход", "roles": ["student"], **data}
+    payload = {
+        "last_name": "Алиев",
+        "first_name": "Фарход",
+        "roles": ["student"],
+        "password": NEW_PASSWORD,
+        **data,
+    }
     return client.post(USERS, payload, format="json")
 
 
@@ -29,7 +38,7 @@ def expire_reauth(client: APIClient) -> None:
 
 @pytest.mark.django_db
 class TestCreate:
-    def test_student_with_generated_login_and_temporary_password(
+    def test_student_with_generated_login_and_the_admins_password(
         self, admin_client: APIClient, admin: User
     ) -> None:
         response = create(
@@ -43,14 +52,13 @@ class TestCreate:
         )
         assert response.status_code == 201, response.json()
         body = response.json()
-        password = body["temporary_password"]
-        assert len(password) == 12
-        assert set(password) <= set(credentials.TEMP_PASSWORD_ALPHABET)
-        assert body["user"]["login"] == "aliev.f"
-        assert body["user"]["must_change_password"] is True
-        assert body["user"]["student_profile"]["school_grade"] == 11
+        assert "temporary_password" not in body  # the admin typed it, nothing is generated
+        assert body["login"] == "aliev.f"
+        assert body["must_change_password"] is False
+        assert body["student_profile"]["school_grade"] == 11
 
         user = User.objects.get(login="aliev.f")
+        password = NEW_PASSWORD
         assert user.check_password(password)
         assert password not in user.password
         entry = AuditLog.objects.get(action="user.create")
@@ -60,18 +68,26 @@ class TestCreate:
         assert password not in str(entry.after)
         assert "password" not in entry.after
 
-        # The new user can log in, but only to change the password.
+        # The new user logs in with the password the administrator gave them.
         client = APIClient()
         assert api_login(client, user, password=password).status_code == 200
-        assert client.get("/api/v1/auth/sessions").json() == {"detail": "password_change_required"}
+        assert client.get("/api/v1/auth/sessions").status_code == 200
 
     def test_duplicate_names_get_numbered_logins(self, admin_client: APIClient) -> None:
-        logins = [create(admin_client).json()["user"]["login"] for _ in range(3)]
+        logins = [create(admin_client).json()["login"] for _ in range(3)]
         assert logins == ["aliev.f", "aliev.f2", "aliev.f3"]
+
+    def test_the_admin_types_a_good_password(self, admin_client: APIClient) -> None:
+        assert create(admin_client, password="").json() == {"password": ["required"]}
+        assert create(admin_client, password="short").json() == {"password": ["password_too_short"]}
+        weak = create(admin_client, password="1234567890").json()
+        assert "password_too_common" in weak["password"]
+        forced = create(admin_client, must_change_password=True).json()
+        assert forced["must_change_password"] is True
 
     def test_explicit_login(self, admin_client: APIClient) -> None:
         response = create(admin_client, login="  Farkhod.A ")
-        assert response.json()["user"]["login"] == "farkhod.a"
+        assert response.json()["login"] == "farkhod.a"
         assert create(admin_client, login="farkhod.a").json() == {"login": ["login_taken"]}
         assert create(admin_client, login="bad login!").json() == {"login": ["invalid_login"]}
 
@@ -93,7 +109,7 @@ class TestCreate:
             roles=["admin", "teacher"],
             teacher_profile={"phone": "+998 90 111 22 33"},
             student_profile={"school": "ignored"},
-        ).json()["user"]
+        ).json()
         assert body["teacher_profile"] == {"phone": "+998 90 111 22 33", "subjects": []}
         assert body["student_profile"] is None
 
@@ -186,9 +202,14 @@ class TestAccountActions:
         self, admin_client: APIClient, student: User, client_for: ClientFor
     ) -> None:
         student_client = client_for(student)
-        response = admin_client.post(f"{USERS}/{student.pk}/reset-password")
+        password = NEW_PASSWORD
+        response = admin_client.post(
+            f"{USERS}/{student.pk}/reset-password",
+            {"password": password, "must_change_password": True},
+            format="json",
+        )
         assert response.status_code == 200
-        password = response.json()["temporary_password"]
+        assert "temporary_password" not in response.json()
         assert student_client.get("/api/v1/me").status_code == 401
         assert api_login(APIClient(), student).status_code == 400  # old password gone
         client = APIClient()

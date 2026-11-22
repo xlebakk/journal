@@ -1,9 +1,7 @@
+/* A quiet line, not a box: empty is normal and should not shout. */
 .empty {
   margin: 0;
-  padding: var(--space-3) var(--space-2);
-  border: var(--line) dashed var(--rule);
-  border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--sheet) 70%, transparent);
+  padding: var(--space-1) 0;
   color: var(--ink-2);
-  text-align: center;
+  font-style: italic;
 }

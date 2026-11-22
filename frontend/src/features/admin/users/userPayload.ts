@@ -5,6 +5,18 @@ import { t } from "@/shared/i18n";
 import type { UserDetail, UserWrite } from "./api";
 
 export const ROLES = ["admin", "teacher", "parent", "student"] as const;
+export const SECTIONS = [
+  "users",
+  "structure",
+  "schedule",
+  "journal",
+  "exams",
+  "reports",
+  "payments",
+  "announcements",
+  "audit",
+  "settings",
+] as const;
 const LOGIN_RE = /^$|^[a-z0-9][a-z0-9._-]{1,62}[a-z0-9]$/i;
 
 export const schema = z.object({
@@ -29,6 +41,11 @@ export const schema = z.object({
     admin_note: z.string(),
   }),
   teacher: z.object({ phone: z.string().trim() }),
+  // Create only: the administrator types the first password (stage 16).
+  password: z.string(),
+  must_change_password: z.boolean(),
+  is_superadmin: z.boolean(),
+  admin_sections: z.array(z.enum(SECTIONS)),
 });
 export type UserFormValues = z.infer<typeof schema>;
 
@@ -53,16 +70,22 @@ export function defaults(user?: UserDetail): UserFormValues {
       admin_note: s?.admin_note ?? "",
     },
     teacher: { phone: user?.teacher_profile?.phone ?? "" },
+    password: "",
+    must_change_password: false,
+    is_superadmin: user?.is_superadmin ?? false,
+    admin_sections: (user?.admin_sections ?? []) as UserFormValues["admin_sections"],
   };
 }
 
-export function toPayload(values: UserFormValues): UserWrite {
+export function toPayload(values: UserFormValues, superadmin = false): UserWrite {
   const payload: UserWrite = {
     last_name: values.last_name,
     first_name: values.first_name,
     middle_name: values.middle_name,
     roles: values.roles,
+    must_change_password: values.must_change_password,
   };
+  if (values.password) payload.password = values.password;
   if (values.login) payload.login = values.login.toLowerCase();
   if (values.roles.includes("student")) {
     const s = values.student;
@@ -78,5 +101,10 @@ export function toPayload(values: UserFormValues): UserWrite {
     };
   }
   if (values.roles.includes("teacher")) payload.teacher_profile = { phone: values.teacher.phone };
+  // Rights of an administrator: only the super administrator sends them.
+  if (superadmin && values.roles.includes("admin")) {
+    payload.is_superadmin = values.is_superadmin;
+    payload.admin_sections = values.is_superadmin ? [] : values.admin_sections;
+  }
   return payload;
 }
