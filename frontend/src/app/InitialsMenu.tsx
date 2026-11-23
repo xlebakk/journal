@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 
 import { homePath, logout, useSwitchRole, type Me, type Role } from "@/features/auth/api";
 import { queueSnapshot } from "@/features/journal/offlineQueue";
-import { t } from "@/shared/i18n";
+import { t, language, LANGUAGES, setLanguage, type Language } from "@/shared/i18n";
 import { useTheme, type ThemePreference } from "@/shared/lib/theme";
 import { initialsOf } from "@/shared/ui";
 
@@ -86,6 +86,19 @@ export function InitialsMenu({ me }: { me: Me }) {
               <Menu.RadioItem key={option} value={option} className={styles.item}>
                 <Menu.ItemIndicator className={styles.indicator}>•</Menu.ItemIndicator>
                 {t(`theme.${option}`)}
+              </Menu.RadioItem>
+            ))}
+          </Menu.RadioGroup>
+          <Menu.Separator className={styles.separator} />
+          <Menu.Label className={styles.label}>{t("language.label")}</Menu.Label>
+          <Menu.RadioGroup
+            value={language()}
+            onValueChange={(value) => setLanguage(value as Language)}
+          >
+            {LANGUAGES.map((option) => (
+              <Menu.RadioItem key={option} value={option} className={styles.item} lang={option}>
+                <Menu.ItemIndicator className={styles.indicator}>•</Menu.ItemIndicator>
+                {t(`language.${option}`)}
               </Menu.RadioItem>
             ))}
           </Menu.RadioGroup>

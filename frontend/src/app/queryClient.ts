@@ -9,6 +9,10 @@ export function createQueryClient(): QueryClient {
       queries: {
         retry: (count, error) => !isApiError(error) && count < 1,
         refetchOnWindowFocus: false,
+        // Stage 19: a screen opened again shows its data at once; within a minute it is not
+        // asked for again, later it is refreshed quietly behind the shown data. Memory only.
+        staleTime: 60_000,
+        gcTime: 30 * 60_000,
       },
     },
     queryCache: new QueryCache({

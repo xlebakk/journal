@@ -19,7 +19,8 @@ import {
   Wallet,
   type LucideIcon,
 } from "lucide-react";
-import { NavLink, Outlet } from "react-router";
+import { useEffect } from "react";
+import { NavLink, Outlet, useLocation } from "react-router";
 
 import type { Me, Role } from "@/features/auth/api";
 import { t, type MessageKey } from "@/shared/i18n";
@@ -30,6 +31,7 @@ import { ChildSwitcher } from "@/features/parent/ChildSwitcher";
 import { useHasChildren } from "@/features/parent/children";
 import styles from "./AppShell.module.css";
 import { InitialsMenu } from "./InitialsMenu";
+import { preloadScreens } from "./preload";
 
 type NavItem = {
   to: string;
@@ -115,6 +117,9 @@ function Links({
 
 /** Header: the product, the sections in the middle, the person. Administrators get a left column. */
 export function AppShell({ me }: { me: Me }) {
+  const location = useLocation();
+  // Once signed in, the other screens' code comes in idle time.
+  useEffect(preloadScreens, []);
   const role = me.active_role ?? "student";
   // An administrator sees only the sections the super administrator granted (stage 16).
   const items = NAV[role].filter(
@@ -157,7 +162,9 @@ export function AppShell({ me }: { me: Me }) {
           {isParent && hasChildren === false ? (
             <EmptyState text={t("parent.noChildren")} />
           ) : (
-            <Outlet />
+            <div key={location.pathname} className={styles.pageIn}>
+              <Outlet />
+            </div>
           )}
         </main>
       </div>
