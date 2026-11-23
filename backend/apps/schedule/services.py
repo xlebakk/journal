@@ -436,3 +436,121 @@ def check_or_raise(candidates: Sequence[Candidate]) -> list[dict[str, Any]]:
     if conflicts:
         raise ScheduleConflict(conflicts)
     return warnings
+
+
+# --- Availability (stage 19): what the forms may offer --------------------------------------
+
+
+@dataclass(frozen=True)
+class Busy:
+    start: time
+    end: time
+    subject: str
+    group: str
+    teacher_id: Any
+    room_id: Any
+    group_id: Any
+
+
+def _overlaps(a_start: time, a_end: time, b_start: time, b_end: time) -> bool:
+    return a_start < b_end and b_start < a_end
+
+
+def busy_on_date(day: date, exclude_lesson: Any = None) -> list[Busy]:
+    """Every active lesson of the day: the same facts the conflict check uses."""
+    lessons = _active_lessons_on({day}).exclude(pk=exclude_lesson)
+    return [
+        Busy(
+            lesson.start_time,
+            lesson.end_time,
+            lesson.course.subject.name,
+            lesson.course.group.name,
+            lesson.teacher_id,
+            lesson.room_id,
+            lesson.course.group_id,
+        )
+        for lesson in lessons
+    ]
+
+
+def busy_on_weekday(
+    weekday: int, valid_from: date, valid_to: date | None, exclude_slot: Any = None
+) -> list[Busy]:
+    """Every template slot of that weekday whose period meets the given one."""
+    slots = (
+        ScheduleSlot.objects.filter(weekday=weekday, course__group__is_archived=False)
+        .exclude(pk=exclude_slot)
+        .select_related("course__group", "course__subject")
+    )
+    return [
+        Busy(
+            slot.start_time,
+            slot.end_time,
+            slot.course.subject.name,
+            slot.course.group.name,
+            slot.course.teacher_id,
+            slot.room_id,
+            slot.course.group_id,
+        )
+        for slot in slots
+        if _periods_overlap(valid_from, valid_to, slot.valid_from, slot.valid_to)
+    ]
+
+
+def usual_pairs() -> list[tuple[time, time]]:
+    """The pair times the center already uses (from the week template), earliest first."""
+    pairs = set(ScheduleSlot.objects.values_list("start_time", "end_time").distinct())
+    return sorted(pairs)
+
+
+def availability(
+    course: Course,
+    busy: list[Busy],
+    start: time | None,
+    end: time | None,
+) -> dict[str, Any]:
+    """Free pairs for the group and its teacher; with a time — free rooms and free teachers of
+    the subject. The save still runs the full conflict check; this only shapes the choices."""
+    group_busy = [b for b in busy if b.group_id == course.group_id]
+    teacher_busy = [b for b in busy if b.teacher_id == course.teacher_id]
+    blocked = group_busy + teacher_busy
+    free_pairs = [
+        {"start": s.strftime("%H:%M"), "end": e.strftime("%H:%M")}
+        for s, e in usual_pairs()
+        if not any(_overlaps(s, e, b.start, b.end) for b in blocked)
+    ]
+    result: dict[str, Any] = {
+        "group_busy": [
+            {
+                "start": b.start.strftime("%H:%M"),
+                "end": b.end.strftime("%H:%M"),
+                "subject": b.subject,
+            }
+            for b in sorted(group_busy, key=lambda b: b.start)
+        ],
+        "free_pairs": free_pairs,
+        "rooms": [],
+        "teachers": [],
+    }
+    if start is None or end is None:
+        return result
+    at_time = [b for b in busy if _overlaps(start, end, b.start, b.end)]
+    taken_rooms = {b.room_id for b in at_time if b.room_id}
+    busy_teachers = {b.teacher_id for b in at_time}
+    size = GroupMembership.objects.filter(group=course.group, left_on__isnull=True).count()
+    result["rooms"] = [
+        {"id": str(room.pk), "name": room.name, "capacity": room.capacity,
+         "fits": room.capacity >= size}
+        for room in Room.objects.filter(is_archived=False).order_by("name")
+        if room.pk not in taken_rooms
+    ]  # fmt: skip
+    teachers = (
+        User.objects.with_role(Role.TEACHER)
+        .active()
+        .filter(teacher_profile__subjects=course.subject)
+        .order_by("last_name", "first_name")
+    )
+    result["teachers"] = [
+        {"id": str(u.pk), "full_name": u.full_name} for u in teachers if u.pk not in busy_teachers
+    ]
+    return result

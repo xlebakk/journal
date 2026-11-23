@@ -72,14 +72,45 @@ type WeekScheduleProps = Options & {
   today: string;
   lessons: ScheduleItem[];
   onSelect?: (item: ScheduleItem) => void;
+  /** Stage 19: a free place in the grid adds a lesson on that day at that time. */
+  onAddAt?: (day: string, time: string) => void;
 };
+
+function AddHere({
+  day,
+  time,
+  onAdd,
+}: {
+  day: string;
+  time: string;
+  onAdd: (day: string, time: string) => void;
+}) {
+  return (
+    <button
+      type="button"
+      className={styles.addHere}
+      aria-label={t("schedule.addAt", { when: `${formatDayShort(day)} ${time}` })}
+      title={t("schedule.addLesson")}
+      onClick={() => onAdd(day, time)}
+    >
+      +
+    </button>
+  );
+}
 
 /**
  * Desktop: a ruled timetable — rows are start times, columns are days, like a paper
  * schedule. Lessons of different groups at the same time share a cell. Phone: a list by
  * day.
  */
-export function WeekSchedule({ monday, today, lessons, onSelect, ...options }: WeekScheduleProps) {
+export function WeekSchedule({
+  monday,
+  today,
+  lessons,
+  onSelect,
+  onAddAt,
+  ...options
+}: WeekScheduleProps) {
   const phone = useMediaQuery("(max-width: 599px)");
   const days = useMemo(() => weekDays(monday), [monday]);
   const cells = useMemo(() => {
@@ -91,8 +122,8 @@ export function WeekSchedule({ monday, today, lessons, onSelect, ...options }: W
     return map;
   }, [lessons]);
   const byDay = (day: string) => lessons.filter((lesson) => lesson.date === day);
-  // Sunday only when something happens on it.
-  const shown = days.filter((day, i) => i < 6 || byDay(day).length > 0);
+  // Sunday only when something happens on it (or when lessons can be added).
+  const shown = days.filter((day, i) => i < 6 || onAddAt || byDay(day).length > 0);
 
   if (phone) {
     return (
@@ -108,6 +139,7 @@ export function WeekSchedule({ monday, today, lessons, onSelect, ...options }: W
                 {formatDayLong(day)}
                 {isToday && <span className="visually-hidden"> ({t("schedule.today")})</span>}
               </h3>
+              {onAddAt && <AddHere day={day} time="" onAdd={onAddAt} />}
               {items.length === 0 ? (
                 <p className={styles.emptyDay}>{t("schedule.emptyDay")}</p>
               ) : (
@@ -123,6 +155,8 @@ export function WeekSchedule({ monday, today, lessons, onSelect, ...options }: W
   }
 
   const times = [...new Set(lessons.map((lesson) => hhmm(lesson.start_time)))].sort();
+  // An empty week that can be filled still gets a row to click into.
+  if (onAddAt && times.length === 0) times.push("");
   return (
     <div className={styles.scroller}>
       <table className={styles.timetable}>
@@ -144,7 +178,7 @@ export function WeekSchedule({ monday, today, lessons, onSelect, ...options }: W
           </tr>
         </thead>
         <tbody>
-          {times.length === 0 ? (
+          {times.length === 0 && !onAddAt ? (
             <tr>
               <td className={styles.timeCell} />
               <td colSpan={shown.length} className={styles.emptyWeek}>
@@ -165,6 +199,7 @@ export function WeekSchedule({ monday, today, lessons, onSelect, ...options }: W
                     {(cells.get(`${day} ${time}`) ?? []).map((item) => (
                       <Lesson key={item.id} item={item} onSelect={onSelect} {...options} />
                     ))}
+                    {onAddAt && <AddHere day={day} time={time} onAdd={onAddAt} />}
                   </td>
                 ))}
               </tr>

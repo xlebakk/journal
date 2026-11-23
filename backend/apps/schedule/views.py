@@ -15,7 +15,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.academics.models import Room
+from apps.academics.models import Course, Room
 from apps.accounts.models import User
 from apps.accounts.permissions import (
     STUDENT_PAGES,
@@ -26,7 +26,7 @@ from apps.accounts.permissions import (
     subject_student,
 )
 from apps.audit import services as audit
-from apps.core.params import date_param, uuid_param
+from apps.core.params import date_param, time_param, uuid_param
 
 from . import services
 from .models import Lesson, LessonStatus, ScheduleRequest, ScheduleSlot
@@ -705,3 +705,55 @@ class RoomOptionsView(APIView):
         return Response(
             RoomOptionSerializer(Room.objects.filter(is_archived=False), many=True).data
         )
+
+
+class AvailabilityView(APIView):
+    """Stage 19: what the schedule forms may offer — free pairs of the group and its teacher,
+    then free rooms and free teachers of the subject at the chosen time. For one date (a lesson)
+    or a weekday and period (a template slot). The save still checks every conflict."""
+
+    permission_classes = (IsAdmin,)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("course", str, required=True),
+            OpenApiParameter("date", str),
+            OpenApiParameter("weekday", int),
+            OpenApiParameter("valid_from", str),
+            OpenApiParameter("valid_to", str),
+            OpenApiParameter("start", str),
+            OpenApiParameter("end", str),
+            OpenApiParameter("exclude_lesson", str),
+            OpenApiParameter("exclude_slot", str),
+        ],
+        responses=inline_serializer(
+            "Availability",
+            {
+                "group_busy": serializers.ListField(child=serializers.DictField()),
+                "free_pairs": serializers.ListField(child=serializers.DictField()),
+                "rooms": serializers.ListField(child=serializers.DictField()),
+                "teachers": serializers.ListField(child=serializers.DictField()),
+            },
+        ),
+    )
+    def get(self, request: Request) -> Response:
+        course_id = uuid_param(request, "course")
+        if course_id is None:
+            raise ValidationError({"course": ["required"]})
+        course = get_object_or_404(Course.objects.select_related("group", "subject"), pk=course_id)
+        start, end = time_param(request, "start"), time_param(request, "end")
+        if start and end and end <= start:
+            raise ValidationError({"end": ["ends_before_start"]})
+        day = date_param(request, "date")
+        if day is not None:
+            busy = services.busy_on_date(day, uuid_param(request, "exclude_lesson"))
+        else:
+            raw = request.query_params.get("weekday", "")
+            if raw not in {"1", "2", "3", "4", "5", "6", "7"}:
+                raise ValidationError({"weekday": ["invalid_choice"]})
+            valid_from = date_param(request, "valid_from") or services.today()
+            busy = services.busy_on_weekday(
+                int(raw), valid_from, date_param(request, "valid_to"),
+                uuid_param(request, "exclude_slot"),
+            )  # fmt: skip
+        return Response(services.availability(course, busy, start, end))

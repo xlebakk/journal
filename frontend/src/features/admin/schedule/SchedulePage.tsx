@@ -19,7 +19,7 @@ import {
 import type { ScheduleWarning } from "@/shared/ui/ScheduleIssues";
 
 import { useAdminLessons, type Filters } from "./api";
-import { ExtraLessonDialog } from "./ExtraLessonDialog";
+import { ExtraLessonDialog, type AddAt } from "./ExtraLessonDialog";
 import { LessonDialog } from "./LessonDialog";
 import { SlotsPanel } from "./SlotsPanel";
 
@@ -38,7 +38,7 @@ export function SchedulePage() {
   const rooms = useRooms();
   const lessons = useAdminLessons(monday, filters);
   const [selected, setSelected] = useState<Lesson | null>(null);
-  const [adding, setAdding] = useState(false);
+  const [adding, setAdding] = useState<AddAt | null>(null);
   const [warnings, setWarnings] = useState<ScheduleWarning[]>([]);
 
   const setParam = (name: string, value: string) => {
@@ -116,7 +116,9 @@ export function SchedulePage() {
         />
         {mode === "week" && (
           <>
-            <Button onClick={() => setAdding(true)}>{t("schedule.addLesson")}</Button>
+            <Button onClick={() => setAdding({ group: filters.group })}>
+              {t("schedule.addLesson")}
+            </Button>
             {canPrint && <Button onClick={() => window.print()}>{t("schedule.print")}</Button>}
           </>
         )}
@@ -140,6 +142,7 @@ export function SchedulePage() {
           showGroup={!filters.group}
           showTeacher
           onSelect={(item) => setSelected(data.find((l) => l.id === item.id) ?? null)}
+          onAddAt={(date, time) => setAdding({ date, time, group: filters.group })}
         />
       )}
 
@@ -148,10 +151,10 @@ export function SchedulePage() {
         onClose={() => setSelected(null)}
       />
       <ExtraLessonDialog
-        open={adding}
+        at={adding}
         today={today}
         onClose={(found) => {
-          setAdding(false);
+          setAdding(null);
           setWarnings(found);
         }}
       />

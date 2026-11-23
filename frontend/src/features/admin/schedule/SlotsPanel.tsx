@@ -22,6 +22,7 @@ import {
 import type { ScheduleWarning } from "@/shared/ui/ScheduleIssues";
 
 import { issuesOf, useLessonTypes, useSlots, warningsOf, type Filters, type Plan } from "./api";
+import { LessonWizard } from "./LessonWizard";
 
 type Values = {
   course: string;
@@ -380,7 +381,20 @@ export function SlotsPanel({
               : t("schedule.addSlot")
         }
       >
-        {dialog?.kind === "edit" && (
+        {dialog?.kind === "edit" && !dialog.slot && (
+          // A new slot is built step by step from what is free (stage 19).
+          <LessonWizard
+            mode="slot"
+            today={today}
+            presetGroup={filters.group}
+            onDone={(warnings) => {
+              close();
+              onWarnings(warnings);
+            }}
+            onCancel={close}
+          />
+        )}
+        {dialog?.kind === "edit" && dialog.slot && (
           <SlotForm
             slot={dialog.slot}
             today={today}

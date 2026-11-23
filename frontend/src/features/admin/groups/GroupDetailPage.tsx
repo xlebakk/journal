@@ -284,9 +284,10 @@ function CourseForm({
   onClose: () => void;
 }) {
   const subjects = useSubjects();
-  const teachers = useTeachers();
   const invalidate = useInvalidateAdmin();
   const [subject, setSubject] = useState(course?.subject ?? "");
+  // Only teachers of the chosen subject; nothing to pick before the subject (stage 19).
+  const teachers = useTeachers(subject || undefined);
   const [teacher, setTeacher] = useState(course?.teacher ?? "");
   const [assistants, setAssistants] = useState<string[]>(course?.assistants ?? []);
   const save = useMutation({
@@ -313,7 +314,11 @@ function CourseForm({
         <SelectField
           label={t("groups.subject")}
           value={subject}
-          onChange={(e) => setSubject(e.target.value)}
+          onChange={(e) => {
+            setSubject(e.target.value);
+            setTeacher("");
+            setAssistants([]);
+          }}
           options={[
             { value: "", label: "—" },
             ...(subjects.data ?? [])

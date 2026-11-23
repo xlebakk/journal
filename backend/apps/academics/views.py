@@ -341,7 +341,14 @@ class TeacherOptionsView(APIView):
 
     permission_classes = (IsAdmin,)
 
-    @extend_schema(responses=s.PersonSerializer(many=True))
+    @extend_schema(
+        parameters=[OpenApiParameter("subject", str)],
+        responses=s.PersonSerializer(many=True),
+    )
     def get(self, request: Request) -> Response:
         qs = User.objects.with_role(Role.TEACHER).active().order_by("last_name", "first_name")
+        # Stage 19: only those who teach the chosen subject (a course's teacher list).
+        subject = uuid_param(request, "subject")
+        if subject is not None:
+            qs = qs.filter(teacher_profile__subjects=subject)
         return Response(s.PersonSerializer(qs, many=True).data)

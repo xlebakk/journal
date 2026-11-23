@@ -1,9 +1,8 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router";
 
-import { useTeachers } from "@/features/admin/groups/api";
-import { useInvalidateSchedule, useRooms, type Lesson } from "@/features/schedule/api";
+import { useInvalidateSchedule, type Lesson } from "@/features/schedule/api";
 import styles from "@/features/schedule/SchedulePage.module.css";
 import { api, ApiError } from "@/shared/api/client";
 import { errorMessage, fieldError } from "@/shared/api/errors";
@@ -45,9 +44,13 @@ export function LessonDialog({ lesson, onClose }: { lesson: Lesson | null; onClo
   );
 }
 
+type Free = {
+  group_busy: { start: string; end: string; subject: string }[];
+  rooms: { id: string; name: string; capacity: number; fits: boolean }[];
+  teachers: { id: string; full_name: string }[];
+};
+
 function LessonActions({ lesson, onClose }: { lesson: Lesson; onClose: () => void }) {
-  const rooms = useRooms();
-  const teachers = useTeachers();
   const invalidate = useInvalidateSchedule();
   const [mode, setMode] = useState<Mode | null>(null);
   const [reason, setReason] = useState("");
@@ -57,6 +60,17 @@ function LessonActions({ lesson, onClose }: { lesson: Lesson; onClose: () => voi
   const [room, setRoom] = useState(lesson.room ?? "");
   const [teacher, setTeacher] = useState("");
   const [warnings, setWarnings] = useState<ScheduleWarning[]>([]);
+  // Stage 19: only free rooms at the new time and free teachers of the subject are offered.
+  const timeOk = Boolean(date && start && end && start < end);
+  const free = useQuery({
+    queryKey: ["admin", "availability", "lesson", lesson.id, date, start, end],
+    queryFn: () =>
+      api<Free>("/admin/availability", {
+        query: { course: lesson.course, date, start, end, exclude_lesson: lesson.id },
+      }),
+    enabled: (mode === "move" || mode === "substitute") && timeOk,
+    staleTime: 0,
+  });
 
   const act = useMutation({
     mutationFn: (action: "cancel" | "restore" | "move" | "substitute") => {
@@ -117,11 +131,22 @@ function LessonActions({ lesson, onClose }: { lesson: Lesson; onClose: () => voi
       </dl>
       <Link to={`/admin/journal/lessons/${lesson.id}`}>{t("schedule.openJournal")}</Link>
 
-      {editable && (
+      {editable && mode === null && warnings.length === 0 && (
+        <DialogActions>
+          <Button variant="primary" onClick={() => setMode("move")}>
+            {t("common.edit")}
+          </Button>
+          <Button variant="danger" onClick={() => setMode("cancel")}>
+            {t("schedule.deleteLesson")}
+          </Button>
+          <Button onClick={onClose}>{t("common.close")}</Button>
+        </DialogActions>
+      )}
+
+      {editable && (mode === "move" || mode === "substitute") && (
         <div className={styles.tabs} role="tablist">
           {(
             [
-              ["cancel", "schedule.cancel"],
               ["move", "schedule.move"],
               ["substitute", "schedule.substituteAction"],
             ] as const
@@ -145,6 +170,7 @@ function LessonActions({ lesson, onClose }: { lesson: Lesson; onClose: () => voi
 
       {editable && mode && (
         <form className={styles.form} onSubmit={submit} noValidate>
+          {mode === "cancel" && <p className={styles.note}>{t("schedule.deleteNote")}</p>}
           {mode === "cancel" && (
             <TextField
               label={t("schedule.reason")}
@@ -181,13 +207,22 @@ function LessonActions({ lesson, onClose }: { lesson: Lesson; onClose: () => voi
                 onChange={(e) => setRoom(e.target.value)}
                 options={[
                   { value: "", label: t("schedule.noRoom") },
-                  ...(rooms.data ?? []).map((r) => ({
+                  ...(free.data?.rooms ?? []).map((r) => ({
                     value: r.id,
                     label: `${r.name} (${r.capacity})`,
                   })),
                 ]}
               />
             </div>
+          )}
+          {mode === "move" && free.data && free.data.group_busy.length > 0 && (
+            <p className={styles.note}>
+              {t("schedule.groupBusy", {
+                list: free.data.group_busy
+                  .map((b) => `${b.start}–${b.end} ${b.subject}`)
+                  .join(", "),
+              })}
+            </p>
           )}
           {mode === "substitute" && (
             <SelectField
@@ -196,7 +231,7 @@ function LessonActions({ lesson, onClose }: { lesson: Lesson; onClose: () => voi
               onChange={(e) => setTeacher(e.target.value)}
               options={[
                 { value: "", label: t("schedule.substituteReset") },
-                ...(teachers.data ?? [])
+                ...(free.data?.teachers ?? [])
                   .filter((p) => p.id !== lesson.teacher)
                   .map((p) => ({ value: p.id, label: p.full_name })),
               ]}
@@ -216,13 +251,20 @@ function LessonActions({ lesson, onClose }: { lesson: Lesson; onClose: () => voi
             >
               {t(
                 mode === "cancel"
-                  ? "schedule.cancel"
+                  ? "schedule.deleteLesson"
                   : mode === "move"
                     ? "schedule.move"
                     : "schedule.substituteAction",
               )}
             </Button>
-            <Button onClick={onClose}>{t("common.close")}</Button>
+            <Button
+              onClick={() => {
+                act.reset();
+                setMode(null);
+              }}
+            >
+              {t("common.back")}
+            </Button>
           </DialogActions>
         </form>
       )}

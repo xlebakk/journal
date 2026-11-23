@@ -52,10 +52,11 @@ export function useSubjects() {
   });
 }
 
-export function useTeachers() {
+/** Active teachers; with a subject — only those who teach it (stage 19). */
+export function useTeachers(subject?: string) {
   return useQuery({
-    queryKey: ["admin", "teachers"],
-    queryFn: () => api<Person[]>("/admin/teachers"),
+    queryKey: ["admin", "teachers", subject ?? ""],
+    queryFn: () => api<Person[]>("/admin/teachers", { query: subject ? { subject } : {} }),
     staleTime: 60_000,
   });
 }

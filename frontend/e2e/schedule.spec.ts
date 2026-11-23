@@ -19,9 +19,10 @@ test("teacher sees the lesson, admin cancels it, the student sees «отмене
   await page.getByRole("link", { name: "Расписание" }).first().click();
   await page.getByRole("button", { name: /Математика/ }).click();
   const dialog = page.getByRole("dialog");
-  await dialog.getByRole("tab", { name: "отменить занятие" }).click();
+  // Stage 19: the card shows the lesson first, then «изменить» / «удалить занятие».
+  await dialog.getByRole("button", { name: "удалить занятие" }).click();
   await dialog.getByLabel("Причина").fill("Преподаватель на олимпиаде");
-  await dialog.getByRole("button", { name: "отменить занятие" }).click();
+  await dialog.getByRole("button", { name: "удалить занятие" }).click();
   await expect(dialog).toBeHidden();
   await expect(page.getByText("отменено")).toBeVisible();
   await logout(page);

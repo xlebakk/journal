@@ -266,6 +266,63 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /api/v1/admin/availability:
+    get:
+      operationId: admin_availability_retrieve
+      description: |-
+        Stage 19: what the schedule forms may offer — free pairs of the group and its teacher,
+        then free rooms and free teachers of the subject at the chosen time. For one date (a lesson)
+        or a weekday and period (a template slot). The save still checks every conflict.
+      parameters:
+      - in: query
+        name: course
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: date
+        schema:
+          type: string
+      - in: query
+        name: end
+        schema:
+          type: string
+      - in: query
+        name: exclude_lesson
+        schema:
+          type: string
+      - in: query
+        name: exclude_slot
+        schema:
+          type: string
+      - in: query
+        name: start
+        schema:
+          type: string
+      - in: query
+        name: valid_from
+        schema:
+          type: string
+      - in: query
+        name: valid_to
+        schema:
+          type: string
+      - in: query
+        name: weekday
+        schema:
+          type: integer
+      tags:
+      - admin
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Availability'
+          description: ''
   /api/v1/admin/courses:
     get:
       operationId: admin_courses_list
@@ -2272,6 +2329,11 @@ paths:
     get:
       operationId: admin_teachers_list
       description: Active teachers for selects in admin forms.
+      parameters:
+      - in: query
+        name: subject
+        schema:
+          type: string
       tags:
       - admin
       security:
@@ -5406,6 +5468,34 @@ components:
       - id
       - ip
       - reason
+    Availability:
+      type: object
+      properties:
+        group_busy:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        free_pairs:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        rooms:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        teachers:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - free_pairs
+      - group_busy
+      - rooms
+      - teachers
     BackupCodes:
       type: object
       properties:

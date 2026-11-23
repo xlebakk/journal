@@ -129,7 +129,12 @@ MATRIX: list[tuple[str, str, dict[str, int]]] = [
     ("patch", "/api/v1/admin/settings", {"admin": 200, "teacher": 403, "student": 403}),
     # Stage 19: the login video — only administrators upload or remove it (JSON here → 415).
     ("post", "/api/v1/admin/settings/video", {"admin": 415, "teacher": 403, "student": 403}),
-    ("delete", "/api/v1/admin/settings/video", {"admin": 200, "teacher": 403, "student": 403}),
+    (
+        "delete",
+        "/api/v1/admin/settings/video",
+        {"admin": 200, "teacher": 403, "student": 403},
+    ),  # Stage 19: the schedule forms ask what is free (no course given → 400).
+    ("get", "/api/v1/admin/availability", {"admin": 400, "teacher": 403, "student": 403}),
 ]
 
 

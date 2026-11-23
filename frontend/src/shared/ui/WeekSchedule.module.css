@@ -431,3 +431,40 @@ button.lesson:hover {
     content: "· ";
   }
 }
+
+/* Stage 19: a free place in the administrator's grid — a quiet «+» that wakes on hover. */
+.addHere {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 28px;
+  margin-top: 4px;
+  border: var(--line) dashed transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  color: transparent;
+  font: inherit;
+  font-size: var(--text-16);
+  cursor: pointer;
+  transition:
+    color var(--duration) var(--easing),
+    border-color var(--duration) var(--easing),
+    background-color var(--duration) var(--easing);
+}
+
+td:hover > .addHere,
+.listDay:hover > .addHere,
+.addHere:focus-visible {
+  border-color: var(--accent-tint);
+  color: var(--accent);
+}
+
+.addHere:hover {
+  background: var(--accent-soft);
+}
+
+td:only-child > .addHere,
+.cell > .addHere:only-child {
+  min-height: 72px;
+}

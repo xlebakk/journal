@@ -175,3 +175,103 @@
   border-radius: var(--radius);
   background: var(--night-1);
 }
+
+/* Stage 19: the lesson wizard — one short step at a time, each opening under the last. */
+.wizard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  animation: step-in 220ms var(--easing) both;
+}
+
+.stepTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: var(--space-1);
+  padding: 0;
+  font-weight: 600;
+}
+
+.stepNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: var(--text-12);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.chip {
+  min-height: 36px;
+  padding: 0 14px;
+  border: var(--line) solid var(--rule);
+  border-radius: var(--radius-pill);
+  background: var(--sheet);
+  color: var(--ink);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    background-color var(--duration) var(--easing),
+    border-color var(--duration) var(--easing);
+}
+
+.chip:hover {
+  border-color: var(--accent-tint);
+  background: var(--accent-soft);
+}
+
+.chip[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.chipNote {
+  opacity: 0.7;
+}
+
+.chipWarn {
+  color: var(--pencil);
+}
+
+.chip[aria-pressed="true"] .chipWarn {
+  color: inherit;
+}
+
+@keyframes step-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step {
+    animation: none;
+  }
+}

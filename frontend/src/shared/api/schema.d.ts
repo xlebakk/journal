@@ -124,6 +124,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Stage 19: what the schedule forms may offer — free pairs of the group and its teacher,
+         *     then free rooms and free teachers of the subject at the chosen time. For one date (a lesson)
+         *     or a weekday and period (a template slot). The save still checks every conflict.
+         */
+        get: operations["admin_availability_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/courses": {
         parameters: {
             query?: never;
@@ -2889,6 +2910,20 @@ export interface components {
             readonly after: unknown;
             readonly reason: string;
         };
+        Availability: {
+            group_busy: {
+                [key: string]: unknown;
+            }[];
+            free_pairs: {
+                [key: string]: unknown;
+            }[];
+            rooms: {
+                [key: string]: unknown;
+            }[];
+            teachers: {
+                [key: string]: unknown;
+            }[];
+        };
         BackupCodes: {
             backup_codes: string[];
         };
@@ -4992,6 +5027,35 @@ export interface operations {
             };
         };
     };
+    admin_availability_retrieve: {
+        parameters: {
+            query: {
+                course: string;
+                date?: string;
+                end?: string;
+                exclude_lesson?: string;
+                exclude_slot?: string;
+                start?: string;
+                valid_from?: string;
+                valid_to?: string;
+                weekday?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Availability"];
+                };
+            };
+        };
+    };
     admin_courses_list: {
         parameters: {
             query?: {
@@ -6683,7 +6747,9 @@ export interface operations {
     };
     admin_teachers_list: {
         parameters: {
-            query?: never;
+            query?: {
+                subject?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;

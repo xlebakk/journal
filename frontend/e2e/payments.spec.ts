@@ -25,11 +25,11 @@ test("admin prices the group and bills the month; the student sees the debt, the
   await expect(page.getByRole("status")).toHaveText(/Начислено: 1/);
 
   await page.getByRole("tab", { name: "Ученики" }).click();
-  await expect(page.getByText(/Должников: 1, на сумму 500\s000 сум/)).toBeVisible();
+  await expect(page.getByText(/Должников: 1, на сумму 500\s000 сомони/)).toBeVisible();
   await logout(page);
 
   await login(page, "e2e.student");
-  await expect(page.getByText(/Задолженность за обучение: 500\s000 сум/)).toBeVisible();
+  await expect(page.getByText(/Задолженность за обучение: 500\s000 сомони/)).toBeVisible();
   await page.getByRole("link", { name: "подробнее" }).click();
   await expect(page).toHaveURL(/\/student\/payments$/);
   // The server refuses the administrator's ledger, whatever the client shows.

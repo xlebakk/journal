@@ -37,6 +37,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
     ),
     path("admin/teachers", academics.TeacherOptionsView.as_view(), name="admin-teachers"),
     path("rooms", views.RoomOptionsView.as_view(), name="rooms"),
+    path("admin/availability", views.AvailabilityView.as_view(), name="admin-availability"),
     path("me/calendar", calendar_views.MyCalendarView.as_view(), name="me-calendar"),
     path("calendar/<uuid:pk>.ics", calendar_views.CalendarFeedView.as_view(), name="calendar-feed"),
     path("teacher/schedule", views.TeacherScheduleView.as_view(), name="teacher-schedule"),

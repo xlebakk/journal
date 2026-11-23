@@ -58,6 +58,7 @@ ADMIN_PATHS: tuple[tuple[str, str], ...] = (
     ("/api/v1/admin/memberships", AdminSection.STRUCTURE),
     ("/api/v1/admin/teachers", AdminSection.STRUCTURE),
     ("/api/v1/admin/slots", AdminSection.SCHEDULE),
+    ("/api/v1/admin/availability", AdminSection.SCHEDULE),
     ("/api/v1/admin/lessons", AdminSection.SCHEDULE),
     ("/api/v1/admin/schedule-requests", AdminSection.SCHEDULE),
     ("/api/v1/rooms", AdminSection.SCHEDULE),
