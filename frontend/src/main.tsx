@@ -18,7 +18,7 @@ if (import.meta.env.PROD && !isNativeApp && "serviceWorker" in navigator) {
 const root = document.getElementById("root");
 if (!root) throw new Error("#root not found");
 
-// The saved language (Uzbek is a separate chunk) is ready before anything renders.
+// The saved language (Tajik and English are separate chunks) is ready before anything renders.
 void initLanguage().then(() =>
   createRoot(root).render(
     <StrictMode>

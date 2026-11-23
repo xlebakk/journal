@@ -1,4 +1,5 @@
-import { forwardRef, useId, useState, type InputHTMLAttributes } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { forwardRef, useId, useState, type InputHTMLAttributes, type ReactNode } from "react";
 
 import { t } from "@/shared/i18n";
 
@@ -8,11 +9,13 @@ type PasswordFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type"> & 
   label: string;
   hint?: string;
   error?: string;
+  /** A small pictogram before the caption (decorative). */
+  icon?: ReactNode;
 };
 
 /** Password with a «показать» toggle. */
 export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
-  function PasswordField({ label, hint, error, id, className, ...rest }, ref) {
+  function PasswordField({ label, hint, error, icon, id, className, ...rest }, ref) {
     const autoId = useId();
     const inputId = id ?? autoId;
     const noteId = `${inputId}-note`;
@@ -21,6 +24,7 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
     return (
       <div className={[styles.field, className].filter(Boolean).join(" ")}>
         <label className={styles.label} htmlFor={inputId}>
+          {icon && <span className={styles.icon}>{icon}</span>}
           {label}
         </label>
         <div className={styles.withAction}>
@@ -42,6 +46,11 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
             aria-controls={inputId}
             onClick={() => setVisible((v) => !v)}
           >
+            {visible ? (
+              <EyeOff size={16} strokeWidth={1.6} aria-hidden="true" />
+            ) : (
+              <Eye size={16} strokeWidth={1.6} aria-hidden="true" />
+            )}
             {visible ? t("login.hidePassword") : t("login.showPassword")}
           </button>
         </div>

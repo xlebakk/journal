@@ -13,7 +13,9 @@ export type WorkTypeOption = Schemas["WorkTypeOption"];
 export type AttendanceStatus = Schemas["AttendanceStatusEnum"];
 export type Today = Schemas["Today"];
 
-export const STATUS_CYCLE: AttendanceStatus[] = ["present", "late", "absent", "excused"];
+// Stage 19: only «был» and «н» for now; lateness and excused absences are switched off.
+export const STATUS_CYCLE: AttendanceStatus[] = ["present", "absent"];
+// export const STATUS_CYCLE: AttendanceStatus[] = ["present", "late", "absent", "excused"];
 export const GRADABLE: AttendanceStatus[] = ["present", "late"];
 
 export function useJournalCourses() {

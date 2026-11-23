@@ -73,6 +73,10 @@ const PAIRS = [
   ["ink", "marker", "sheet", TEXT, "today header, search hit"],
   ["ink", "marker-soft", "sheet", TEXT, "grade in today column"],
   ["red-pen", "marker-soft", "sheet", TEXT, "«н» in today column"],
+  ["night-text", "night-1", null, TEXT, "login: the center's name at night"],
+  ["night-text", "night-2", null, TEXT, "login: text over the sky"],
+  ["night-text-2", "night-1", null, TEXT, "login: date line"],
+  ["night-accent", "night-1", null, TEXT, "login: the accented word"],
   ["pencil", "marker-soft", "sheet", TEXT, "«оп» in today column"],
   ...[1, 2, 3, 4, 5, 6].map((i) => [`stamp-${i}`, `stamp-${i}@10`, "paper", TEXT, "initials"]),
 ];

@@ -1,82 +1,82 @@
-/* Login and the other auth steps (stage 16): a quiet pale-blue panel ruled like a journal
-   page with the center's name; the form alone on white. No pictures, no gradients. */
+/* Login and the other auth steps (stage 19, after the customer's mock-up): on the left a quiet
+   night as «живые обои» with the program's logo and the center's name, on the right the form
+   on a light panel that meets the night with a soft wave. The product's sans throughout. */
 
 .screen {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
   min-height: 100vh;
-  background: var(--sheet);
+  background: var(--sheet-2);
+  font-family: var(--font-brand);
 }
+
+/* --- The night ------------------------------------------------------------------------ */
 
 .panel {
+  position: relative;
   display: grid;
-  grid-template-rows: 1fr auto 1fr;
-  padding: var(--space-6) var(--space-6) var(--space-4);
-  border-right: var(--line) solid var(--rule);
-  /* The ruling of a class journal: thin lines every 36 px, a margin line on the left. */
-  background:
-    linear-gradient(
-      90deg,
-      transparent 72px,
-      var(--accent-tint) 72px,
-      var(--accent-tint) 73px,
-      transparent 73px
-    ),
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0,
-      transparent 35px,
-      var(--marker) 35px,
-      var(--marker) 36px
-    ),
-    var(--accent-soft);
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+  padding: var(--space-5) var(--space-6) var(--space-4);
+  background: var(--night-1);
+  color: var(--night-text);
 }
 
-/* The program's logo in the top corner of the page, the center's name in the middle. */
-.logo {
-  grid-row: 1;
-  align-self: start;
-  padding-left: var(--space-6);
+.sky {
+  position: absolute;
+  inset: 0;
+}
+
+.logo,
+.panelTop,
+.panelFoot {
+  position: relative;
 }
 
 .panelTop {
-  grid-row: 2;
-  max-width: 30rem;
-  padding-left: var(--space-6);
-}
-
-.year {
-  margin: var(--space-3) 0 0;
-  color: var(--ink-2);
-}
-
-.panelFoot {
-  grid-row: 3;
   align-self: end;
+  max-width: 36rem;
+  padding-bottom: var(--space-6);
 }
 
 .center {
   margin: 0;
-  color: var(--accent-strong);
-  font-family: var(--font-display);
-  font-size: 2.75rem;
-  font-weight: 600;
+  color: var(--night-text);
+  font-family: var(--font-brand);
+  font-size: 3.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   line-height: 1.1;
 }
 
-.date {
-  margin: 0;
-  padding-left: var(--space-6);
-  font-size: var(--text-15);
-  color: var(--ink-2);
+.centerAccent {
+  color: var(--night-accent);
 }
 
-.contacts {
-  margin: 4px 0 0;
-  padding-left: var(--space-6);
-  font-size: var(--text-14);
-  color: var(--ink-2);
+.centerRule {
+  width: 72px;
+  height: 3px;
+  margin-top: var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--night-accent);
 }
+
+.panelFoot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--night-text-2);
+  font-size: var(--text-14);
+}
+
+.footRule {
+  width: 1px;
+  height: 18px;
+  background: var(--night-text-2);
+  opacity: 0.5;
+}
+
+/* --- The form ------------------------------------------------------------------------- */
 
 .side {
   position: relative;
@@ -84,6 +84,18 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-6) var(--space-4);
+  background: var(--sheet-2);
+}
+
+/* The light panel laps over the night with a soft wave. */
+.wave {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -96px;
+  width: 98px;
+  height: 100%;
+  fill: var(--sheet-2);
 }
 
 .language {
@@ -97,22 +109,109 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  width: min(380px, 100%);
+  width: min(420px, 100%);
 }
 
 .title {
-  margin-bottom: var(--space-1);
-  font-family: var(--font-display);
-  font-size: var(--text-28);
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-brand);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.title::before {
+  content: "";
+  width: 4px;
+  height: 1.1em;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+}
+
+.fields input {
+  min-height: 52px;
+  font-family: var(--font-brand);
+  font-size: var(--text-16);
+}
+
+.fields label {
+  color: var(--ink);
+  font-weight: 500;
 }
 
 .fields > button[type="submit"],
 .form > button[type="submit"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   width: 100%;
-  min-height: 44px;
+  min-height: 56px;
   margin-top: var(--space-1);
-  font-size: var(--text-16);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+  font-family: var(--font-brand);
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.fields button {
+  font-family: var(--font-brand);
+}
+
+/* The chosen language: a filled dark-blue pill, as in the mock-up. */
+.language label {
+  font-family: var(--font-brand);
+  font-size: var(--text-14);
+}
+
+.language label:has(input:checked) {
+  background: var(--accent-strong);
+  color: var(--on-accent);
+}
+
+.or {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+  color: var(--ink-2);
+  font-size: var(--text-14);
+}
+
+.or::before,
+.or::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+
+.helpBlock {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 10px;
+  justify-content: center;
+  margin: 0 auto;
+  font-size: var(--text-14);
+}
+
+.helpIcon {
+  grid-row: span 2;
+  align-self: center;
+  color: var(--accent);
+}
+
+.helpTitle {
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+
+.helpText {
+  color: var(--ink-2);
 }
 
 .row {
@@ -173,61 +272,31 @@
   font-size: var(--text-16);
 }
 
+/* Tablets and phones: the night becomes a band over the form. */
 @media (max-width: 899px) {
   .screen {
     grid-template-columns: 1fr;
   }
 
   .panel {
-    grid-template-rows: auto auto auto;
-    gap: var(--space-2);
-    padding: var(--space-4) var(--space-2) var(--space-3);
-    border-right: 0;
-    border-bottom: var(--line) solid var(--rule);
-    background:
-      linear-gradient(
-        90deg,
-        transparent 40px,
-        var(--accent-tint) 40px,
-        var(--accent-tint) 41px,
-        transparent 41px
-      ),
-      repeating-linear-gradient(
-        to bottom,
-        transparent 0,
-        transparent 35px,
-        var(--marker) 35px,
-        var(--marker) 36px
-      ),
-      var(--accent-soft);
+    min-height: 260px;
+    padding: var(--space-3) var(--space-2) var(--space-2);
   }
 
-  .logo,
-  .panelTop,
-  .date {
-    grid-row: auto;
-    padding-left: 40px;
-  }
-
-  .panelFoot {
-    grid-row: auto;
-  }
-
-  .year {
-    display: none;
+  .panelTop {
+    padding-bottom: var(--space-2);
   }
 
   .center {
     font-size: var(--text-28);
   }
 
-  .contacts {
+  .wave {
     display: none;
   }
 
   .side {
     flex-direction: column;
-    align-items: center;
     gap: var(--space-3);
     padding: var(--space-3) var(--space-2) var(--space-4);
   }
@@ -235,5 +304,9 @@
   .language {
     position: static;
     align-self: flex-end;
+  }
+
+  .title {
+    font-size: 1.625rem;
   }
 }

@@ -8,9 +8,17 @@ type Paths<T, Prefix extends string = ""> = {
 
 export type MessageKey = Paths<Dictionary>;
 
-/** Russian is the center's language and ships in the main bundle; Uzbek (Latin) loads lazily. */
-export type Language = "ru" | "uz";
-export const LANGUAGES: readonly Language[] = ["ru", "uz"];
+/**
+ * Russian is the center's language and ships in the main bundle; Tajik and English load lazily
+ * (stage 19; Uzbek was dropped at the customer's request).
+ */
+export type Language = "ru" | "tg" | "en";
+export const LANGUAGES: readonly Language[] = ["ru", "tg", "en"];
+
+const LOADERS: Record<Exclude<Language, "ru">, () => Promise<{ default: unknown }>> = {
+  tg: () => import("./tg.json"),
+  en: () => import("./en.json"),
+};
 
 const STORAGE_KEY = "journal.language";
 
@@ -43,7 +51,8 @@ export function tMaybe(key: string, params?: Record<string, string | number>): s
 
 function storedLanguage(): Language {
   try {
-    return localStorage.getItem(STORAGE_KEY) === "uz" ? "uz" : "ru";
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return LANGUAGES.find((option) => option === stored) ?? "ru";
   } catch {
     return "ru";
   }
@@ -51,10 +60,11 @@ function storedLanguage(): Language {
 
 /** Runs before the first render, so even module-level `t()` calls of lazy pages are right. */
 export async function initLanguage(): Promise<void> {
-  if (storedLanguage() === "uz") {
+  const wanted = storedLanguage();
+  if (wanted !== "ru") {
     try {
-      messages = (await import("./uz.json")).default as Dictionary;
-      current = "uz";
+      messages = (await LOADERS[wanted]()).default as Dictionary;
+      current = wanted;
     } catch {
       // The chunk did not load (no network on a cold start): stay with Russian.
     }
@@ -66,7 +76,7 @@ export function language(): Language {
   return current;
 }
 
-/** «январь,февраль,…» → a list; for names Intl may not know (Uzbek in some engines). */
+/** «январь,февраль,…» → a list; for names Intl may not know (Tajik in most engines). */
 export function names(key: "dates.months" | "dates.weekdays" | "dates.weekdaysShort"): string[] {
   return t(key).split(",");
 }

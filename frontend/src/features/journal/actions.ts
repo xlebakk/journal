@@ -33,20 +33,22 @@ export const STATUS_NAME: Record<AttendanceStatus, MessageKey> = {
   excused: "attendance.excused",
 };
 // Б / О / Н / У on a Russian layout, the same physical keys on a Latin one;
-// K / S for the Uzbek «kechikdi» and «sababli» («y» for «yoʻq» is the key of «н»).
+// «a» for the English «absent»; KeyY is the physical key of «н».
 const KEYS: Record<string, AttendanceStatus> = {
   б: "present",
-  о: "late",
   н: "absent",
-  у: "excused",
-  k: "late",
-  s: "excused",
+  a: "absent", // English: «a» for absent
+  // Stage 19: lateness and excused absences are switched off for now.
+  // о: "late",
+  // у: "excused",
+  // k: "late",
+  // s: "excused",
 };
 const CODES: Record<string, AttendanceStatus> = {
   Comma: "present",
-  KeyJ: "late",
   KeyY: "absent",
-  KeyE: "excused",
+  // KeyJ: "late",
+  // KeyE: "excused",
 };
 
 export function statusFromKey(event: { key: string; code: string }): AttendanceStatus | undefined {

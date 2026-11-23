@@ -29,6 +29,9 @@ import {
   type LessonRef,
 } from "./actions";
 
+/** Stage 19: lateness is switched off for now; `true` brings the minutes field back. */
+const LATENESS = STATUS_CYCLE.includes("late");
+
 type EditorProps = {
   lesson: LessonRef;
   rules: Rules;
@@ -251,7 +254,8 @@ export function StudentEditor(props: EditorProps) {
       >
         {mark(status)}
       </button>
-      {status === "late" && (
+      {/* Stage 19: hidden while lateness is switched off. */}
+      {LATENESS && status === "late" && (
         <input
           className={`mono ${styles.lateInput}`}
           inputMode="numeric"

@@ -278,26 +278,17 @@
   color: var(--ink-2);
 }
 
-.mark_present {
-  border-color: color-mix(in srgb, var(--green) 35%, var(--rule));
-  background: color-mix(in srgb, var(--green) 8%, var(--sheet));
-  color: var(--green);
-}
-
-.mark_late {
-  border-color: color-mix(in srgb, var(--pencil) 35%, var(--rule));
-  background: color-mix(in srgb, var(--pencil) 8%, var(--sheet));
-  color: var(--pencil);
+/* Stage 19: the journal is soft black — marks differ by letter, not by colour. */
+.mark_present,
+.mark_late,
+.mark_excused {
+  color: var(--ink);
 }
 
 .mark_absent {
-  border-color: color-mix(in srgb, var(--red-pen) 35%, var(--rule));
-  background: color-mix(in srgb, var(--red-pen) 8%, var(--sheet));
-  color: var(--red-pen);
-}
-
-.mark_excused {
-  color: var(--ink-2);
+  border-color: var(--ink-2);
+  background: var(--sheet-2);
+  color: var(--ink);
 }
 
 .lateInput,
@@ -657,7 +648,7 @@
 }
 
 .cellAbsent {
-  color: var(--red-pen);
+  color: var(--ink);
 }
 
 .cellExcused {
@@ -669,7 +660,7 @@
 }
 
 .low {
-  color: var(--red-pen);
+  color: var(--ink);
 }
 
 .buffer {
@@ -742,7 +733,7 @@
   border-radius: 50%;
   background: var(--sheet);
   box-shadow: var(--shadow-pill);
-  color: var(--red-pen);
+  color: var(--ink);
   font: inherit;
   font-size: var(--text-20);
   font-weight: 600;
@@ -750,9 +741,9 @@
 }
 
 .absentToggle[aria-pressed="true"] {
-  border-color: var(--red-pen);
-  background: var(--red-pen);
-  color: var(--on-accent);
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--sheet);
 }
 
 /* Phones: only the name stays fixed; №, the summaries and the dates scroll under it. */

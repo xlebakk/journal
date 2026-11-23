@@ -1,6 +1,7 @@
 import { t } from ".";
 import ru from "./ru.json";
-import uz from "./uz.json";
+import en from "./en.json";
+import tg from "./tg.json";
 
 function flatten(node: unknown, prefix = ""): Record<string, string> {
   const out: Record<string, string> = {};
@@ -23,24 +24,23 @@ describe("t", () => {
   });
 });
 
-describe("the Uzbek dictionary", () => {
+describe.each([
+  ["Tajik", tg],
+  ["English", en],
+])("the %s dictionary", (_, dictionary) => {
   const russian = flatten(ru);
-  const uzbek = flatten(uz);
+  const other = flatten(dictionary);
 
   it("has exactly the keys of the Russian one", () => {
-    expect(Object.keys(uzbek).sort()).toEqual(Object.keys(russian).sort());
+    expect(Object.keys(other).sort()).toEqual(Object.keys(russian).sort());
   });
 
   it("keeps every placeholder", () => {
     const broken = Object.keys(russian).filter(
       (key) =>
         JSON.stringify(placeholders(russian[key]!)) !==
-        JSON.stringify(placeholders(uzbek[key] ?? "")),
+        JSON.stringify(placeholders(other[key] ?? "")),
     );
     expect(broken).toEqual([]);
-  });
-
-  it("uses the letters oʻ and gʻ, not an ASCII apostrophe", () => {
-    expect(Object.entries(uzbek).filter(([, text]) => text.includes("'"))).toEqual([]);
   });
 });

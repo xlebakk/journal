@@ -1,3 +1,11 @@
+import {
+  CalendarDays,
+  CircleHelp,
+  CircleUserRound,
+  LockKeyhole,
+  LogIn,
+  UserRound,
+} from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router";
@@ -13,6 +21,7 @@ import { Button } from "@/shared/ui/Button";
 import { Checkbox } from "@/shared/ui/Checkbox";
 import { LanguageSwitch } from "@/shared/ui/LanguageSwitch";
 import { Logo } from "@/shared/ui/Logo";
+import { NightSky } from "@/shared/ui/NightSky";
 import { PasswordField } from "@/shared/ui/PasswordField";
 import { TextField } from "@/shared/ui/TextField";
 
@@ -24,24 +33,48 @@ type LoginForm = { login: string; password: string; remember: boolean };
 type TotpForm = { code: string };
 const required = (value: string) => value.trim() !== "" || t("common.required");
 
-/** Login and the other auth steps: a quiet ruled panel with the center, the form on white. */
+/** The center's name with its last word in the night's accent: «Учебный **центр**». */
+function CenterName({ name }: { name: string }) {
+  const words = name.trim().split(/\s+/);
+  const last = words.pop() ?? "";
+  return (
+    <h1 className={styles.center}>
+      {words.length > 0 && `${words.join(" ")} `}
+      <span className={styles.centerAccent}>{last}</span>
+    </h1>
+  );
+}
+
+/** Login and the other auth steps: a quiet night with the logo, the form on a light panel. */
 export function AuthColumn({ children }: { children: React.ReactNode }) {
   const branding = useBranding();
-  const contacts = branding.data?.contacts;
+  const [date, weekday] = formatJournalHeader(new Date()).split(" · ");
   return (
     <div className={styles.screen}>
       <section className={styles.panel}>
-        <Logo size="lg" tagline className={styles.logo} />
+        <NightSky className={styles.sky} />
+        <Logo size="lg" tagline tone="night" className={styles.logo} />
         <div className={styles.panelTop}>
-          <h1 className={styles.center}>{branding.data?.center_name || t("app.centerName")}</h1>
-          <p className={styles.year}>{t("login.forWhom")}</p>
+          <CenterName name={branding.data?.center_name || t("app.centerName")} />
+          <div className={styles.centerRule} />
         </div>
-        <div className={styles.panelFoot}>
-          <p className={styles.date}>{formatJournalHeader(new Date())}</p>
-          {contacts && <p className={styles.contacts}>{contacts}</p>}
-        </div>
+        <p className={styles.panelFoot}>
+          <CalendarDays size={18} strokeWidth={1.6} aria-hidden="true" />
+          <span>{date}</span>
+          <span className={styles.footRule} />
+          <span>{weekday}</span>
+        </p>
       </section>
       <main className={styles.side}>
+        <svg
+          className={styles.wave}
+          viewBox="0 0 100 1000"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M100 0 H70 C20 180 92 360 46 540 C8 700 78 850 36 1000 H100 Z" />
+        </svg>
         <LanguageSwitch className={styles.language} />
         <div className={styles.form}>{children}</div>
       </main>
@@ -53,10 +86,17 @@ function HelpLine() {
   const branding = useBranding();
   const contacts = branding.data?.contacts;
   return (
-    <p className={styles.help}>
-      {t("login.help")}
-      {contacts ? `: ${contacts}` : "."}
-    </p>
+    <>
+      <p className={styles.or}>{t("login.or")}</p>
+      <p className={styles.helpBlock}>
+        <CircleHelp className={styles.helpIcon} size={20} strokeWidth={1.8} aria-hidden="true" />
+        <span className={styles.helpTitle}>{t("login.helpTitle")}</span>
+        <span className={styles.helpText}>
+          {t("login.helpText")}
+          {contacts ? `: ${contacts}` : "."}
+        </span>
+      </p>
+    </>
   );
 }
 
@@ -82,6 +122,8 @@ function PasswordStep({ onTotp }: { onTotp: () => void }) {
       <h2 className={styles.title}>{t("login.signIn")}</h2>
       <TextField
         label={t("login.login")}
+        icon={<UserRound size={15} strokeWidth={2} aria-hidden="true" />}
+        trailing={<CircleUserRound size={18} strokeWidth={1.6} aria-hidden="true" />}
         autoComplete="username"
         autoCapitalize="off"
         spellCheck={false}
@@ -90,6 +132,7 @@ function PasswordStep({ onTotp }: { onTotp: () => void }) {
       />
       <PasswordField
         label={t("login.password")}
+        icon={<LockKeyhole size={15} strokeWidth={2} aria-hidden="true" />}
         autoComplete="current-password"
         error={form.formState.errors.password?.message}
         {...form.register("password", { validate: required })}
@@ -102,6 +145,7 @@ function PasswordStep({ onTotp }: { onTotp: () => void }) {
         </p>
       )}
       <Button type="submit" variant="primary" disabled={login.isPending}>
+        <LogIn size={19} strokeWidth={1.8} aria-hidden="true" />
         {t("login.submit")}
       </Button>
     </form>

@@ -3,29 +3,38 @@ import { t } from "@/shared/i18n";
 import styles from "./Logo.module.css";
 
 /**
- * Daftar — «тетрадь, журнал» in Uzbek and Tajik: the name of the program, not of the center.
- * The mark is a journal page: a margin line, three ruled lines and a red bookmark. Colours come
- * from the tokens, so it follows the theme; the PNG icons repeat it (mobile/scripts/make_icons.py).
+ * Daftar — «тетрадь, журнал» in Tajik: the name of the program, not of the center.
+ * The mark is a closed exercise book drawn in one line — the cover, the pages under it — with a
+ * red bookmark (stage 19, after the customer's login mock-up). The line takes the text colour,
+ * so the same mark works on the white header and on the night of the login page.
  */
 export function Logo({
   size = "md",
   tagline = false,
+  tone = "day",
   className,
 }: {
   size?: "md" | "lg";
-  /** «электронный журнал» under the name — on the login panel. */
+  /** «Электронный журнал» under the name — on the login panel. */
   tagline?: boolean;
+  /** "night": white line and text, for the dark login panel. */
+  tone?: "day" | "night";
   className?: string;
 }) {
   return (
-    <span className={[styles.logo, styles[size], className].filter(Boolean).join(" ")}>
+    <span
+      className={[styles.logo, styles[size], tone === "night" && styles.night, className]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <svg className={styles.mark} viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-        <rect className={styles.page} x="5.5" y="3.5" width="21" height="25" rx="3" />
-        <line className={styles.margin} x1="11" y1="4" x2="11" y2="28" />
-        <line className={styles.rule} x1="14" y1="13" x2="23" y2="13" />
-        <line className={styles.rule} x1="14" y1="18" x2="23" y2="18" />
-        <line className={styles.rule} x1="14" y1="23" x2="20" y2="23" />
-        <path className={styles.bookmark} d="M19.5 3.5h4.5v8.5l-2.25-1.8-2.25 1.8z" />
+        <path
+          className={styles.line}
+          d="M9 7.5C7 7.5 5.75 8.75 5.75 10.75v15C5.75 27.4 7.1 28.5 8.75 28.5H23"
+        />
+        <rect className={styles.cover} x="9" y="3.5" width="17.25" height="21.5" rx="2.5" />
+        <path className={styles.line} d="M12.25 4v20.5" />
+        <path className={styles.bookmark} d="M19.25 3.5h4.25v9.25l-2.125-1.7-2.125 1.7z" />
       </svg>
       <span className={styles.words}>
         <span className={styles.name}>{t("app.productName")}</span>

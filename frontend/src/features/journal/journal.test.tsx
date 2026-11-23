@@ -45,7 +45,7 @@ describe("StudentEditor", () => {
     return perform;
   }
 
-  it("defaults to «был» and cycles on tap", async () => {
+  it("defaults to «был» and switches to «н» on tap (stage 19: no lateness)", async () => {
     const perform = setup();
     const toggle = screen.getByRole("button", { name: /Посещаемость: был/ });
     expect(toggle).toHaveTextContent("был");
@@ -54,7 +54,7 @@ describe("StudentEditor", () => {
     }).fetchMock;
     await userEvent.click(toggle);
     await perform.mock.calls[0]![0].run();
-    expect(JSON.parse(fetchMock.mock.calls[0]![1]!.body as string).status).toBe("late");
+    expect(JSON.parse(fetchMock.mock.calls[0]![1]!.body as string).status).toBe("absent");
   });
 
   it("sets the status by key", async () => {

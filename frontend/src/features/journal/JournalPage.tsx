@@ -137,6 +137,7 @@ const GridRow = memo(function GridRow({
         const selected = col === selectedCol;
         const remark = member ? remarkOf(cell) : "";
         const status = cell?.attendance?.status;
+        // Stage 19: only «н» is shown; an excused absence (older records) reads as «н» too.
         const marked = status === "absent" || status === "excused";
         const empty = !marked && !cell?.grades.length && !(selected && buffer);
         const classes = [
@@ -174,11 +175,7 @@ const GridRow = memo(function GridRow({
           >
             {member && !empty ? (
               <span className={styles.cellContent}>
-                {marked && status && (
-                  <span className={status === "absent" ? styles.cellAbsent : styles.cellExcused}>
-                    {mark(status)}
-                  </span>
-                )}
+                {marked && status && <span className={styles.cellAbsent}>{mark("absent")}</span>}
                 {cell?.grades.map((g) => (
                   <span
                     key={g.id}

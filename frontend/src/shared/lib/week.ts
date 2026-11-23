@@ -49,11 +49,11 @@ export function weekDays(monday: string): string[] {
 type DateParts = Pick<Intl.DateTimeFormatOptions, "weekday" | "day" | "month" | "year">;
 
 /**
- * Russian through Intl. Uzbek is assembled from the dictionary: not every engine ships Uzbek
- * locale data (without it Intl prints «M11 22, Sun»). Uzbek order: «du, 16-noyabr 2026».
+ * Russian through Intl. Tajik and English are assembled from the dictionary: most engines ship
+ * no Tajik locale data, and one path keeps both alike: «дш, 16 ноябр 2026», «Mon, 16 November».
  */
 function format(iso: string, options: DateParts): string {
-  if (language() !== "uz") {
+  if (language() === "ru") {
     return new Intl.DateTimeFormat("ru-RU", { timeZone: "UTC", ...options }).format(toUtc(iso));
   }
   const [y, m, d] = iso.split("-").map(Number);
@@ -64,7 +64,7 @@ function format(iso: string, options: DateParts): string {
     : "";
   const month = options.month ? names("dates.months")[(m ?? 1) - 1] : "";
   const day = options.day ? String(d) : "";
-  const dayMonth = day && month ? `${day}-${month}` : day || month;
+  const dayMonth = day && month ? `${day} ${month}` : day || month;
   const rest = [dayMonth, options.year ? String(y) : ""].filter(Boolean).join(" ");
   return weekday && rest ? `${weekday}, ${rest}` : weekday || rest;
 }

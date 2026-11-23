@@ -5,7 +5,7 @@ import secrets
 
 from .models import User, normalize_login
 
-# Russian and Uzbek Cyrillic → Latin, readable and keyboard-friendly.
+# Russian and Tajik Cyrillic → Latin, readable and keyboard-friendly.
 _TRANSLIT = {
     "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "yo", "ж": "zh",
     "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m", "н": "n", "о": "o",

@@ -30,7 +30,7 @@ export async function login(page: Page, loginName: string, password = PASSWORD) 
   await page.goto("/login");
   await page.getByLabel("Логин").fill(loginName);
   await page.getByLabel("Пароль", { exact: true }).fill(password);
-  await page.getByRole("button", { name: "войти" }).click();
+  await page.getByRole("button", { name: "Войти" }).click();
 }
 
 export async function logout(page: Page) {

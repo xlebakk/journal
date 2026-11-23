@@ -2,7 +2,7 @@
 import { language, names } from "@/shared/i18n";
 
 export const CENTER_TIME_ZONE = "Asia/Tashkent";
-// Digits come from Intl in Russian; Uzbek names of days and months — from the dictionary.
+// Digits come from Intl in Russian; Tajik and English names of days and months — from the dictionary.
 const LOCALE = "ru-RU";
 
 function parts(date: Date, options: Intl.DateTimeFormatOptions): Record<string, string> {
@@ -33,7 +33,7 @@ function weekdayIndex(date: Date): number {
 /** 21.11.2026 · пятница — header line of the login page. */
 export function formatJournalHeader(date: Date): string {
   const weekday =
-    language() === "uz"
+    language() !== "ru"
       ? names("dates.weekdays")[weekdayIndex(date)]
       : parts(date, { weekday: "long" }).weekday;
   return `${formatDate(date)} · ${weekday}`;
@@ -41,10 +41,10 @@ export function formatJournalHeader(date: Date): string {
 
 /** пт, 21 ноября */
 export function formatHumanDate(date: Date): string {
-  if (language() === "uz") {
+  if (language() !== "ru") {
     const p = parts(date, { day: "numeric", month: "numeric" });
     const month = names("dates.months")[Number(p.month) - 1];
-    return `${names("dates.weekdaysShort")[weekdayIndex(date)]}, ${p.day}-${month}`;
+    return `${names("dates.weekdaysShort")[weekdayIndex(date)]}, ${p.day} ${month}`;
   }
   const p = parts(date, { weekday: "short", day: "numeric", month: "long" });
   return `${p.weekday}, ${p.day} ${p.month}`;

@@ -396,14 +396,11 @@ class Command(BaseCommand):
                 roll = self.rng.random()
                 if sid == weak_attendance.pk:
                     status = AttendanceStatus.ABSENT if roll < 0.45 else AttendanceStatus.PRESENT
-                elif roll < 0.82:
+                # Stage 19: only «был» and «н» for now (lateness and excused are switched off).
+                elif roll < 0.9:
                     status = AttendanceStatus.PRESENT
-                elif roll < 0.89:
-                    status = AttendanceStatus.LATE
-                elif roll < 0.96:
-                    status = AttendanceStatus.ABSENT
                 else:
-                    status = AttendanceStatus.EXCUSED
+                    status = AttendanceStatus.ABSENT
                 attendance.append(
                     Attendance(
                         lesson=lesson,

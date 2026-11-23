@@ -15,7 +15,7 @@ async function fillAndSubmit(login = "aliev.f", password = "secret-password") {
   const user = userEvent.setup();
   await user.type(screen.getByLabelText("Логин"), login);
   await user.type(screen.getByLabelText("Пароль"), password);
-  await user.click(screen.getByRole("button", { name: "войти" }));
+  await user.click(screen.getByRole("button", { name: "Войти" }));
   return user;
 }
 
@@ -24,7 +24,7 @@ describe("LoginPage", () => {
     mockApi({ "GET /me": { status: 401 }, "GET /auth/login": { body: BRANDING } });
     renderRoutes(routes, "/login");
     expect(await screen.findByRole("heading", { name: BRANDING.center_name })).toBeInTheDocument();
-    expect(screen.getByText(/^\d{2}\.\d{2}\.\d{4} · /)).toBeInTheDocument();
+    expect(screen.getByText(/^\d{2}\.\d{2}\.\d{4}$/)).toBeInTheDocument();
     expect(screen.getByText(/Обратитесь к администратору центра: \+998 71/)).toBeInTheDocument();
     expect(screen.queryByText(/регистр/i)).not.toBeInTheDocument();
   });

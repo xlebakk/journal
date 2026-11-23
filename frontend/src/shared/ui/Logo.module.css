@@ -1,34 +1,27 @@
-/* The Daftar mark and name (stage 17): a journal page with a red bookmark, the name in the
-   serif of the interface. No gradients, no glow — the same flat colours as the rest. */
+/* The Daftar mark and name (stage 19): an exercise book in one line with a red bookmark, the
+   name in the product's sans. Flat colours only. */
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   color: var(--accent-strong);
+  font-family: var(--font-brand);
   white-space: nowrap;
 }
 
 .mark {
   flex: none;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
 }
 
-.page {
-  fill: var(--sheet);
-  stroke: var(--accent);
-  stroke-width: 1.6;
-}
-
-.margin {
-  stroke: var(--accent);
-  stroke-width: 1.2;
-}
-
-.rule {
-  stroke: var(--accent-tint);
-  stroke-width: 1.6;
+.line,
+.cover {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
   stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .bookmark {
@@ -38,20 +31,29 @@
 .words {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .name {
-  font-family: var(--font-display);
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   line-height: 1;
 }
 
 .tagline {
   color: var(--ink-2);
   font-size: var(--text-14);
+  font-weight: 400;
   line-height: 1.2;
+}
+
+.night {
+  color: var(--night-text);
+}
+
+.night .tagline {
+  color: var(--night-text-2);
 }
 
 .lg {
@@ -64,16 +66,25 @@
 }
 
 .lg .name {
-  font-size: 2rem;
+  font-size: 2.125rem;
 }
 
 @media (max-width: 599px) {
   .md .mark {
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
   }
 
   .md .name {
     font-size: 1.25rem;
+  }
+
+  .lg .mark {
+    width: 38px;
+    height: 38px;
+  }
+
+  .lg .name {
+    font-size: 1.625rem;
   }
 }

@@ -5,8 +5,22 @@
 }
 
 .label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: var(--text-14);
   color: var(--ink-2);
+}
+
+.icon,
+.trailing {
+  display: inline-flex;
+  color: var(--ink-2);
+}
+
+.trailing {
+  align-items: center;
+  padding: 0 12px;
 }
 
 .input,
@@ -85,6 +99,9 @@
 }
 
 .action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 0 12px;
   border: 0;
   background: transparent;
