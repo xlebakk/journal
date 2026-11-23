@@ -26,6 +26,7 @@ import { TextField } from "@/shared/ui/TextField";
 
 import { homePath, useBranding, useLogin, useMe, useTotpLogin } from "./api";
 import styles from "./AuthPage.module.css";
+import { LoginWaves } from "./LoginWaves";
 
 // No zod here: the login page is the first screen and must stay light.
 type LoginForm = { login: string; password: string; remember: boolean };
@@ -86,22 +87,11 @@ export function AuthColumn({ children }: { children: React.ReactNode }) {
         >
           <path d="M240 0 H206 C226 150 214 300 168 450 C120 610 60 760 36 880 C28 930 24 970 22 1000 H240 Z" />
         </svg>
-        <svg
+        <LoginWaves
           className={styles.waves}
-          viewBox="0 0 600 220"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-          focusable="false"
-        >
-          <path
-            className={styles.waveBack}
-            d="M-80 220 C80 140 300 190 420 120 C500 74 580 30 680 0 V220 Z"
-          />
-          <path
-            className={styles.waveFront}
-            d="M40 220 C220 175 380 200 480 140 C540 104 600 70 680 50 V220 Z"
-          />
-        </svg>
+          backClassName={styles.waveBack}
+          frontClassName={styles.waveFront}
+        />
         <LanguageSwitch className={styles.language} />
         <div className={styles.form}>{children}</div>
       </main>
