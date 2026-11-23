@@ -14,7 +14,7 @@ MONDAY = "2026-11-16"
 
 
 def teacher_of(make_user: Any, last: str, subject: Any) -> User:
-    user = make_user(Role.TEACHER, last_name=last)
+    user: User = make_user(Role.TEACHER, last_name=last)
     TeacherProfile.objects.get_or_create(user=user)[0].subjects.add(subject)
     return user
 
