@@ -8,7 +8,13 @@ export type UserWrite = Schemas["AdminUserWriteRequest"];
 export type AdminSection = NonNullable<UserWrite["admin_sections"]>[number];
 export type UserStatus = "active" | "blocked" | "archived";
 
-export type UserFilters = { q: string; role: string; status: string; page: number };
+export type UserFilters = {
+  q: string;
+  role: string;
+  status: string;
+  page: number;
+  subject?: string;
+};
 
 const USERS_KEY = ["admin", "users"] as const;
 
@@ -20,6 +26,7 @@ export function useUsers(filters: UserFilters) {
         query: {
           q: filters.q.trim() || undefined,
           role: filters.role || undefined,
+          subject: filters.subject || undefined,
           status: filters.status || undefined,
           page: filters.page > 1 ? String(filters.page) : undefined,
         },

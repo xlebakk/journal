@@ -2763,6 +2763,8 @@ export interface components {
             readonly created_at: string;
             readonly is_superadmin: boolean;
             readonly admin_sections: components["schemas"]["AdminSectionsEnum"][];
+            readonly position: string;
+            readonly subjects: string[];
             readonly must_change_password: boolean;
             /** Format: date-time */
             readonly password_changed_at: string | null;
@@ -2792,6 +2794,8 @@ export interface components {
             readonly created_at: string;
             readonly is_superadmin: boolean;
             readonly admin_sections: components["schemas"]["AdminSectionsEnum"][];
+            readonly position: string;
+            readonly subjects: string[];
         };
         /** @description Create and update. Profiles are created when the matching role is present. */
         AdminUserWriteRequest: {
@@ -2807,6 +2811,7 @@ export interface components {
             must_change_password: boolean;
             is_superadmin?: boolean;
             admin_sections?: components["schemas"]["AdminSectionsEnum"][];
+            position?: string;
         };
         /** @description The administrator's form. The author is the current user; the body is plain text. */
         Announcement: {
@@ -3663,6 +3668,7 @@ export interface components {
             readonly totp_setup_required: boolean;
             readonly is_superadmin: boolean;
             readonly admin_sections: components["schemas"]["AdminSectionsEnum"][];
+            readonly position: string;
             readonly groups: components["schemas"]["MeGroup"][];
         };
         MeGroup: {
@@ -3866,6 +3872,7 @@ export interface components {
             must_change_password: boolean;
             is_superadmin?: boolean;
             admin_sections?: components["schemas"]["AdminSectionsEnum"][];
+            position?: string;
         };
         /** @description The administrator's form. The author is the current user; the body is plain text. */
         PatchedAnnouncementRequest: {

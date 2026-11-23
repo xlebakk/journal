@@ -4,18 +4,29 @@ import { Link, useSearchParams } from "react-router";
 import { errorMessage } from "@/shared/api/errors";
 import { formatDateTime as when } from "@/shared/lib/time";
 import { t } from "@/shared/i18n";
-import { Button, EmptyState, RuledSkeleton, SelectField, Table, TextField } from "@/shared/ui";
+import { useSubjects } from "@/features/admin/groups/api";
+import {
+  Button,
+  EmptyState,
+  RuledSkeleton,
+  Segmented,
+  SelectField,
+  Table,
+  TextField,
+} from "@/shared/ui";
 
 import { useUsers } from "./api";
 import { statusLabel } from "./labels";
 import styles from "./Users.module.css";
 
-const ROLE_OPTIONS = [
-  { value: "", label: t("users.any") },
-  { value: "admin", label: t("roles.admin") },
-  { value: "teacher", label: t("roles.teacher") },
-  { value: "parent", label: t("roles.parent") },
-  { value: "student", label: t("roles.student") },
+// Stage 19: one tab per kind of person; «Персонал» is the administrators.
+type Tab = "" | "student" | "teacher" | "parent" | "admin";
+const TABS: { value: Tab; label: string }[] = [
+  { value: "", label: t("users.tabAll") },
+  { value: "student", label: t("users.tabStudents") },
+  { value: "teacher", label: t("users.tabTeachers") },
+  { value: "parent", label: t("users.tabParents") },
+  { value: "admin", label: t("users.tabStaff") },
 ];
 const STATUS_OPTIONS = [
   { value: "", label: t("users.any") },
@@ -27,7 +38,10 @@ const STATUS_OPTIONS = [
 /** Filters live in the URL, so the list survives reloads and back navigation. */
 export function UsersPage() {
   const [params, setParams] = useSearchParams();
-  const role = params.get("role") ?? "";
+  const rawRole = params.get("role") ?? "";
+  const role: Tab = TABS.some((tab) => tab.value === rawRole) ? (rawRole as Tab) : "";
+  const subject = role === "teacher" ? (params.get("subject") ?? "") : "";
+  const subjects = useSubjects();
   const status = params.get("status") ?? "";
   const page = Number(params.get("page") ?? "1") || 1;
   const [q, setQ] = useState(params.get("q") ?? "");
@@ -38,7 +52,7 @@ export function UsersPage() {
     return () => clearTimeout(timer);
   }, [q]);
 
-  const users = useUsers({ q: debounced, role, status, page });
+  const users = useUsers({ q: debounced, role, status, page, subject });
 
   const update = (changes: Record<string, string>) => {
     const next = new URLSearchParams(params);
@@ -64,6 +78,13 @@ export function UsersPage() {
         </Link>
       </div>
 
+      <Segmented
+        label={t("users.title")}
+        value={role}
+        onChange={(value) => update({ role: value, subject: "" })}
+        options={TABS}
+      />
+
       <div className={styles.filters}>
         <TextField
           label={t("users.search")}
@@ -72,12 +93,19 @@ export function UsersPage() {
           onChange={(e) => setQ(e.target.value)}
           className={styles.search}
         />
-        <SelectField
-          label={t("users.role")}
-          options={ROLE_OPTIONS}
-          value={role}
-          onChange={(e) => update({ role: e.target.value })}
-        />
+        {role === "teacher" && (
+          <SelectField
+            label={t("users.subject")}
+            options={[
+              { value: "", label: t("users.anySubject") },
+              ...(subjects.data ?? [])
+                .filter((x) => !x.is_archived)
+                .map((x) => ({ value: x.id, label: x.name })),
+            ]}
+            value={subject}
+            onChange={(e) => update({ subject: e.target.value })}
+          />
+        )}
         <SelectField
           label={t("users.status")}
           options={STATUS_OPTIONS}
@@ -101,9 +129,13 @@ export function UsersPage() {
                   <tr>
                     <th scope="col">{t("users.name")}</th>
                     <th scope="col">{t("users.login")}</th>
-                    <th scope="col">{t("users.roles")}</th>
+                    {role === "" && <th scope="col">{t("users.roles")}</th>}
+                    {role === "teacher" && <th scope="col">{t("users.subjects")}</th>}
+                    {role === "admin" && <th scope="col">{t("users.position")}</th>}
                     <th scope="col">{t("users.status")}</th>
-                    <th scope="col">{t("users.twoFactor")}</th>
+                    <th scope="col">
+                      <abbr title={t("users.twoFactorHint")}>{t("users.twoFactor")}</abbr>
+                    </th>
                     <th scope="col">{t("users.lastLogin")}</th>
                   </tr>
                 </thead>
@@ -114,7 +146,14 @@ export function UsersPage() {
                         <Link to={`/admin/users/${user.id}`}>{user.full_name}</Link>
                       </td>
                       <td className="mono">{user.login}</td>
-                      <td>{user.roles.map((r) => t(`roles.${r}`)).join(", ")}</td>
+                      {role === "" && <td>{user.roles.map((r) => t(`roles.${r}`)).join(", ")}</td>}
+                      {role === "teacher" && <td>{user.subjects.join(", ") || "—"}</td>}
+                      {role === "admin" && (
+                        <td>
+                          {user.position ||
+                            (user.is_superadmin ? t("roles.superadmin") : t("roles.admin"))}
+                        </td>
+                      )}
                       <td className={user.status === "active" ? undefined : styles.muted}>
                         {statusLabel(user.status)}
                       </td>

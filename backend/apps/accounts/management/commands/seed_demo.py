@@ -156,7 +156,12 @@ class Command(BaseCommand):
         return last, self.rng.choice(FEMALE if female else MALE)
 
     def _make(
-        self, roles: list[str], last: str, first: str, sections: list[str] | None = None
+        self,
+        roles: list[str],
+        last: str,
+        first: str,
+        sections: list[str] | None = None,
+        position: str = "",
     ) -> User:
         password = self.password or credentials.generate_temporary_password()
         user = User.objects.create_user(
@@ -168,6 +173,7 @@ class Command(BaseCommand):
             # An administrator with sections is an ordinary one; without them — the super admin.
             is_superadmin=Role.ADMIN in roles and sections is None,
             admin_sections=sections or [],
+            position=position,
             # Demo convenience: skip the forced change; 2FA is each user's choice.
             must_change_password=False,
         )
@@ -182,6 +188,7 @@ class Command(BaseCommand):
             "Завуч",
             "Демо",
             sections=[AdminSection.SCHEDULE, AdminSection.JOURNAL, AdminSection.REPORTS],
+            position="Завуч",
         )
         teachers = []
         for i in range(6):

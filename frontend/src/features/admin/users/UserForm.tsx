@@ -157,6 +157,12 @@ export function UserForm({ user, submitLabel, onSubmit }: UserFormProps) {
       {roles.includes("admin") && superadmin && (
         <fieldset className={styles.fieldset}>
           <legend>{t("userForm.adminRights")}</legend>
+          <TextField
+            label={t("userForm.position")}
+            hint={t("userForm.positionHint")}
+            maxLength={80}
+            {...form.register("position")}
+          />
           <Checkbox label={t("userForm.superadmin")} {...form.register("is_superadmin")} />
           {!superadminFlag && (
             <>

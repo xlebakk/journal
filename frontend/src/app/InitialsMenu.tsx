@@ -5,17 +5,13 @@ import { useNavigate } from "react-router";
 import { homePath, logout, useSwitchRole, type Me, type Role } from "@/features/auth/api";
 import { queueSnapshot } from "@/features/journal/offlineQueue";
 import { t, language, LANGUAGES, setLanguage, type Language } from "@/shared/i18n";
-import { useTheme, type ThemePreference } from "@/shared/lib/theme";
 import { initialsOf } from "@/shared/ui";
 
 import styles from "./InitialsMenu.module.css";
 
-const THEMES: ThemePreference[] = ["light", "dark", "system"];
-
 /** The stamp in the header corner and its keyboard-operable menu. */
 export function InitialsMenu({ me }: { me: Me }) {
   const navigate = useNavigate();
-  const [theme, setTheme] = useTheme();
   const switchRole = useSwitchRole();
   const otherRoles = me.roles.filter((role) => role !== me.active_role);
 
@@ -39,9 +35,11 @@ export function InitialsMenu({ me }: { me: Me }) {
           <span className={styles.profileName}>{me.full_name}</span>
           {me.active_role && (
             <span className={styles.profileRole}>
-              {me.is_superadmin && me.active_role === "admin"
-                ? t("roles.superadmin")
-                : t(`roles.${me.active_role}`)}
+              {me.active_role === "admin" && me.position
+                ? me.position
+                : me.is_superadmin && me.active_role === "admin"
+                  ? t("roles.superadmin")
+                  : t(`roles.${me.active_role}`)}
             </span>
           )}
         </span>
@@ -76,19 +74,6 @@ export function InitialsMenu({ me }: { me: Me }) {
           <Menu.Item className={styles.item} onSelect={() => navigate("/account/sessions")}>
             {t("menu.sessions")}
           </Menu.Item>
-          <Menu.Separator className={styles.separator} />
-          <Menu.Label className={styles.label}>{t("theme.label")}</Menu.Label>
-          <Menu.RadioGroup
-            value={theme}
-            onValueChange={(value) => setTheme(value as ThemePreference)}
-          >
-            {THEMES.map((option) => (
-              <Menu.RadioItem key={option} value={option} className={styles.item}>
-                <Menu.ItemIndicator className={styles.indicator}>•</Menu.ItemIndicator>
-                {t(`theme.${option}`)}
-              </Menu.RadioItem>
-            ))}
-          </Menu.RadioGroup>
           <Menu.Separator className={styles.separator} />
           <Menu.Label className={styles.label}>{t("language.label")}</Menu.Label>
           <Menu.RadioGroup

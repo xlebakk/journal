@@ -120,6 +120,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "totp_setup_required",
             "is_superadmin",
             "admin_sections",
+            "position",
             "groups",
         )
         read_only_fields = fields
@@ -209,6 +210,8 @@ def user_status(user: User) -> str:
 class AdminUserListSerializer(serializers.ModelSerializer[User]):
     full_name = serializers.CharField(read_only=True)
     status = serializers.SerializerMethodField()
+    # Stage 19: what a teacher teaches, right in the list.
+    subjects = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -226,11 +229,19 @@ class AdminUserListSerializer(serializers.ModelSerializer[User]):
             "created_at",
             "is_superadmin",
             "admin_sections",
+            "position",
+            "subjects",
         )
         read_only_fields = fields
 
     def get_status(self, user: User) -> str:
         return user_status(user)
+
+    def get_subjects(self, user: User) -> list[str]:
+        profile = getattr(user, "teacher_profile", None)
+        if profile is None or Role.TEACHER not in user.roles:
+            return []
+        return [subject.name for subject in profile.subjects.all()]
 
 
 class AdminUserDetailSerializer(AdminUserListSerializer):
@@ -283,6 +294,7 @@ class AdminUserWriteSerializer(serializers.Serializer[Any]):
     admin_sections = serializers.ListField(
         child=serializers.ChoiceField(choices=AdminSection.choices), required=False
     )
+    position = serializers.CharField(max_length=80, required=False, allow_blank=True)
 
     def validate_roles(self, roles: list[str]) -> list[str]:
         return validate_roles(roles)

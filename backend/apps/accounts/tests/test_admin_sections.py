@@ -139,3 +139,41 @@ def test_every_admin_route_belongs_to_a_section() -> None:
     missing = [r for r in _admin_routes() if admin_section(r) is None and "schema" not in r]
     assert missing == [], f"add to ADMIN_PATHS: {missing}"
     assert {s for _, s in ADMIN_PATHS} - {""} == set(AdminSection.values)
+
+
+@pytest.mark.django_db
+class TestStaffAndTeachers:
+    """Stage 19: staff titles from the super administrator; teachers with their subjects."""
+
+    def test_the_super_admin_names_the_staff(
+        self, admin_client: APIClient, make_user: MakeUser, client_for: ClientFor
+    ) -> None:
+        head = limited(make_user, AdminSection.SCHEDULE)
+        response = admin_client.patch(f"{USERS}/{head.pk}", {"position": "Завуч"}, format="json")
+        assert response.status_code == 200, response.json()
+        listed = admin_client.get(USERS, {"role": "admin"}).json()["results"]
+        assert {"Завуч"} <= {u["position"] for u in listed}
+        # An ordinary administrator with the users section cannot give titles.
+        other = client_for(limited(make_user, AdminSection.USERS))
+        student = make_user(Role.STUDENT)
+        refused = other.patch(f"{USERS}/{student.pk}", {"position": "Директор"}, format="json")
+        assert refused.status_code == 403
+
+    def test_teachers_show_and_filter_by_subject(
+        self, admin_client: APIClient, make_user: MakeUser
+    ) -> None:
+        from apps.academics.models import Subject
+        from apps.accounts.models import TeacherProfile
+
+        maths = Subject.objects.create(name="Математика", short_name="Мат")
+        physics = Subject.objects.create(name="Физика", short_name="Физ")
+        both = make_user(Role.TEACHER, last_name="Оба")
+        TeacherProfile.objects.get_or_create(user=both)[0].subjects.add(maths, physics)
+        only = make_user(Role.TEACHER, last_name="Физик")
+        TeacherProfile.objects.get_or_create(user=only)[0].subjects.add(physics)
+        rows = admin_client.get(USERS, {"role": "teacher"}).json()["results"]
+        subjects = {r["last_name"]: sorted(r["subjects"]) for r in rows}
+        assert subjects["Оба"] == ["Математика", "Физика"]
+        found = admin_client.get(USERS, {"role": "teacher", "subject": maths.pk}).json()["results"]
+        assert [r["last_name"] for r in found] == ["Оба"]
+        assert admin_client.get(USERS, {"subject": "мусор"}).status_code == 400

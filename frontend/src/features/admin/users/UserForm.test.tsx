@@ -81,6 +81,7 @@ describe("toPayload", () => {
       must_change_password: false,
       is_superadmin: false,
       admin_sections: [],
+      position: "",
     });
     expect(payload).toEqual({
       last_name: "Ким",

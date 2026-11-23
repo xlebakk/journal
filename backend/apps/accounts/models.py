@@ -107,6 +107,8 @@ class User(AbstractBaseUser):
     admin_sections = ArrayField(
         models.CharField(max_length=16, choices=AdminSection.choices), default=list, blank=True
     )
+    # Stage 19: the staff member's title the super administrator gives («Завуч», «Бухгалтер»).
+    position = models.CharField(max_length=80, blank=True)
 
     USERNAME_FIELD = "login"
     REQUIRED_FIELDS: ClassVar[list[str]] = ["last_name", "first_name"]

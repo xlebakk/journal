@@ -359,3 +359,30 @@
     transition: none;
   }
 }
+
+/* Stage 19: light or dark in one press, next to the person. */
+.themeToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: var(--line) solid var(--rule);
+  border-radius: 50%;
+  background: var(--sheet);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition:
+    color var(--duration) var(--easing),
+    background-color var(--duration) var(--easing),
+    transform 300ms var(--easing);
+}
+
+.themeToggle:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.themeToggle:active {
+  transform: rotate(-20deg);
+}

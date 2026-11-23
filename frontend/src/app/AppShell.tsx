@@ -33,6 +33,7 @@ import { ChildSwitcher } from "@/features/parent/ChildSwitcher";
 import { useHasChildren } from "@/features/parent/children";
 import styles from "./AppShell.module.css";
 import { InitialsMenu } from "./InitialsMenu";
+import { ThemeToggle } from "./ThemeToggle";
 import { preloadScreens } from "./preload";
 
 type NavItem = {
@@ -174,6 +175,7 @@ export function AppShell({ me }: { me: Me }) {
           </nav>
         )}
         <div className={styles.aside}>
+          <ThemeToggle />
           {isParent && <ChildSwitcher />}
           <InitialsMenu me={me} />
         </div>

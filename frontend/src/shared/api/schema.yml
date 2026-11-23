@@ -5041,6 +5041,14 @@ components:
           items:
             $ref: '#/components/schemas/AdminSectionsEnum'
           readOnly: true
+        position:
+          type: string
+          readOnly: true
+        subjects:
+          type: array
+          items:
+            type: string
+          readOnly: true
         must_change_password:
           type: boolean
           readOnly: true
@@ -5082,9 +5090,11 @@ components:
       - middle_name
       - must_change_password
       - password_changed_at
+      - position
       - roles
       - status
       - student_profile
+      - subjects
       - teacher_profile
       - totp_enabled
     AdminUserList:
@@ -5138,6 +5148,14 @@ components:
           items:
             $ref: '#/components/schemas/AdminSectionsEnum'
           readOnly: true
+        position:
+          type: string
+          readOnly: true
+        subjects:
+          type: array
+          items:
+            type: string
+          readOnly: true
       required:
       - admin_sections
       - created_at
@@ -5149,8 +5167,10 @@ components:
       - last_name
       - login
       - middle_name
+      - position
       - roles
       - status
+      - subjects
       - totp_enabled
     AdminUserWriteRequest:
       type: object
@@ -5194,6 +5214,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdminSectionsEnum'
+        position:
+          type: string
+          maxLength: 80
       required:
       - first_name
       - last_name
@@ -7543,6 +7566,9 @@ components:
           items:
             $ref: '#/components/schemas/AdminSectionsEnum'
           readOnly: true
+        position:
+          type: string
+          readOnly: true
         groups:
           type: array
           items:
@@ -7561,6 +7587,7 @@ components:
       - login
       - middle_name
       - must_change_password
+      - position
       - roles
       - totp_enabled
       - totp_setup_required
@@ -7991,6 +8018,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdminSectionsEnum'
+        position:
+          type: string
+          maxLength: 80
     PatchedAnnouncementRequest:
       type: object
       description: The administrator's form. The author is the current user; the body

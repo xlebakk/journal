@@ -46,6 +46,7 @@ export const schema = z.object({
   must_change_password: z.boolean(),
   is_superadmin: z.boolean(),
   admin_sections: z.array(z.enum(SECTIONS)),
+  position: z.string().max(80),
 });
 export type UserFormValues = z.infer<typeof schema>;
 
@@ -74,6 +75,7 @@ export function defaults(user?: UserDetail): UserFormValues {
     must_change_password: false,
     is_superadmin: user?.is_superadmin ?? false,
     admin_sections: (user?.admin_sections ?? []) as UserFormValues["admin_sections"],
+    position: user?.position ?? "",
   };
 }
 
@@ -105,6 +107,7 @@ export function toPayload(values: UserFormValues, superadmin = false): UserWrite
   if (superadmin && values.roles.includes("admin")) {
     payload.is_superadmin = values.is_superadmin;
     payload.admin_sections = values.is_superadmin ? [] : values.admin_sections;
+    payload.position = values.position.trim();
   }
   return payload;
 }

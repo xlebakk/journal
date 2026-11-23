@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.audit import services as audit
+from apps.core.params import uuid_param
 
 from . import credentials, lockout, sessions
 from .models import Role, StudentProfile, TeacherProfile, User, UserQuerySet, UserSession
@@ -40,6 +41,7 @@ USER_AUDIT_FIELDS = (
     "totp_enabled",
     "is_superadmin",
     "admin_sections",
+    "position",
 )
 STUDENT_AUDIT_FIELDS = tuple(StudentProfileSerializer.Meta.fields)
 
@@ -104,8 +106,10 @@ class AdminUserViewSet(
     lookup_value_converter = "uuid"
 
     def get_queryset(self) -> UserQuerySet:
-        qs = User.objects.for_user(current_user(self.request)).select_related(
-            "student_profile", "teacher_profile"
+        qs = (
+            User.objects.for_user(current_user(self.request))
+            .select_related("student_profile", "teacher_profile")
+            .prefetch_related("teacher_profile__subjects")
         )
         params = self.request.query_params
         if q := params.get("q", "").strip():
@@ -118,6 +122,9 @@ class AdminUserViewSet(
                 )
         if (role := params.get("role")) in Role.values:
             qs = qs.with_role(role)
+        # Stage 19: the teachers of one subject.
+        if subject := uuid_param(self.request, "subject"):
+            qs = qs.filter(teacher_profile__subjects=subject)
         match params.get("status"):
             case "active":
                 qs = qs.filter(is_active=True, archived_at__isnull=True)
@@ -151,7 +158,12 @@ class AdminUserViewSet(
         form = AdminUserWriteSerializer(data=request.data)
         form.is_valid(raise_exception=True)
         data = form.validated_data
-        grants = Role.ADMIN in data["roles"] or "is_superadmin" in data or "admin_sections" in data
+        grants = (
+            Role.ADMIN in data["roles"]
+            or "is_superadmin" in data
+            or "admin_sections" in data
+            or bool(data.get("position"))
+        )
         if grants and not current_user(request).is_superadmin:
             raise SuperadminRequired()
         password = data.get("password") or ""
@@ -184,6 +196,7 @@ class AdminUserViewSet(
                         admin_sections=data.get("admin_sections", [])
                         if Role.ADMIN in data["roles"]
                         else [],
+                        position=data.get("position", "") if Role.ADMIN in data["roles"] else "",
                     )
                     _apply_profiles(user, data)
                     audit.record(
@@ -208,9 +221,8 @@ class AdminUserViewSet(
         data = form.validated_data
         _require_superadmin_for(request, user)
         new_roles = data.get("roles", user.roles)
-        if (Role.ADMIN in new_roles or "is_superadmin" in data or "admin_sections" in data) and (
-            not current_user(request).is_superadmin
-        ):
+        rights = "is_superadmin" in data or "admin_sections" in data or "position" in data
+        if (Role.ADMIN in new_roles or rights) and (not current_user(request).is_superadmin):
             raise SuperadminRequired()
         roles_changed = "roles" in data and sorted(data["roles"]) != sorted(user.roles)
         if roles_changed:
@@ -232,8 +244,10 @@ class AdminUserViewSet(
                 user.is_superadmin = data["is_superadmin"]
             if "admin_sections" in data:
                 user.admin_sections = sorted(set(data["admin_sections"]))
+            if "position" in data:
+                user.position = data["position"].strip()
             if not user.is_admin:
-                user.is_superadmin, user.admin_sections = False, []
+                user.is_superadmin, user.admin_sections, user.position = False, [], ""
             if data.get("login"):
                 user.login = data["login"]
             try:
