@@ -95,11 +95,11 @@ export function AuthColumn({ children }: { children: React.ReactNode }) {
         >
           <path
             className={styles.waveBack}
-            d="M0 220 C140 150 300 190 420 120 C500 74 560 40 600 20 V220 Z"
+            d="M-80 220 C80 140 300 190 420 120 C500 74 580 30 680 0 V220 Z"
           />
           <path
             className={styles.waveFront}
-            d="M120 220 C260 180 380 200 480 140 C540 104 580 80 600 70 V220 Z"
+            d="M40 220 C220 175 380 200 480 140 C540 104 600 70 680 50 V220 Z"
           />
         </svg>
         <LanguageSwitch className={styles.language} />

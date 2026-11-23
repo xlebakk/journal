@@ -123,6 +123,15 @@
   height: 180px;
 }
 
+/* The waves sway slowly and out of step (stage 19); the paths run past the edges of the box,
+   so the sway never shows an empty corner. Still for reduced motion. */
+.waveBack,
+.waveFront {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: sway 11s ease-in-out infinite alternate;
+}
+
 .waveBack {
   fill: var(--accent-tint);
   opacity: 0.6;
@@ -131,6 +140,25 @@
 .waveFront {
   fill: var(--accent);
   opacity: 0.18;
+  animation-duration: 8s;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes sway {
+  from {
+    transform: translateX(-36px) scaleY(0.94);
+  }
+
+  to {
+    transform: translateX(36px) scaleY(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waveBack,
+  .waveFront {
+    animation: none;
+  }
 }
 
 /* The form above the waves (positioned elements paint over static ones). */
