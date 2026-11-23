@@ -508,11 +508,15 @@ def availability(
     busy: list[Busy],
     start: time | None,
     end: time | None,
+    teacher_id: Any = None,
 ) -> dict[str, Any]:
     """Free pairs for the group and its teacher; with a time — free rooms and free teachers of
     the subject. The save still runs the full conflict check; this only shapes the choices."""
     group_busy = [b for b in busy if b.group_id == course.group_id]
-    teacher_busy = [b for b in busy if b.teacher_id == course.teacher_id]
+    # The teacher chosen for this lesson (a one-off lesson may be taught by another teacher of
+    # the subject); the course's own teacher otherwise.
+    teacher = teacher_id or course.teacher_id
+    teacher_busy = [b for b in busy if b.teacher_id == teacher]
     blocked = group_busy + teacher_busy
     free_pairs = [
         {"start": s.strftime("%H:%M"), "end": e.strftime("%H:%M")}

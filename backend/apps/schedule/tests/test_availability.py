@@ -86,3 +86,31 @@ class TestAvailability:
             for p in admin_client.get("/api/v1/admin/teachers", {"subject": math.pk}).json()
         ]
         assert names == [mine.full_name]
+
+
+@pytest.mark.django_db
+def test_pairs_follow_the_chosen_teacher(
+    admin_client: APIClient, course: Any, slot: Any, other_group: Any, math: Any, make_user: Any
+) -> None:
+    """A one-off lesson by another teacher of the subject: pairs follow that teacher."""
+    from apps.academics.models import Course
+
+    ScheduleSlot.objects.create(
+        course=course, weekday=3, start_time=time(16), end_time=time(17, 30),
+        valid_from=date(2026, 9, 1),
+    )  # fmt: skip
+    other = teacher_of(make_user, "Другой", math)
+    busy_elsewhere = Course.objects.create(group=other_group, subject=math, teacher=other)
+    from apps.schedule.models import Lesson
+
+    Lesson.objects.create(
+        course=busy_elsewhere, date=date(2026, 11, 16), start_time=time(16),
+        end_time=time(17, 30), teacher=other, planned_date=date(2026, 11, 16),
+        planned_start_time=time(16), planned_end_time=time(17, 30),
+    )  # fmt: skip
+    mine = admin_client.get(URL, {"course": course.pk, "date": MONDAY}).json()
+    assert {"start": "16:00", "end": "17:30"} in mine["free_pairs"]
+    theirs = admin_client.get(
+        URL, {"course": course.pk, "date": MONDAY, "teacher": other.pk}
+    ).json()
+    assert {"start": "16:00", "end": "17:30"} not in theirs["free_pairs"]

@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo, useState, type FormEvent } from "react";
 
-import { useCourses } from "@/features/admin/groups/api";
+import { useCourses, useTeachers } from "@/features/admin/groups/api";
 import { useInvalidateSchedule } from "@/features/schedule/api";
 import styles from "@/features/schedule/SchedulePage.module.css";
 import { api, ApiError } from "@/shared/api/client";
@@ -58,6 +58,7 @@ export function LessonWizard({
   const [custom, setCustom] = useState(false);
   const [room, setRoom] = useState<string | null>(null);
   const [lessonType, setLessonType] = useState("");
+  const [teacher, setTeacher] = useState("");
 
   const groups = useMemo(() => {
     const seen = new Map<string, string>();
@@ -66,7 +67,11 @@ export function LessonWizard({
   }, [courses.data]);
   const groupCourses = (courses.data ?? []).filter((c) => c.group === group);
   const chosen = groupCourses.find((c) => c.id === course);
+  // Stage 19: a one-off lesson may be taught by any teacher of the subject.
+  const subjectTeachers = useTeachers(mode === "lesson" ? chosen?.subject : undefined);
+  const teacherId = mode === "lesson" ? teacher || chosen?.teacher || "" : "";
   const when = mode === "lesson" ? date : weekday;
+  const shift = mode === "lesson" ? 1 : 0;
 
   // The free pairs do not depend on the time; the last answer for this course and day holds them.
   const lastFree = useQuery({
@@ -75,6 +80,7 @@ export function LessonWizard({
       "availability",
       "pairs",
       course,
+      teacherId,
       mode === "lesson" ? date : weekday,
       validFrom,
       validTo,
@@ -83,7 +89,7 @@ export function LessonWizard({
       api<Availability>("/admin/availability", {
         query:
           mode === "lesson"
-            ? { course, date }
+            ? { course, date, teacher: teacherId || undefined }
             : { course, weekday, valid_from: validFrom, valid_to: validTo || undefined },
       }),
     enabled: Boolean(course && (mode === "lesson" ? date : weekday)),
@@ -91,7 +97,7 @@ export function LessonWizard({
   }).data;
   const query =
     mode === "lesson"
-      ? { course, date }
+      ? { course, date, teacher: teacherId || undefined }
       : { course, weekday, valid_from: validFrom, valid_to: validTo || undefined };
   // The row clicked in the grid: its pair is taken as soon as it turns out to be free.
   const presetPair =
@@ -120,6 +126,7 @@ export function LessonWizard({
   };
   const pickCourse = (value: string) => {
     setCourse(value);
+    setTeacher("");
     setTime(null);
     setRoom(null);
   };
@@ -141,7 +148,8 @@ export function LessonWizard({
               end_time: timed!.end,
               room: room || null,
               lesson_type: lessonType || null,
-              teacher: null,
+              // The course's own teacher is stored as no substitution.
+              teacher: teacher && teacher !== chosen?.teacher ? teacher : null,
             },
           })
         : api<unknown>("/admin/slots", {
@@ -194,7 +202,7 @@ export function LessonWizard({
               ...groupCourses.map((c) => ({ value: c.id, label: c.subject_name })),
             ]}
           />
-          {chosen && (
+          {chosen && mode === "slot" && (
             <p className={styles.note}>
               {t("schedule.teacherIs", { name: chosen.teacher_info.short_name })}
             </p>
@@ -202,8 +210,42 @@ export function LessonWizard({
         </Step>
       )}
 
+      {course && mode === "lesson" && (
+        <Step n={3} title={t("schedule.stepTeacher")}>
+          <SelectField
+            label={t("schedule.teacher")}
+            value={teacherId}
+            onChange={(e) => {
+              setTeacher(e.target.value);
+              setTime(null);
+              setRoom(null);
+            }}
+            options={[
+              // The course's teacher even if their card lacks the subject.
+              ...(chosen && !(subjectTeachers.data ?? []).some((p) => p.id === chosen.teacher)
+                ? [{ id: chosen.teacher, full_name: chosen.teacher_info.short_name }]
+                : []),
+              ...(subjectTeachers.data ?? []),
+            ]
+              .slice()
+              // The course's own teacher first.
+              .sort((a, b) => Number(b.id === chosen?.teacher) - Number(a.id === chosen?.teacher))
+              .map((p) => ({
+                value: p.id,
+                label:
+                  p.id === chosen?.teacher
+                    ? `${p.full_name} — ${t("schedule.courseTeacher")}`
+                    : p.full_name,
+              }))}
+          />
+        </Step>
+      )}
+
       {course && (
-        <Step n={3} title={mode === "lesson" ? t("schedule.stepDate") : t("schedule.stepWeekday")}>
+        <Step
+          n={3 + shift}
+          title={mode === "lesson" ? t("schedule.stepDate") : t("schedule.stepWeekday")}
+        >
           {mode === "lesson" ? (
             <TextField
               label={t("schedule.date")}
@@ -241,7 +283,7 @@ export function LessonWizard({
       )}
 
       {course && when && (
-        <Step n={4} title={t("schedule.stepTime")}>
+        <Step n={4 + shift} title={t("schedule.stepTime")}>
           {data && data.group_busy.length > 0 && (
             <p className={styles.note}>
               {t("schedule.groupBusy", {
@@ -309,7 +351,7 @@ export function LessonWizard({
       )}
 
       {timed && data && (
-        <Step n={5} title={t("schedule.stepRoom")}>
+        <Step n={5 + shift} title={t("schedule.stepRoom")}>
           {data.rooms.length === 0 && <p className={styles.note}>{t("schedule.noFreeRooms")}</p>}
           <div className={styles.chips} role="group" aria-label={t("schedule.freeRooms")}>
             {data.rooms.map((r) => (
@@ -338,7 +380,7 @@ export function LessonWizard({
       )}
 
       {timed && room !== null && (
-        <Step n={6} title={t("schedule.stepFinish")}>
+        <Step n={6 + shift} title={t("schedule.stepFinish")}>
           <SelectField
             label={t("schedule.lessonType")}
             value={lessonType}

@@ -725,6 +725,7 @@ class AvailabilityView(APIView):
             OpenApiParameter("end", str),
             OpenApiParameter("exclude_lesson", str),
             OpenApiParameter("exclude_slot", str),
+            OpenApiParameter("teacher", str),
         ],
         responses=inline_serializer(
             "Availability",
@@ -756,4 +757,5 @@ class AvailabilityView(APIView):
                 int(raw), valid_from, date_param(request, "valid_to"),
                 uuid_param(request, "exclude_slot"),
             )  # fmt: skip
-        return Response(services.availability(course, busy, start, end))
+        teacher = uuid_param(request, "teacher")
+        return Response(services.availability(course, busy, start, end, teacher))

@@ -492,7 +492,9 @@
     "roomSmall": "{capacity} seats — the group is bigger",
     "deleteLesson": "delete the lesson",
     "deleteNote": "The lesson leaves the schedule; the history and journal keep it as cancelled, with the reason.",
-    "addAt": "Add a lesson: {when}"
+    "addAt": "Add a lesson: {when}",
+    "stepTeacher": "Teacher",
+    "courseTeacher": "teaches the course"
   },
   "catalogs": {
     "title": "Catalogs",
