@@ -129,29 +129,51 @@
   }
 }
 
-.file {
-  min-height: 40px;
-  padding: 6px 0;
-  font: inherit;
-  font-size: var(--text-14);
+/* The file picker (stage 19): our button and name instead of the browser's own words. */
+.picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
 }
 
-.file::file-selector-button {
-  margin-right: var(--space-1);
-  padding: 7px 14px;
+.fileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.fileButton {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 14px;
   border: var(--line) solid var(--rule);
   border-radius: var(--radius);
   background: var(--sheet);
   color: var(--ink);
-  font: inherit;
+  font-size: var(--text-14);
   cursor: pointer;
+  transition: background-color var(--duration) var(--easing);
 }
 
-.file::file-selector-button:hover {
+.fileButton:hover {
   background: var(--accent-soft);
 }
 
-.file:focus-visible {
+.fileInput:focus-visible + .fileButton {
   outline: 2px solid var(--accent);
-  outline-offset: 4px;
+  outline-offset: 2px;
+}
+
+.fileName {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink-2);
+  font-size: var(--text-14);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

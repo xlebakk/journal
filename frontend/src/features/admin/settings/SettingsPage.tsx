@@ -215,7 +215,6 @@ function AppearanceBlock({ color, video }: { color: string; video: string | null
   const queryClient = useQueryClient();
   const withReauth = useReauth();
   const [draft, setDraft] = useState(color);
-  const [file, setFile] = useState<File | null>(null);
   const done = (next: Settings) => {
     queryClient.setQueryData(KEY, next);
     void queryClient.invalidateQueries({ queryKey: ["branding"] });
@@ -228,9 +227,9 @@ function AppearanceBlock({ color, video }: { color: string; video: string | null
     onSuccess: done,
   });
   const send = useMutation({
-    mutationFn: () => {
+    mutationFn: (file: File) => {
       const form = new FormData();
-      if (file) form.append("file", file);
+      form.append("file", file);
       return upload<Settings>("/admin/settings/video", form);
     },
     onSuccess: done,
@@ -284,13 +283,20 @@ function AppearanceBlock({ color, video }: { color: string; video: string | null
         label={t("settings.video")}
         hint={t("settings.videoHint")}
         accept="video/mp4,video/webm"
-        onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-        error={fieldError(send.error, "file")}
+        disabled={send.isPending}
+        onChange={(e) => {
+          const chosen = e.target.files?.[0];
+          if (chosen) send.mutate(chosen);
+        }}
+        error={
+          fieldError(send.error, "file") ?? (send.error ? errorMessage(send.error) : undefined)
+        }
       />
+      {send.isPending && <p className={styles.note}>{t("settings.videoUploading")}</p>}
+      {send.isSuccess && !send.isPending && (
+        <p className={styles.note}>{t("settings.videoSaved")}</p>
+      )}
       <div className={styles.row}>
-        <Button onClick={() => send.mutate()} disabled={!file || send.isPending}>
-          {send.isPending ? t("settings.videoUploading") : t("settings.videoUpload")}
-        </Button>
         {video && (
           <Button onClick={() => remove.mutate()} disabled={remove.isPending}>
             {t("settings.videoDelete")}

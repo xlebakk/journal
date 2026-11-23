@@ -63,7 +63,9 @@
     "required": "Required field",
     "actions": "Actions",
     "edit": "edit",
-    "webOnly": "Printing and file downloads are in the web version of the journal."
+    "webOnly": "Printing and file downloads are in the web version of the journal.",
+    "chooseFile": "choose a file",
+    "noFile": "no file chosen"
   },
   "login": {
     "login": "Login",
@@ -945,11 +947,11 @@
     "brandColorHint": "One colour: buttons, links, fills and the login page follow it. A colour too light is darkened automatically so the text stays readable.",
     "brandColorSave": "apply the colour",
     "video": "Login page video",
-    "videoHint": "MP4 or WebM up to 25 MB. Plays muted in a loop to the left of the login form.",
-    "videoUpload": "upload a video",
+    "videoHint": "MP4 or WebM up to 25 MB — uploads as soon as you choose it. Plays muted in a loop to the left of the login form.",
     "videoUploading": "uploading…",
     "videoDelete": "remove the video",
-    "noVideo": "No video uploaded — a calm background in the brand colour is shown."
+    "noVideo": "No video uploaded — a calm background in the brand colour is shown.",
+    "videoSaved": "Video saved — it is already on the login page."
   },
   "overview": {
     "today": "Today's lessons",
