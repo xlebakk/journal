@@ -174,6 +174,7 @@ class TestStaffAndTeachers:
         rows = admin_client.get(USERS, {"role": "teacher"}).json()["results"]
         subjects = {r["last_name"]: sorted(r["subjects"]) for r in rows}
         assert subjects["Оба"] == ["Математика", "Физика"]
-        found = admin_client.get(USERS, {"role": "teacher", "subject": maths.pk}).json()["results"]
+        query = {"role": "teacher", "subject": str(maths.pk)}
+        found = admin_client.get(USERS, query).json()["results"]
         assert [r["last_name"] for r in found] == ["Оба"]
         assert admin_client.get(USERS, {"subject": "мусор"}).status_code == 400
