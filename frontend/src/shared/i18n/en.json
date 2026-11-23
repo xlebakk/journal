@@ -153,7 +153,9 @@
     "import": "Import",
     "audit": "Audit",
     "settings": "Settings",
-    "payments": "Payments"
+    "payments": "Payments",
+    "fold": "fold the panel",
+    "unfold": "unfold the panel"
   },
   "sessions": {
     "title": "Active sessions",
@@ -1121,7 +1123,7 @@
     "title": "Payments",
     "tabStudents": "Students",
     "tabGroups": "Fees and charges",
-    "currency": "UZS",
+    "currency": "TJS",
     "student": "Student",
     "groups": "Groups",
     "group": "Group",
@@ -1144,7 +1146,7 @@
     "billed": "Charged: {created}, already there: {existing}.",
     "fees": "Monthly group fees",
     "feesHint": "Empty or 0 — the group is free. A new fee applies from the next charge.",
-    "fee": "Fee per month, UZS",
+    "fee": "Fee per month, TJS",
     "feeFor": "Monthly fee for {group}",
     "back": "all students",
     "acceptTitle": "Accept a payment",

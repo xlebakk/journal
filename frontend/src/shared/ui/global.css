@@ -18,6 +18,9 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* The scrollbar's room is always kept: a dialog locking the scroll (or a short page) does not
+     shift the header, the sidebar and the page sideways (stage 19). */
+  scrollbar-gutter: stable;
 }
 
 body {

@@ -471,10 +471,11 @@ class Command(BaseCommand):
         TeacherReview.objects.bulk_create(reviews)
 
     FEES: ClassVar[dict[str, int]] = {
-        "11-М вечерняя": 600_000,
-        "11-Б утренняя": 550_000,
-        "11-Г вечерняя": 600_000,
-        "10-М выходного дня": 450_000,
+        # Somoni a month (stage 19: the somoni is the center's currency).
+        "11-М вечерняя": 600,
+        "11-Б утренняя": 550,
+        "11-Г вечерняя": 600,
+        "10-М выходного дня": 450,
     }
 
     def _payments(self, today: date, groups: dict[str, Group], students: list[User]) -> None:

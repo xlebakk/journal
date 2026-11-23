@@ -10,6 +10,8 @@ import {
   LayoutDashboard,
   Megaphone,
   NotebookPen,
+  PanelLeftClose,
+  PanelLeftOpen,
   Settings,
   ShieldCheck,
   Sun,
@@ -19,7 +21,7 @@ import {
   Wallet,
   type LucideIcon,
 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router";
 
 import type { Me, Role } from "@/features/auth/api";
@@ -105,9 +107,11 @@ function Links({
             className={({ isActive }) =>
               [className, isActive && styles.active].filter(Boolean).join(" ")
             }
+            // A folded sidebar shows only icons: the name comes as a tooltip.
+            title={icons ? t(item.label) : undefined}
           >
             {Icon && <Icon size={18} strokeWidth={1.75} aria-hidden="true" />}
-            {t(item.label)}
+            {icons ? <span className={styles.sideLabel}>{t(item.label)}</span> : t(item.label)}
           </NavLink>
         );
       })}
@@ -115,9 +119,32 @@ function Links({
   );
 }
 
+const FOLD_KEY = "journal.sidebarFolded";
+
+/** The administrator's sidebar folded to icons (stage 19); remembered on this device. */
+function useFoldedSidebar(): [boolean, (folded: boolean) => void] {
+  const [folded, setFolded] = useState(() => {
+    try {
+      return localStorage.getItem(FOLD_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+  const change = (next: boolean) => {
+    setFolded(next);
+    try {
+      localStorage.setItem(FOLD_KEY, next ? "1" : "0");
+    } catch {
+      // Private mode: the choice lasts for this page only.
+    }
+  };
+  return [folded, change];
+}
+
 /** Header: the product, the sections in the middle, the person. Administrators get a left column. */
 export function AppShell({ me }: { me: Me }) {
   const location = useLocation();
+  const [folded, setFolded] = useFoldedSidebar();
   // Once signed in, the other screens' code comes in idle time.
   useEffect(preloadScreens, []);
   const role = me.active_role ?? "student";
@@ -151,9 +178,29 @@ export function AppShell({ me }: { me: Me }) {
           <InitialsMenu me={me} />
         </div>
       </header>
-      <div className={isAdmin ? styles.withSidebar : styles.body}>
+      <div
+        className={
+          isAdmin
+            ? [styles.withSidebar, folded && styles.folded].filter(Boolean).join(" ")
+            : styles.body
+        }
+      >
         {isAdmin && (
           <nav className={styles.sidebar} aria-label={t("nav.sections")}>
+            <button
+              type="button"
+              className={styles.fold}
+              aria-expanded={!folded}
+              aria-label={folded ? t("nav.unfold") : t("nav.fold")}
+              title={folded ? t("nav.unfold") : t("nav.fold")}
+              onClick={() => setFolded(!folded)}
+            >
+              {folded ? (
+                <PanelLeftOpen size={18} strokeWidth={1.75} aria-hidden="true" />
+              ) : (
+                <PanelLeftClose size={18} strokeWidth={1.75} aria-hidden="true" />
+              )}
+            </button>
             <Links items={items} className={styles.sideLink} icons />
           </nav>
         )}

@@ -48,9 +48,9 @@ describe("StudentPaymentsPage", () => {
       "/admin/payments/s1",
     );
     expect(await screen.findByRole("heading", { name: "Алиев Фарход" })).toBeInTheDocument();
-    expect(screen.getByText(/250\s000 сум/)).toHaveClass("debt");
+    expect(screen.getByText(/250\s000 сомони/)).toHaveClass("debt");
     expect(screen.getByText(/Начисление за ноябрь 2026 г\. · 11-М/)).toBeInTheDocument();
-    expect(screen.getByText(/500\s000 сум со скидкой 10%/)).toBeInTheDocument();
+    expect(screen.getByText(/500\s000 сомони со скидкой 10%/)).toBeInTheDocument();
 
     await userEvent.type(screen.getByLabelText("Сумма"), "250000");
     await userEvent.click(screen.getByRole("button", { name: "принять оплату" }));
@@ -87,7 +87,9 @@ describe("MyPaymentsPage", () => {
       },
     });
     renderRoutes([{ path: "/student/payments", element: <MyPaymentsPage /> }], "/student/payments");
-    expect(await screen.findByText(/Задолженность за обучение: 250\s000 сум/)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Задолженность за обучение: 250\s000 сомони/),
+    ).toBeInTheDocument();
     expect(screen.getByText("Ваша скидка: 10%.")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "аннулировать" })).not.toBeInTheDocument();
   });

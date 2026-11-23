@@ -90,8 +90,65 @@
 
 .withSidebar {
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 240px minmax(0, 1fr);
   min-height: calc(100vh - var(--header-height));
+  transition: grid-template-columns 260ms var(--easing);
+}
+
+/* Stage 19: the sidebar folds to icons; the page moves into the middle of the freed room. */
+.folded {
+  grid-template-columns: 64px minmax(0, 1fr);
+}
+
+.fold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  align-self: stretch;
+  min-height: 36px;
+  margin: 0 0 var(--space-1);
+  padding: 0 var(--space-3);
+  border: 0;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: padding 260ms var(--easing);
+}
+
+.fold:hover {
+  color: var(--accent);
+}
+
+.sideLabel {
+  overflow: hidden;
+  white-space: nowrap;
+  transition:
+    opacity 200ms var(--easing),
+    max-width 260ms var(--easing);
+  max-width: 200px;
+}
+
+.folded .sideLabel {
+  max-width: 0;
+  opacity: 0;
+}
+
+.folded .fold {
+  justify-content: center;
+  padding: 0;
+}
+
+.folded .sideLink {
+  justify-content: center;
+  gap: 0;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.withSidebar .main > * {
+  max-width: 1240px;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .sidebar {
@@ -146,8 +203,24 @@
 }
 
 @media (max-width: 1023px) {
-  .withSidebar {
+  .withSidebar,
+  .folded {
     grid-template-columns: 1fr;
+  }
+
+  /* The sidebar is a row of links here: nothing to fold. */
+  .fold {
+    display: none;
+  }
+
+  .folded .sideLabel {
+    max-width: none;
+    opacity: 1;
+  }
+
+  .folded .sideLink {
+    gap: 12px;
+    padding: 0 12px;
   }
 
   .sidebar {
@@ -278,5 +351,11 @@
 @media (prefers-reduced-motion: reduce) {
   .pageIn {
     animation: none;
+  }
+
+  .withSidebar,
+  .sideLabel,
+  .fold {
+    transition: none;
   }
 }

@@ -12,6 +12,7 @@ export type PaymentMethod = Schemas["PaymentWriteRequest"]["method"];
 export const METHODS: PaymentMethod[] = ["cash", "card", "transfer"];
 
 /** «1 250 000 сум» — whole soʻm, grouped like the rest of the numbers. */
+/** The center's currency is the somoni (stage 19), in whole somoni. */
 export function money(amount: number): string {
   return `${amount.toLocaleString("ru-RU")} ${t("payments.currency")}`;
 }
