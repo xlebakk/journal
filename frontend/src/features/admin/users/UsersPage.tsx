@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 
 import { errorMessage } from "@/shared/api/errors";
 import { formatDateTime as when } from "@/shared/lib/time";
@@ -52,6 +52,8 @@ export function UsersPage() {
     return () => clearTimeout(timer);
   }, [q]);
 
+  const navigate = useNavigate();
+  const [chosen, setChosen] = useState<string | null>(null);
   const users = useUsers({ q: debounced, role, status, page, subject });
 
   const update = (changes: Record<string, string>) => {
@@ -73,9 +75,19 @@ export function UsersPage() {
     <section className={styles.page}>
       <div className={styles.titleRow}>
         <h1>{t("users.title")}</h1>
-        <Link className={styles.primaryLink} to="/admin/users/new">
-          {t("users.create")}
-        </Link>
+        <div className={styles.actions}>
+          {/* Stage 19: a row picked in the table opens for editing here. */}
+          <Button
+            disabled={!chosen}
+            onClick={() => chosen && navigate(`/admin/users/${chosen}`)}
+            title={chosen ? undefined : t("users.pickToEdit")}
+          >
+            {t("users.edit")}
+          </Button>
+          <Link className={styles.primaryLink} to="/admin/users/new">
+            {t("users.create")}
+          </Link>
+        </div>
       </div>
 
       <Segmented
@@ -141,7 +153,13 @@ export function UsersPage() {
                 </thead>
                 <tbody>
                   {data.results.map((user) => (
-                    <tr key={user.id}>
+                    <tr
+                      key={user.id}
+                      className={user.id === chosen ? styles.chosenRow : styles.pickRow}
+                      aria-selected={user.id === chosen}
+                      onClick={() => setChosen(user.id)}
+                      onDoubleClick={() => navigate(`/admin/users/${user.id}`)}
+                    >
                       <td>
                         <Link to={`/admin/users/${user.id}`}>{user.full_name}</Link>
                       </td>

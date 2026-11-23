@@ -204,7 +204,9 @@
     "anySubject": "all subjects",
     "subjects": "Subjects",
     "position": "Position",
-    "twoFactorHint": "Two-factor protection (2FA): after the password, sign-in asks for 6 digits from a phone app. Knowing the password alone, a stranger cannot get in."
+    "twoFactorHint": "Two-factor protection (2FA): after the password, sign-in asks for 6 digits from a phone app. Knowing the password alone, a stranger cannot get in.",
+    "edit": "edit",
+    "pickToEdit": "Pick a user in the table"
   },
   "userForm": {
     "newTitle": "New user",

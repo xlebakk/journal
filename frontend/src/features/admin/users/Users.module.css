@@ -153,3 +153,28 @@
     min-height: var(--tap-target);
   }
 }
+
+/* Stage 19: pick a row, then «изменить» next to «добавить». */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.pickRow,
+.chosenRow {
+  cursor: pointer;
+}
+
+.pickRow:hover > td {
+  background: var(--sheet-2);
+}
+
+.chosenRow > td {
+  background: var(--accent-soft);
+}
+
+.chosenRow > td:first-child {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
