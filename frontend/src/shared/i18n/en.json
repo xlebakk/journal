@@ -235,7 +235,9 @@
     "superadmin": "Super administrator: all sections and managing administrators",
     "sectionsHint": "Sections this administrator can open:",
     "position": "Position",
-    "positionHint": "For example: head of studies, accountant"
+    "positionHint": "For example: head of studies, accountant",
+    "teacherSubjects": "Subjects",
+    "teacherSubjectsHint": "What the teacher teaches: courses and the schedule offer them by it."
   },
   "userActions": {
     "title": "Actions",

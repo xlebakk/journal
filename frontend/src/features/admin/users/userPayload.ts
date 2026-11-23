@@ -40,7 +40,7 @@ export const schema = z.object({
     parent_phone: z.string().trim(),
     admin_note: z.string(),
   }),
-  teacher: z.object({ phone: z.string().trim() }),
+  teacher: z.object({ phone: z.string().trim(), subjects: z.array(z.string()) }),
   // Create only: the administrator types the first password (stage 16).
   password: z.string(),
   must_change_password: z.boolean(),
@@ -70,7 +70,10 @@ export function defaults(user?: UserDetail): UserFormValues {
       parent_phone: s?.parent_phone ?? "",
       admin_note: s?.admin_note ?? "",
     },
-    teacher: { phone: user?.teacher_profile?.phone ?? "" },
+    teacher: {
+      phone: user?.teacher_profile?.phone ?? "",
+      subjects: user?.teacher_profile?.subjects ?? [],
+    },
     password: "",
     must_change_password: false,
     is_superadmin: user?.is_superadmin ?? false,
@@ -102,7 +105,9 @@ export function toPayload(values: UserFormValues, superadmin = false): UserWrite
       admin_note: s.admin_note,
     };
   }
-  if (values.roles.includes("teacher")) payload.teacher_profile = { phone: values.teacher.phone };
+  if (values.roles.includes("teacher")) {
+    payload.teacher_profile = { phone: values.teacher.phone, subjects: values.teacher.subjects };
+  }
   // Rights of an administrator: only the super administrator sends them.
   if (superadmin && values.roles.includes("admin")) {
     payload.is_superadmin = values.is_superadmin;

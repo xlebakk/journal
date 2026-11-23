@@ -76,7 +76,7 @@ describe("toPayload", () => {
         parent_phone: "",
         admin_note: "",
       },
-      teacher: { phone: "+998" },
+      teacher: { phone: "+998", subjects: ["s1"] },
       password: "",
       must_change_password: false,
       is_superadmin: false,
@@ -90,7 +90,7 @@ describe("toPayload", () => {
       login: "kim.s",
       roles: ["teacher"],
       must_change_password: false,
-      teacher_profile: { phone: "+998" },
+      teacher_profile: { phone: "+998", subjects: ["s1"] },
     });
   });
 });

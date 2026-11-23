@@ -5,6 +5,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { ApiError } from "@/shared/api/client";
 import { errorMessage, fieldError } from "@/shared/api/errors";
 import { t } from "@/shared/i18n";
+import { useSubjects } from "@/features/admin/groups/api";
 import { useMe } from "@/features/auth/api";
 import { Button, Checkbox, PasswordField, SelectField, TextField } from "@/shared/ui";
 
@@ -25,6 +26,7 @@ export function UserForm({ user, submitLabel, onSubmit }: UserFormProps) {
   });
   const { errors, isSubmitting } = form.formState;
   const roles = useWatch({ control: form.control, name: "roles" });
+  const subjects = useSubjects();
   const superadminFlag = useWatch({ control: form.control, name: "is_superadmin" });
   const me = useMe().data;
   // Administrators are created and given rights only by the super administrator (stage 16).
@@ -188,6 +190,23 @@ export function UserForm({ user, submitLabel, onSubmit }: UserFormProps) {
           <div className={styles.grid}>
             <TextField label={t("userForm.phone")} type="tel" {...form.register("teacher.phone")} />
           </div>
+          {/* Stage 19: what the teacher teaches — courses and the schedule offer them by it. */}
+          <fieldset className={styles.fieldset}>
+            <legend>{t("userForm.teacherSubjects")}</legend>
+            <p className={styles.note}>{t("userForm.teacherSubjectsHint")}</p>
+            <div className={styles.grid}>
+              {(subjects.data ?? [])
+                .filter((x) => !x.is_archived)
+                .map((x) => (
+                  <Checkbox
+                    key={x.id}
+                    label={x.name}
+                    value={x.id}
+                    {...form.register("teacher.subjects")}
+                  />
+                ))}
+            </div>
+          </fieldset>
         </fieldset>
       )}
 

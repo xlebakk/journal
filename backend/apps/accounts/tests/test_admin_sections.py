@@ -178,3 +178,22 @@ class TestStaffAndTeachers:
         found = admin_client.get(USERS, query).json()["results"]
         assert [r["last_name"] for r in found] == ["Оба"]
         assert admin_client.get(USERS, {"subject": "мусор"}).status_code == 400
+
+
+@pytest.mark.django_db
+def test_a_new_teacher_gets_subjects(admin_client: APIClient) -> None:
+    """Stage 19: the subjects chosen in the form are saved with the new teacher."""
+    from apps.academics.models import Subject
+
+    maths = Subject.objects.create(name="Математика", short_name="Мат")
+    body = {
+        "last_name": "Новый",
+        "first_name": "Учитель",
+        "roles": ["teacher"],
+        "password": PASSWORD,
+        "teacher_profile": {"phone": "", "subjects": [str(maths.pk)]},
+    }
+    created = admin_client.post(USERS, body, format="json")
+    assert created.status_code == 201, created.json()
+    rows = admin_client.get(USERS, {"role": "teacher"}).json()["results"]
+    assert next(r for r in rows if r["last_name"] == "Новый")["subjects"] == ["Математика"]
