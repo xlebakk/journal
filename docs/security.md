@@ -156,7 +156,7 @@
 | `GET /reports/courses/{id}` (`?export=` — с паролем) | 401 | 403 | свой — 200, чужой — 404 | 200 |
 | `GET /admin/reports/*`, `/admin/overview`, `/admin/audit/export` | 401 | 403 | 403 | 200 (выгрузка — с паролем) |
 | `/admin/import/students`, `/admin/access-cards` | 401 | 403 | 403 | 200 |
-| `GET/PATCH /admin/settings`, `POST/DELETE /admin/settings/logo` | 401 | 403 | 403 | 200 (PATCH — с паролем) |
+| `GET/PATCH /admin/settings`, `POST/DELETE /admin/settings/logo`, `POST/DELETE /admin/settings/video` | 401 | 403 | 403 | 200 (PATCH — с паролем) |
 
 ## Этап 6: PWA и Android
 
@@ -313,6 +313,14 @@
 | Пароль, блокировка, изменения, сеансы администратора — только суперадмину | `test_an_ordinary_admin_cannot_touch_another_admin` |
 | Последний суперадмин остаётся | `test_the_last_super_admin_stays` |
 | Пароль задаёт администратор; правила сложности — машинными кодами; пароль не попадает ни в ответ, ни в аудит | `test_student_with_generated_login_and_the_admins_password`, `test_the_admin_types_a_good_password` |
+
+## Этап 19: цвет оформления и видео входа
+
+| Мера | Тест |
+| --- | --- |
+| Цвет — только `#rrggbb` (сериалайзер и CHECK в БД); палитра считается в браузере и держит контраст WCAG AA для любого цвета; значения ставятся через CSSOM, CSP `style-src 'self'` не ослаблена | `test_brand_color_is_validated_and_public`, `brand.test.ts` |
+| Видео загружает только администратор с разделом «Настройки»; MP4 или WebM определяется по первым байтам, а не по имени; не больше 25 МБ; имя файла случайное | `test_video_rejects_other_files`, матрица прав |
+| Публичный `GET /branding/video/<имя>` (страница входа видна до входа) отдаёт только текущий файл: имя проверяется по шаблону и сверяется с настройками, путь не собирается из ввода; поддержаны диапазоны байтов | `test_video_upload_serve_and_delete`, `test_url_permissions` |
 
 ## Модель угроз (кратко)
 

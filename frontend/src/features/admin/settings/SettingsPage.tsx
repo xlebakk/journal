@@ -7,6 +7,7 @@ import { api, upload, type Schemas } from "@/shared/api/client";
 import { errorMessage, fieldError } from "@/shared/api/errors";
 import { t, type MessageKey } from "@/shared/i18n";
 import { formatDateTime } from "@/shared/lib/time";
+import { applyBrand } from "@/shared/lib/brand";
 import { Button, Checkbox, FileField, RuledSkeleton, SelectField, TextField } from "@/shared/ui";
 
 type Settings = Schemas["CenterSettings"];
@@ -35,6 +36,8 @@ const JOURNAL: NumberField[] = [
 const KEY = ["admin", "settings"];
 const READ_ONLY = [
   "logo",
+  "login_video",
+  "brand_color",
   "last_backup_at",
   "last_backup_ok",
   "last_restore_check_at",
@@ -204,6 +207,100 @@ function LogoBlock({ logo }: { logo: string | null }) {
   );
 }
 
+/**
+ * «Оформление» (stage 19): one colour the whole interface follows — shown at once as a preview,
+ * saved with the password check — and the video of the login page.
+ */
+function AppearanceBlock({ color, video }: { color: string; video: string | null }) {
+  const queryClient = useQueryClient();
+  const withReauth = useReauth();
+  const [draft, setDraft] = useState(color);
+  const [file, setFile] = useState<File | null>(null);
+  const done = (next: Settings) => {
+    queryClient.setQueryData(KEY, next);
+    void queryClient.invalidateQueries({ queryKey: ["branding"] });
+  };
+  const saveColor = useMutation({
+    mutationFn: () =>
+      withReauth(() =>
+        api<Settings>("/admin/settings", { method: "PATCH", body: { brand_color: draft } }),
+      ),
+    onSuccess: done,
+  });
+  const send = useMutation({
+    mutationFn: () => {
+      const form = new FormData();
+      if (file) form.append("file", file);
+      return upload<Settings>("/admin/settings/video", form);
+    },
+    onSuccess: done,
+  });
+  const remove = useMutation({
+    mutationFn: () => api<Settings>("/admin/settings/video", { method: "DELETE" }),
+    onSuccess: done,
+  });
+  return (
+    <section className={styles.section} aria-labelledby="settings-appearance">
+      <h2 id="settings-appearance">{t("settings.appearance")}</h2>
+      <div className={styles.colorRow}>
+        <TextField
+          className={styles.color}
+          label={t("settings.brandColor")}
+          type="color"
+          value={draft}
+          onChange={(e) => {
+            setDraft(e.target.value);
+            applyBrand(e.target.value); // a preview right away
+          }}
+          error={fieldError(saveColor.error, "brand_color")}
+        />
+        <span className="mono">{draft}</span>
+        <Button
+          variant="primary"
+          onClick={() => saveColor.mutate()}
+          disabled={draft === color || saveColor.isPending}
+        >
+          {t("settings.brandColorSave")}
+        </Button>
+        {draft !== color && (
+          <Button
+            onClick={() => {
+              setDraft(color);
+              applyBrand(color);
+            }}
+          >
+            {t("common.cancel")}
+          </Button>
+        )}
+      </div>
+      <p className={styles.note}>{t("settings.brandColorHint")}</p>
+      <h3>{t("settings.video")}</h3>
+      {video ? (
+        <video className={styles.videoPreview} src={video} muted loop autoPlay playsInline />
+      ) : (
+        <p className={styles.note}>{t("settings.noVideo")}</p>
+      )}
+      <FileField
+        label={t("settings.video")}
+        hint={t("settings.videoHint")}
+        accept="video/mp4,video/webm"
+        onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+        error={fieldError(send.error, "file")}
+      />
+      <div className={styles.row}>
+        <Button onClick={() => send.mutate()} disabled={!file || send.isPending}>
+          {send.isPending ? t("settings.videoUploading") : t("settings.videoUpload")}
+        </Button>
+        {video && (
+          <Button onClick={() => remove.mutate()} disabled={remove.isPending}>
+            {t("settings.videoDelete")}
+          </Button>
+        )}
+      </div>
+    </section>
+  );
+}
+
 /** «Настройки». */
 export function SettingsPage() {
   const settings = useQuery({ queryKey: KEY, queryFn: () => api<Settings>("/admin/settings") });
@@ -214,6 +311,11 @@ export function SettingsPage() {
   return (
     <section className={styles.page}>
       <h1>{t("settings.title")}</h1>
+      <AppearanceBlock
+        key={settings.data.brand_color}
+        color={settings.data.brand_color ?? "#2b67c6"}
+        video={settings.data.login_video}
+      />
       <LogoBlock logo={settings.data.logo} />
       <SettingsForm key={settings.data.updated_at} initial={settings.data} />
       <section className={styles.section} aria-labelledby="settings-backup">

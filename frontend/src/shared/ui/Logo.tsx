@@ -10,13 +10,10 @@ import styles from "./Logo.module.css";
  */
 export function Logo({
   size = "md",
-  tagline = false,
   tone = "day",
   className,
 }: {
   size?: "md" | "lg";
-  /** «Электронный журнал» under the name — on the login panel. */
-  tagline?: boolean;
   /** "night": white line and text, for the dark login panel. */
   tone?: "day" | "night";
   className?: string;
@@ -38,7 +35,6 @@ export function Logo({
       </svg>
       <span className={styles.words}>
         <span className={styles.name}>{t("app.productName")}</span>
-        {tagline && <span className={styles.tagline}>{t("app.tagline")}</span>}
       </span>
     </span>
   );

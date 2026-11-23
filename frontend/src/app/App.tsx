@@ -2,8 +2,10 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { lazy, Suspense, useEffect, type ComponentType } from "react";
 import { createBrowserRouter, RouterProvider, type RouteObject } from "react-router";
 
+import { useBranding } from "@/features/auth/api";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { onBackButton } from "@/platform";
+import { applyBrand } from "@/shared/lib/brand";
 import { RuledSkeleton } from "@/shared/ui/RuledSkeleton";
 
 import { Gate, RootRedirect } from "./Gate";
@@ -195,11 +197,20 @@ function canGoBack(): boolean {
   return (state?.idx ?? 0) > 0;
 }
 
+/** The center's colour (stage 19) tunes every token before the screens show it. */
+function BrandColor() {
+  const branding = useBranding();
+  const color = branding.data?.brand_color;
+  useEffect(() => applyBrand(color), [color]);
+  return null;
+}
+
 export function App() {
   // The Android «Назад» (no-op on the site).
   useEffect(() => onBackButton(() => void router.navigate(-1), canGoBack), []);
   return (
     <QueryClientProvider client={queryClient}>
+      <BrandColor />
       <Suspense fallback={<RuledSkeleton />}>
         <RouterProvider router={router} />
       </Suspense>

@@ -1021,6 +1021,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/settings/video": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description The video of the login page (stage 19): uploaded in the settings, played muted in a loop. */
+        post: operations["admin_settings_video_create"];
+        /** @description The video of the login page (stage 19): uploaded in the settings, played muted in a loop. */
+        delete: operations["admin_settings_video_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/slots": {
         parameters: {
             query?: never;
@@ -2892,6 +2910,8 @@ export interface components {
             center_name: string;
             contacts: string;
             logo: string | null;
+            brand_color: string;
+            login_video: string | null;
         };
         Bucket: {
             from_percent: number;
@@ -2930,7 +2950,9 @@ export interface components {
             require_admin_2fa?: boolean;
             require_teacher_2fa?: boolean;
             default_grade_scale: components["schemas"]["GradeScaleEnum"];
+            brand_color?: string;
             readonly logo: string | null;
+            readonly login_video: string | null;
             /** Format: date-time */
             readonly last_backup_at: string | null;
             readonly last_backup_ok: boolean | null;
@@ -3845,6 +3867,7 @@ export interface components {
             require_admin_2fa?: boolean;
             require_teacher_2fa?: boolean;
             default_grade_scale?: components["schemas"]["GradeScaleEnum"];
+            brand_color?: string;
         };
         PatchedCourseRequest: {
             /** Format: uuid */
@@ -6348,6 +6371,50 @@ export interface operations {
         };
     };
     admin_settings_logo_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    admin_settings_video_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file?: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CenterSettings"];
+                };
+            };
+        };
+    };
+    admin_settings_video_destroy: {
         parameters: {
             query?: never;
             header?: never;

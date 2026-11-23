@@ -44,6 +44,9 @@ class CenterSettings(models.Model):
 
     # Branding and administration (stage 5).
     logo = models.CharField(max_length=100, blank=True)  # file name under MEDIA_ROOT/logo
+    # Stage 19: one colour the whole interface is tuned to, and the video of the login page.
+    brand_color = models.CharField(max_length=7, default="#2b67c6")
+    login_video = models.CharField(max_length=100, blank=True)  # file under MEDIA_ROOT/video
     default_grade_scale = models.CharField(max_length=3, default="100")
     last_backup_at = models.DateTimeField(null=True, blank=True)
     last_backup_ok = models.BooleanField(null=True, blank=True)
@@ -59,6 +62,10 @@ class CenterSettings(models.Model):
             models.CheckConstraint(
                 condition=Q(max_grades_per_lesson__gte=1) & Q(max_grades_per_lesson__lte=9),
                 name="core_settings_max_grades",
+            ),
+            models.CheckConstraint(
+                condition=Q(brand_color__regex=r"^#[0-9a-f]{6}$"),
+                name="core_settings_brand_color",
             ),
         ]
 

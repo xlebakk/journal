@@ -170,6 +170,8 @@ class BrandingSerializer(serializers.Serializer[Any]):
     center_name = serializers.CharField()
     contacts = serializers.CharField()
     logo = serializers.CharField(allow_null=True)
+    brand_color = serializers.CharField()
+    login_video = serializers.CharField(allow_null=True)
 
 
 # --- Administrator ---------------------------------------------------------------------

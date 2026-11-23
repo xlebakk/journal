@@ -1927,6 +1927,44 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/admin/settings/video:
+    post:
+      operationId: admin_settings_video_create
+      description: 'The video of the login page (stage 19): uploaded in the settings,
+        played muted in a loop.'
+      tags:
+      - admin
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CenterSettings'
+          description: ''
+    delete:
+      operationId: admin_settings_video_destroy
+      description: 'The video of the login page (stage 19): uploaded in the settings,
+        played muted in a loop.'
+      tags:
+      - admin
+      security:
+      - appBearer: []
+      - sessionCookie: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/admin/slots:
     get:
       operationId: admin_slots_list
@@ -5419,9 +5457,16 @@ components:
         logo:
           type: string
           nullable: true
+        brand_color:
+          type: string
+        login_video:
+          type: string
+          nullable: true
       required:
+      - brand_color
       - center_name
       - contacts
+      - login_video
       - logo
     Bucket:
       type: object
@@ -5543,7 +5588,14 @@ components:
           type: boolean
         default_grade_scale:
           $ref: '#/components/schemas/GradeScaleEnum'
+        brand_color:
+          type: string
+          maxLength: 7
         logo:
+          type: string
+          nullable: true
+          readOnly: true
+        login_video:
           type: string
           nullable: true
           readOnly: true
@@ -5575,6 +5627,7 @@ components:
       - last_backup_ok
       - last_restore_check_at
       - last_restore_check_ok
+      - login_video
       - logo
       - updated_at
     Child:
@@ -7960,6 +8013,10 @@ components:
           type: boolean
         default_grade_scale:
           $ref: '#/components/schemas/GradeScaleEnum'
+        brand_color:
+          type: string
+          minLength: 1
+          maxLength: 7
     PatchedCourseRequest:
       type: object
       properties:

@@ -21,7 +21,6 @@ import { Button } from "@/shared/ui/Button";
 import { Checkbox } from "@/shared/ui/Checkbox";
 import { LanguageSwitch } from "@/shared/ui/LanguageSwitch";
 import { Logo } from "@/shared/ui/Logo";
-import { NightSky } from "@/shared/ui/NightSky";
 import { PasswordField } from "@/shared/ui/PasswordField";
 import { TextField } from "@/shared/ui/TextField";
 
@@ -52,8 +51,20 @@ export function AuthColumn({ children }: { children: React.ReactNode }) {
   return (
     <div className={styles.screen}>
       <section className={styles.panel}>
-        <NightSky className={styles.sky} />
-        <Logo size="lg" tagline tone="night" className={styles.logo} />
+        {/* The video the center uploads in the settings; empty until then (stage 19). */}
+        {branding.data?.login_video && (
+          <video
+            className={styles.video}
+            src={branding.data.login_video}
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-hidden="true"
+          />
+        )}
+        <div className={styles.scrim} />
+        <Logo size="lg" tone="night" className={styles.logo} />
         <div className={styles.panelTop}>
           <CenterName name={branding.data?.center_name || t("app.centerName")} />
           <div className={styles.centerRule} />
@@ -68,12 +79,28 @@ export function AuthColumn({ children }: { children: React.ReactNode }) {
       <main className={styles.side}>
         <svg
           className={styles.wave}
-          viewBox="0 0 100 1000"
+          viewBox="0 0 240 1000"
           preserveAspectRatio="none"
           aria-hidden="true"
           focusable="false"
         >
-          <path d="M100 0 H70 C20 180 92 360 46 540 C8 700 78 850 36 1000 H100 Z" />
+          <path d="M240 0 H206 C226 150 214 300 168 450 C120 610 60 760 36 880 C28 930 24 970 22 1000 H240 Z" />
+        </svg>
+        <svg
+          className={styles.waves}
+          viewBox="0 0 600 220"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path
+            className={styles.waveBack}
+            d="M0 220 C140 150 300 190 420 120 C500 74 560 40 600 20 V220 Z"
+          />
+          <path
+            className={styles.waveFront}
+            d="M120 220 C260 180 380 200 480 140 C540 104 580 80 600 70 V220 Z"
+          />
         </svg>
         <LanguageSwitch className={styles.language} />
         <div className={styles.form}>{children}</div>

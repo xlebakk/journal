@@ -23,7 +23,7 @@ from apps.audit import services as audit
 from apps.core.csrf import CsrfEnforcedMixin
 from apps.core.models import CenterSettings
 from apps.core.request_info import client_ip, user_agent
-from apps.core.views_settings import logo_data_uri
+from apps.core.views_settings import login_video_url, logo_data_uri
 
 from . import lockout, sessions, totp
 from .middleware import totp_setup_required
@@ -133,7 +133,13 @@ class LoginView(CsrfEnforcedMixin, APIView):
     def get(self, request: Request) -> Response:
         s = CenterSettings.load()
         return Response(
-            {"center_name": s.center_name, "contacts": s.contacts, "logo": logo_data_uri(s)}
+            {
+                "center_name": s.center_name,
+                "contacts": s.contacts,
+                "logo": logo_data_uri(s),
+                "brand_color": s.brand_color,
+                "login_video": login_video_url(s),
+            }
         )
 
     @extend_schema(request=LoginSerializer, responses=StepSerializer)

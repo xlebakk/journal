@@ -260,11 +260,11 @@ export default function StyleguidePage() {
           <p>
             Daftar — «тетрадь, журнал»: название программы, не центра. Страница журнала с полем,
             линейками и красной закладкой; цвета из токенов. В шапке — обычный размер, на входе —
-            крупный с подписью. Иконки приложения рисует mobile/scripts/make_icons.py.
+            крупный. Иконки приложения рисует mobile/scripts/make_icons.py.
           </p>
           <div className={styles.row}>
             <Logo />
-            <Logo size="lg" tagline />
+            <Logo size="lg" />
           </div>
         </section>
 

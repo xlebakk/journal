@@ -1,8 +1,7 @@
 {
   "app": {
     "centerName": "Training center",
-    "productName": "Daftar",
-    "tagline": "Electronic journal"
+    "productName": "Daftar"
   },
   "home": {
     "styleguideLink": "open the styleguide"
@@ -364,7 +363,9 @@
     "password_too_common": "The password is too common",
     "password_too_similar": "The password is too similar to the name or login",
     "superadmin_required": "Only the super administrator can do this",
-    "last_superadmin": "This is the last super administrator"
+    "last_superadmin": "This is the last super administrator",
+    "invalid_color": "A colour like #rrggbb is needed",
+    "unsupported_video": "An MP4 or WebM video is needed."
   },
   "schedule": {
     "title": "Schedule",
@@ -938,7 +939,17 @@
     "reauthNote": "Changing the settings asks for your password if it was entered more than 5 minutes ago.",
     "restoreNone": "No restore check has been run yet.",
     "restoreOk": "Last restore check: {date}, successful.",
-    "restoreFailed": "Last restore check: {date}, with an error — see the server log."
+    "restoreFailed": "Last restore check: {date}, with an error — see the server log.",
+    "appearance": "Appearance",
+    "brandColor": "Brand colour",
+    "brandColorHint": "One colour: buttons, links, fills and the login page follow it. A colour too light is darkened automatically so the text stays readable.",
+    "brandColorSave": "apply the colour",
+    "video": "Login page video",
+    "videoHint": "MP4 or WebM up to 25 MB. Plays muted in a loop to the left of the login form.",
+    "videoUpload": "upload a video",
+    "videoUploading": "uploading…",
+    "videoDelete": "remove the video",
+    "noVideo": "No video uploaded — a calm background in the brand colour is shown."
   },
   "overview": {
     "today": "Today's lessons",
@@ -1047,7 +1058,9 @@
     "run": "run",
     "void": "voided",
     "link": "linked",
-    "unlink": "unlinked"
+    "unlink": "unlinked",
+    "video_update": "login video",
+    "video_delete": "login video removed"
   },
   "offline": {
     "title": "No connection",

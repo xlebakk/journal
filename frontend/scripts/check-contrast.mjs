@@ -19,6 +19,9 @@ function block(selector) {
 }
 
 function parseColor(value) {
+  // Brand colours come at runtime (stage 19); the file's fallback is what is checked here.
+  const fallback = value.match(/^var\(--[\w-]+,\s*(.+)\)$/);
+  if (fallback) return parseColor(fallback[1]);
   const hex = value.match(/^#([0-9a-f]{6})$/i);
   if (hex) {
     const n = parseInt(hex[1], 16);

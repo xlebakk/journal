@@ -29,6 +29,7 @@ PUBLIC_URL_NAMES = {
     "auth-token-totp",
     "auth-token-refresh",
     "calendar-feed",
+    "branding-video",  # the login page's video, before anyone signs in (stage 19)
 }
 
 _CONVERTER_SAMPLES = {"int": "1", "uuid": str(uuid.uuid4()), "str": "x", "slug": "x", "path": "x"}

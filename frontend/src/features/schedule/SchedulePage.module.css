@@ -147,3 +147,31 @@
   border: var(--line) solid var(--rule);
   background: var(--sheet);
 }
+
+/* Settings «Оформление» (stage 19). */
+.colorRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+.colorRow > .mono {
+  padding-bottom: 10px;
+}
+
+.color input {
+  width: 72px;
+  min-height: 44px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.videoPreview {
+  display: block;
+  width: min(360px, 100%);
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radius);
+  background: var(--night-1);
+}

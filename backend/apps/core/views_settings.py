@@ -1,17 +1,21 @@
-"""Center settings and the logo."""
+"""Center settings, the logo, the brand colour and the login video."""
 
 import base64
 import io
+import re
 import secrets
 from typing import Any, ClassVar
 
 from django.conf import settings as django_settings
+from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction
+from django.http import FileResponse, Http404, HttpResponse
 from drf_spectacular.utils import extend_schema
 from PIL import Image, UnidentifiedImageError
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser
+from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -50,6 +54,19 @@ def logo_path(name: str) -> Any:
     return django_settings.MEDIA_ROOT / "logo" / name
 
 
+def video_path(name: str) -> Any:
+    return django_settings.MEDIA_ROOT / "video" / name
+
+
+VIDEO_TYPES = {"mp4": "video/mp4", "webm": "video/webm"}
+VIDEO_NAME = re.compile(r"^[0-9a-f]{32}\.(mp4|webm)$")
+
+
+def login_video_url(center: CenterSettings) -> str | None:
+    """The file name changes with every upload, so the address can be cached for good."""
+    return f"/api/v1/branding/video/{center.login_video}" if center.login_video else None
+
+
 def logo_data_uri(center: CenterSettings) -> str | None:
     """The logo inside the JSON, so no public file endpoint is needed."""
     if not center.logo:
@@ -63,6 +80,7 @@ def logo_data_uri(center: CenterSettings) -> str | None:
 
 class CenterSettingsSerializer(serializers.ModelSerializer[CenterSettings]):
     logo = serializers.SerializerMethodField()
+    login_video = serializers.SerializerMethodField()
     default_grade_scale = serializers.ChoiceField(choices=GradeScale.choices)
 
     class Meta:
@@ -75,7 +93,9 @@ class CenterSettingsSerializer(serializers.ModelSerializer[CenterSettings]):
             "require_admin_2fa",
             "require_teacher_2fa",
             "default_grade_scale",
+            "brand_color",
             "logo",
+            "login_video",
             "last_backup_at",
             "last_backup_ok",
             "last_restore_check_at",
@@ -84,6 +104,7 @@ class CenterSettingsSerializer(serializers.ModelSerializer[CenterSettings]):
         )
         read_only_fields = (
             "logo",
+            "login_video",
             "last_backup_at",
             "last_backup_ok",
             "last_restore_check_at",
@@ -97,13 +118,22 @@ class CenterSettingsSerializer(serializers.ModelSerializer[CenterSettings]):
     def get_logo(self, obj: CenterSettings) -> str | None:
         return logo_data_uri(obj)
 
+    def get_login_video(self, obj: CenterSettings) -> str | None:
+        return login_video_url(obj)
+
+    def validate_brand_color(self, value: str) -> str:
+        if not re.fullmatch(r"#[0-9a-fA-F]{6}", value):
+            raise ValidationError("invalid_color")
+        return value.lower()
+
     def validate_site_url(self, value: str) -> str:
         if not value.startswith(("https://", "http://")):
             raise ValidationError("invalid_url")
         return value.rstrip("/")
 
 
-AUDIT_FIELDS = [f for f in CenterSettingsSerializer.Meta.fields if f not in ("logo", "updated_at")]
+NOT_AUDITED = ("logo", "login_video", "updated_at")
+AUDIT_FIELDS = [f for f in CenterSettingsSerializer.Meta.fields if f not in NOT_AUDITED]
 
 
 class CenterSettingsView(APIView):
@@ -203,3 +233,115 @@ class LogoView(APIView):
             )
             if old:
                 transaction.on_commit(lambda: logo_path(old).unlink(missing_ok=True))
+
+
+def check_video(upload: Any) -> str:
+    """MP4 or WebM by its first bytes, not by the name; returns the extension."""
+    if upload is None:
+        raise ValidationError({"file": ["required"]})
+    if upload.size > django_settings.LOGIN_VIDEO_MAX_BYTES:
+        raise ValidationError({"file": ["file_too_large"]})
+    head = upload.read(16)
+    upload.seek(0)
+    if head[4:8] == b"ftyp":
+        return "mp4"
+    if head[:4] == b"\x1a\x45\xdf\xa3":
+        return "webm"
+    raise ValidationError({"file": ["unsupported_video"]})
+
+
+class LoginVideoView(APIView):
+    """The video of the login page (stage 19): uploaded in the settings, played muted in a loop."""
+
+    permission_classes = (IsAdmin,)
+    parser_classes = (MultiPartParser,)
+
+    @extend_schema(
+        request={
+            "multipart/form-data": {
+                "type": "object",
+                "properties": {"file": {"type": "string", "format": "binary"}},
+            }
+        },
+        responses=CenterSettingsSerializer,
+    )
+    def post(self, request: Request) -> Response:
+        upload: UploadedFile[Any] | None = request.FILES.get("file")
+        extension = check_video(upload)
+        if upload is None:  # pragma: no cover — check_video refused it
+            raise ValidationError({"file": ["required"]})
+        name = f"{secrets.token_hex(16)}.{extension}"
+        video_path("").mkdir(parents=True, exist_ok=True)
+        with video_path(name).open("wb") as out:
+            for chunk in upload.chunks():
+                out.write(chunk)
+        self._replace(request, name)
+        return Response(CenterSettingsSerializer(CenterSettings.load()).data)
+
+    @extend_schema(responses=CenterSettingsSerializer)
+    def delete(self, request: Request) -> Response:
+        self._replace(request, "")
+        return Response(CenterSettingsSerializer(CenterSettings.load()).data)
+
+    def _replace(self, request: Request, name: str) -> None:
+        with transaction.atomic():
+            center = CenterSettings.objects.select_for_update().get_or_create(pk=1)[0]
+            old = center.login_video
+            center.login_video = name
+            center.save()
+            audit.record(
+                request=request,
+                action="settings.video_update" if name else "settings.video_delete",
+                entity=center,
+                before={"login_video": bool(old)},
+                after={"login_video": bool(name)},
+            )
+            if old:
+                transaction.on_commit(lambda: video_path(old).unlink(missing_ok=True))
+
+
+RANGE = re.compile(r"^bytes=(\d*)-(\d*)$")
+
+
+def cached[R: HttpResponse | FileResponse](response: R) -> R:
+    response["Accept-Ranges"] = "bytes"
+    response["Cache-Control"] = "public, max-age=31536000, immutable"
+    return response
+
+
+class LoginVideoFileView(APIView):
+    """Public: the login page plays it before anyone signs in. Only the current file is served;
+    the name is random, so it is cached for good. Byte ranges for Safari's player."""
+
+    permission_classes = (AllowAny,)
+    authentication_classes = ()
+    throttle_classes = ()
+
+    @extend_schema(exclude=True)
+    def get(self, request: Request, name: str) -> HttpResponse | FileResponse:
+        if not VIDEO_NAME.match(name) or name != CenterSettings.load().login_video:
+            raise Http404
+        path = video_path(name)
+        try:
+            size = path.stat().st_size
+        except OSError as exc:
+            raise Http404 from exc
+        content_type = VIDEO_TYPES[name.rsplit(".", 1)[1]]
+        wanted = RANGE.match(request.headers.get("Range", ""))
+        if wanted and (wanted[1] or wanted[2]):
+            if wanted[1]:
+                start = int(wanted[1])
+                end = min(int(wanted[2]) if wanted[2] else size - 1, size - 1)
+            else:
+                start, end = max(0, size - int(wanted[2])), size - 1
+            if start > end or start >= size:
+                response = HttpResponse(status=416)
+                response["Content-Range"] = f"bytes */{size}"
+                return response
+            with path.open("rb") as source:
+                source.seek(start)
+                body = source.read(end - start + 1)
+            partial = HttpResponse(body, status=206, content_type=content_type)
+            partial["Content-Range"] = f"bytes {start}-{end}/{size}"
+            return cached(partial)
+        return cached(FileResponse(path.open("rb"), content_type=content_type))

@@ -127,6 +127,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # Uploaded files live outside the web root and are served only through the API.
 MEDIA_ROOT = Path(env_str("MEDIA_ROOT", str(BASE_DIR / "media")))
 LOGO_MAX_BYTES = 1024 * 1024
+LOGIN_VIDEO_MAX_BYTES = 25 * 1024 * 1024
 
 # Android app (stage 6): access token in memory, refresh token in the Keystore.
 APP_ACCESS_SECONDS = 600

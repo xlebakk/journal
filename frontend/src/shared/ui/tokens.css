@@ -18,29 +18,23 @@
   --ink: #1f2a37;
   --ink-2: #5d6a7a;
   --rule: #e4ebf3;
-  --accent: #2b67c6;
-  --accent-strong: #1f4f9c;
-  --accent-soft: #edf5fd;
-  --accent-tint: #d6e8fa;
+  --accent: var(--brand-accent, #2b67c6);
+  --accent-strong: var(--brand-accent-strong, #1f4f9c);
+  --accent-soft: var(--brand-accent-soft, #edf5fd);
+  --accent-tint: var(--brand-accent-tint, #d6e8fa);
   --on-accent: #ffffff;
   --red-pen: #c2362c;
   --pencil: #9a560f;
   --green: #2c7549;
-  --marker: #dcecfb;
-  --marker-soft: #f0f7fe;
+  --marker: var(--brand-marker, #dcecfb);
+  --marker-soft: var(--brand-marker-soft, #f0f7fe);
 
-  /* The night of the login page (stage 19): the same in both themes */
-  --night-1: #0a1430;
-  --night-2: #13245a;
-  --night-3: #2a4a8f;
-  --night-ridge-1: #1b3067;
-  --night-ridge-2: #12224d;
-  --night-ridge-3: #0b1636;
-  --night-mist: #9db8ec;
-  --night-moon: #dfe8fb;
+  /* The login page's side under the video (stage 19): a deep shade of the brand colour */
+  --night-1: var(--brand-night-1, #0a1430);
+  --night-2: var(--brand-night-2, #13245a);
   --night-text: #f2f6ff;
   --night-text-2: #b9c7e6;
-  --night-accent: #8db8ff;
+  --night-accent: var(--brand-night-accent, #8db8ff);
 
   /* Avatar inks, picked by hash of user id */
   --stamp-1: #2b5fae;
@@ -106,16 +100,16 @@
     --ink: #e6e9ee;
     --ink-2: #a3adbb;
     --rule: #2a3342;
-    --accent: #7eaef0;
-    --accent-strong: #a9c9f6;
-    --accent-soft: #1c2840;
-    --accent-tint: #23324d;
+    --accent: var(--brand-dark-accent, #7eaef0);
+    --accent-strong: var(--brand-dark-accent-strong, #a9c9f6);
+    --accent-soft: var(--brand-dark-accent-soft, #1c2840);
+    --accent-tint: var(--brand-dark-accent-tint, #23324d);
     --on-accent: #12171f;
     --red-pen: #f08a80;
     --pencil: #e3b06a;
     --green: #7ccc9c;
-    --marker: #22314a;
-    --marker-soft: #1b2538;
+    --marker: var(--brand-dark-marker, #22314a);
+    --marker-soft: var(--brand-dark-marker-soft, #1b2538);
 
     --stamp-1: #a3c0f2;
     --stamp-2: #85cfcf;
@@ -136,16 +130,16 @@
   --ink: #e6e9ee;
   --ink-2: #a3adbb;
   --rule: #2a3342;
-  --accent: #7eaef0;
-  --accent-strong: #a9c9f6;
-  --accent-soft: #1c2840;
-  --accent-tint: #23324d;
+  --accent: var(--brand-dark-accent, #7eaef0);
+  --accent-strong: var(--brand-dark-accent-strong, #a9c9f6);
+  --accent-soft: var(--brand-dark-accent-soft, #1c2840);
+  --accent-tint: var(--brand-dark-accent-tint, #23324d);
   --on-accent: #12171f;
   --red-pen: #f08a80;
   --pencil: #e3b06a;
   --green: #7ccc9c;
-  --marker: #22314a;
-  --marker-soft: #1b2538;
+  --marker: var(--brand-dark-marker, #22314a);
+  --marker-soft: var(--brand-dark-marker-soft, #1b2538);
 
   --stamp-1: #a3c0f2;
   --stamp-2: #85cfcf;

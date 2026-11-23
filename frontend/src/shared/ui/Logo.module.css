@@ -41,19 +41,8 @@
   line-height: 1;
 }
 
-.tagline {
-  color: var(--ink-2);
-  font-size: var(--text-14);
-  font-weight: 400;
-  line-height: 1.2;
-}
-
 .night {
   color: var(--night-text);
-}
-
-.night .tagline {
-  color: var(--night-text-2);
 }
 
 .lg {
