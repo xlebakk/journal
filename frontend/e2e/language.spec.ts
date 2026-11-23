@@ -8,7 +8,7 @@ test("the interface switches to Tajik on the login page and stays so after login
   await page.goto("/login");
   await page.getByRole("radio", { name: "Тоҷикӣ" }).click();
   await expect(page.locator("html")).toHaveAttribute("lang", "tg");
-  await expect(page.getByText("Журнали электронӣ")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Воридшавӣ ба журнал" })).toBeVisible();
 
   await page.getByLabel("Логин").fill("e2e.student");
   await page.getByLabel("Рамз", { exact: true }).fill(PASSWORD);

@@ -17,7 +17,8 @@ test("without network the teacher keeps working; the changes reach the server la
   await context.setOffline(true);
   await expect(page.getByText(/^Нет сети\. Можно продолжать/)).toBeVisible();
 
-  await page.getByRole("button", { name: /^Посещаемость: был/ }).click();
+  // Stage 19: only «был» and «н»; an absent student gets no grade, so the grade goes alone
+  // (an offline «н» is covered by the queue unit test).
   const input = page.getByLabel("Оценка для Алиев Ф.");
   await input.fill("77");
   await input.press("Enter");
@@ -25,9 +26,8 @@ test("without network the teacher keeps working; the changes reach the server la
   await page.getByLabel("Тема").blur();
 
   // On the screen at once, waiting in the queue; finishing the lesson needs the network.
-  await expect(page.getByText("Не отправлено: 3")).toBeVisible();
+  await expect(page.getByText("Не отправлено: 2")).toBeVisible();
   await expect(page.getByRole("button", { name: "77" })).toBeVisible();
-  await expect(page.getByRole("button", { name: /^Посещаемость: опоздал/ })).toBeVisible();
   await expect(page.getByRole("button", { name: "завершить занятие" })).toBeDisabled();
 
   await context.setOffline(false);
@@ -39,5 +39,4 @@ test("without network the teacher keeps working; the changes reach the server la
   await page.reload();
   await expect(page.getByRole("button", { name: "77" })).toBeVisible();
   await expect(page.getByLabel("Тема")).toHaveValue("Производная");
-  await expect(page.getByRole("button", { name: /^Посещаемость: опоздал/ })).toBeVisible();
 });
