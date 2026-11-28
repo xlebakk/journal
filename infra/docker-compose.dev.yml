@@ -5,7 +5,7 @@ name: journal-dev
 
 services:
   db:
-    image: postgres:16-alpine
+    image: postgres:19-alpine
     env_file: ../.env
     environment:
       # Superuser (password: POSTGRES_PASSWORD from .env) exists for the container only;
